@@ -17,9 +17,3 @@ Movez is akin to the Uber of moving services, offering a user-friendly applicati
    
 4. **Privacy-Preserving Matching:** We prioritize customer privacy by implementing a privacy-preserving matching algorithm. Instead of revealing exact locations upfront, we utilize proximity-based matching to ensure confidentiality until the final stage of the process.
 
-## Expected Users:
-Movez caters to a diverse range of users, including:
-- Individuals in the process of moving houses.
-- People requiring equipment transfers, even on a small scale.
-- Professional movers seeking additional opportunities.
-- Individuals with suitable vehicles interested in earning secondary income.
