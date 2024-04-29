@@ -1,10 +1,10 @@
 const pool = require("../db")
 
-const getVehicleCargoInfo = async(req,res)=>{
+const getVehicleInfo = async(req,res)=>{
     const vehicleID = req.params.vehicleID
     try {
     const cargoCapacity = await pool.query(
-        "SELECT Depth, Height, Weight FROM VehicleInfo Where vehicleID = $1",
+        "SELECT Depth, Height, Width, Weight FROM VehicleInfo Where VehicleID = $1",
         [vehicleID]
     );
     if(!cargoCapacity.rows.length){
@@ -26,9 +26,9 @@ const createVehicleInfo = async(req, res) => {
     //const Depth = req.params.depth
     //const Height = req.params.height
     //const Weight = req.params.Weight
-    const { moverID, vehicleType, depth, weight, height } = req.body;
+    const { moverID, vehicleType, depth, width ,weight, height } = req.body;
     // Check if any required parameters are missing
-    if (!moverID || !vehicleType || !depth || !weight || !height) {
+    if (!moverID || !vehicleType || !depth || !width || !weight || !height) {
     return res.status(400).json({ message: 'Missing required parameters' });
   }
   
@@ -38,10 +38,10 @@ const createVehicleInfo = async(req, res) => {
   }
     try {
         const result = await pool.query(`
-        INSERT INTO VehicleInfo (MoverID, VehicleType, Depth, Weight, Height)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO VehicleInfo (MoverID, VehicleType, Depth, Width ,Weight, Height)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING *;
-      `, [moverID, vehicleType, depth, weight, height]);
+      `, [moverID, vehicleType, depth, width, weight, height]);
       if (result.rowCount > 0) {
         res.status(201).json({ msg: 'VehicleInfo created successfully', vehicleInfo: result.rows[0] });
       } else {
@@ -78,6 +78,10 @@ const updateVehicleInfo = async (req, res) => {
       if (depth) {
         updateFields.push('Depth = $' + (updateValues.length + 1));
         updateValues.push(depth);
+      }
+      if(width){
+        updateFields.push('Width = $' + (updateValues.length + 1));
+        updateValues.push(weight);
       }
       if (weight) {
         updateFields.push('Weight = $' + (updateValues.length + 1));
@@ -123,3 +127,9 @@ const updateVehicleInfo = async (req, res) => {
     }
   };
   
+  module.exports = {
+    getVehicleInfo,
+    createVehicleInfo,
+    updateVehicleInfo,
+    deleteVehicleInfo
+  };
