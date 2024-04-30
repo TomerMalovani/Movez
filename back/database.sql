@@ -37,11 +37,13 @@ FOREIGN KEY (UserID) REFERENCES Users(UserID)
 CREATE TABLE PriceProposals (
 ProposalID SERIAL PRIMARY KEY,
 RequestID INT,
-MoverID INT,
+MoverID INT NOT NULL,
+MovingID INT NOT NULL,
 EstimatedCost DECIMAL(10, 2) NOT NULL,
 Status VARCHAR(10) DEFAULT 'Pending',
 FOREIGN KEY (RequestID) REFERENCES MovingRequests(RequestID),
 FOREIGN KEY (MoverID) REFERENCES Users(UserID)
+FOREIGN KEY (MovingID) REFERENCES Users(UserID)
 );
 
 CREATE TABLE VehicleInfo (
