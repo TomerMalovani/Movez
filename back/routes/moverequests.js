@@ -2,11 +2,13 @@ var express = require('express');
 var router = express.Router();
 
 const {
-    getMoveRequests,
+    getMoveRequest,
     createMoveRequest,
     updateMoveRequest,
     deleteMoveRequest
-} = require("../controller/move_requests")
+} = require("../controller/move_request")
 
 router.route('/').post(createMoveRequest)
-router.route('/:requestID').get(getMoveRequests).patch(updateMoveRequest).delete(deleteMoveRequest)
+router.route('/:requestID').get(getMoveRequest).patch(updateMoveRequest).delete(deleteMoveRequest)
+
+module.exports = router;

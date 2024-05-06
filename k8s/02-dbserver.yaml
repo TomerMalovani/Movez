@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: movez
+    name: dbserver
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: movez
+        deployment: dbserver
+    strategy: {}
+    template:
+      metadata:
+        labels:
+          app: movez
+          deployment: dbserver
+      spec:
+        containers:
+        - image: docker.io/postgres:15.1
+          name: postgresql
+          ports:
+          - containerPort: 5432
+            protocol: TCP
+          resources: {}
+          env:
+          - name: "POSTGRES_USER"
+            valueFrom:
+              secretKeyRef:
+                name: "db-credentials"
+                key: "username" 
+          - name: "POSTGRES_PASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: "db-credentials"
+                key: "password" 
+          - name: "PGPASSWORD"
+            valueFrom:
+              secretKeyRef:
+                name: "db-credentials"
+                key: "password" 
+          - name: "POSTGRES_DB"
+            valueFrom:
+              secretKeyRef:
+                name: "db-credentials"
+                key: "database" 
+
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data:z
+              name: postgredb
+
+        volumes:
+          - name: postgredb
+            persistentVolumeClaim:
+              claimName: postgres-pv-claim
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: movez
+    name: dbserver
+  spec:
+    type: LoadBalancer
+    ports:
+    - name: 5432-tcp
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      app: movez
+      deployment: dbserver
