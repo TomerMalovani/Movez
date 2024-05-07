@@ -9,6 +9,6 @@ const {
 } = require("../controller/move_request")
 
 router.route('/').post(createMoveRequest)
-router.route('/:requestID').get(getMoveRequest).patch(updateMoveRequest).delete(deleteMoveRequest)
+router.route('/:uuid').get(getMoveRequest).patch(updateMoveRequest).delete(deleteMoveRequest)
 
 module.exports = router;

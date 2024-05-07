@@ -1,12 +1,14 @@
 const pool = require("../db")
+const MoveRequest = require("../models/MoveRequest")
 
 const getMoveRequest = async(req,res)=>{
-    const requestID = req.params.requestID
+    const requestID = req.params.uuid
     try{
-        const result = await pool.query(`
-        SELECT * FROM MoveRequest
-        WHERE RequestID = $1
-        `, [requestID])
+        //const result = await pool.query(`
+        //SELECT * FROM MoveRequest
+       // WHERE RequestID = $1
+        //`, [requestID])
+        const result = await MoveRequest.findOne({where: {uuid: requestID}})
         if(result.rowCount > 0){
             res.status(200).json({message: 'MoveRequest found', moveRequest: result.rows[0]})
         }else{
@@ -19,7 +21,7 @@ const getMoveRequest = async(req,res)=>{
 }
 
 const createMoveRequest = async(req,res) =>{
-    const {requestID ,UserID, Status, RequestItemsID, MovingDate, MovingTime, MovingFrom, MovingTo} = req.body
+    const {uuid ,UserID, Status, RequestItemsID, MovingDate, MovingTime, MovingFrom, MovingTo} = req.body
     try{
         const result = await pool.query(`
         INSERT INTO MoveRequest (RequestID, UserID, Status, RequestItemsID, MovingDate, MovingTime, MonvingFrom, MovingTo)
