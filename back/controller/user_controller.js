@@ -1,6 +1,7 @@
 const pool = require("../db")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const User = require("../models/User")
 dotenv = require('dotenv')
 dotenv.config()
 const register = async(req,res)=>{
@@ -15,13 +16,14 @@ const register = async(req,res)=>{
 
         salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
-        const result = await pool.query(
-            `INSERT INTO Users 
-            (Username, Email, Password,salt,token,token_exp)
-             VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`, 
-             [username, email, hashedPassword,salt,token,Date.now()+604800000])
-        if(result.rowCount > 0){
-            res.status(201).json({message: "User Created Successfully", user: result.rows[0]})
+       // const result = await pool.query(
+        //    `INSERT INTO Users 
+         //   (Username, Email, Password,salt,token,token_exp)
+         //    VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`, 
+         //    [username, email, hashedPassword,salt,token,Date.now()+604800000])
+         const user = await User.create({username, email, password: hashedPassword, salt, token, token_exp: Date.now()+604800000})
+        if(user){
+            res.status(201).json({message: "User Created Successfully", user: user})
         }
         else{
             res.status(500).json({message: "Failed to create User"})
@@ -40,20 +42,22 @@ const login = async(req,res)=>{
             return res.status(400).json({message: "Missing required parameters"})
         }
 
-        const result = await pool.query(
-            `SELECT * FROM Users WHERE Username = $1`, 
-            [username])
-        if(result.rowCount > 0){
-            const user = result.rows[0]
+        //const result = await pool.query(
+         //   `SELECT * FROM Users WHERE Username = $1`, 
+         //   [username])
+         const user = await User.findOne({where: {username}})
+
+        if(user){
             console.log(user)
             // salt hash
-            const saltedPassword = bcrypt.hashSync(user.password, user.salt)
+            //const saltedPassword = bcrypt.hashSync(user.password, user.salt)
             const isMatch = await bcrypt.compare(password, user.password)
             if(isMatch){
                 const token = jwt.sign({username}, process.env.JWT_SECRET, {expiresIn: '7d'})
-                await pool.query(
-                    `UPDATE Users SET token = $1, token_exp = $2 WHERE user_id = $3`, 
-                    [token, Date.now()+604800000, user.user_id])
+                //await pool.query(
+                //    `UPDATE Users SET token = $1, token_exp = $2 WHERE user_id = $3`, 
+                //    [token, Date.now()+604800000, user.user_id])
+                await user.update({ token: token, token_exp: Date.now() + 604800000 });
                 res.status(200).json({message: "Login Successful", user: user})
 
             }

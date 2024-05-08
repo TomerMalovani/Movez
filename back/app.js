@@ -9,6 +9,7 @@ let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let vehicleInfoRouter = require('./routes/vehicle_info');
 let moveRequestsRouter = require('./routes/moverequests');
+let moveRequestItemsRouter = require('./routes/moverequestItems');
 let priceProposalRouter = require('./routes/price_proposal');
 let app = express();
 
@@ -44,6 +45,7 @@ app.use(function(req, res, next) {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/vehicle_info', vehicleInfoRouter);
+app.use('/moverequestitems', moveRequestItemsRouter);
 app.use('/moverequests', moveRequestsRouter);
 app.use('/priceproposal', priceProposalRouter);
 

@@ -1,14 +1,17 @@
 const pool = require("../db")
+const VehicleInfo = require("../models/VehicleInfo")
 
 const getVehicleInfo = async(req,res)=>{
     const vehicleID = req.params.vehicleID
     try {
-    const cargoCapacity = await pool.query(
-        "SELECT Depth, Height, Width, Weight FROM VehicleInfo Where VehicleID = $1",
-        [vehicleID]
-    );
+    //const cargoCapacity = await pool.query(
+      //  "SELECT Depth, Height, Width, Weight FROM VehicleInfo Where VehicleID = $1",
+        //[vehicleID]
+    //);
+    const cargoCapacity = await VehicleInfo.findbyPk(vehicleID, 
+      {attributes: ['Depth', 'Height', 'Width', 'Weight']})
     if(!cargoCapacity.rows.length){
-        return res.status(404).json({msg: "No Vehicle With ${vehicleID} id"});
+        return res.status(404).json({msg: `No Vehicle With ${vehicleID} id`});
     }
     res.status(200).json(cargoCapacity.rows)
     }
@@ -37,12 +40,13 @@ const createVehicleInfo = async(req, res) => {
     return res.status(400).json({ message: 'Invalid parameter values' });
   }
     try {
-        const result = await pool.query(`
-        INSERT INTO VehicleInfo (MoverID, VehicleType, Depth, Width ,Weight, Height)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING *;
-      `, [moverID, vehicleType, depth, width, weight, height]);
-      if (result.rowCount > 0) {
+        //const result = await pool.query(`
+        //INSERT INTO VehicleInfo (MoverID, VehicleType, Depth, Width ,Weight, Height)
+        //VALUES ($1, $2, $3, $4, $5, $6)
+        //RETURNING *;
+      //`, [moverID, vehicleType, depth, width, weight, height]);
+      const result = await VehicleInfo.create({moverID, vehicleType, depth, width, weight, height});
+      if (result) {
         res.status(201).json({ msg: 'VehicleInfo created successfully', vehicleInfo: result.rows[0] });
       } else {
         res.status(500).json({ msg: 'Failed to create the vehicle info' });
@@ -55,50 +59,37 @@ const createVehicleInfo = async(req, res) => {
 //chatgpt generated
 const updateVehicleInfo = async (req, res) => {
     const { moverID, vehicleType, depth, weight, height } = req.body;
-    const vehicleID = req.params.vehicleID; // Assuming vehicleID is passed in the URL
-    let updateValues = [];
-    let updateFields = [];
-  
+    const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
     // Check if any required parameters are missing
     if (!moverID && !vehicleType && !depth && !weight && !height) {
       return res.status(400).json({ message: 'No fields to update' });
     }
-  
     try {
+      let updateValues = {};
       // Construct the query dynamically based on which fields are provided in the request
       let query = 'UPDATE VehicleInfo SET ';
       if (moverID) {
-        updateFields.push('MoverID = $' + (updateValues.length + 1));
-        updateValues.push(moverID);
+       updateValues.moverID = moverID;
       }
       if (vehicleType) {
-        updateFields.push('VehicleType = $' + (updateValues.length + 1));
-        updateValues.push(vehicleType);
+        updateValues.vehicleType = vehicleType;
       }
       if (depth) {
-        updateFields.push('Depth = $' + (updateValues.length + 1));
-        updateValues.push(depth);
+        updateValues.depth = depth;
       }
       if(width){
-        updateFields.push('Width = $' + (updateValues.length + 1));
-        updateValues.push(weight);
+        updateValues.width = width;
       }
       if (weight) {
-        updateFields.push('Weight = $' + (updateValues.length + 1));
-        updateValues.push(weight);
+        updateValues.weight = weight;
       }
       if (height) {
-        updateFields.push('Height = $' + (updateValues.length + 1));
-        updateValues.push(height);
+        updateValues.height = height;
       }
-      
-      query += updateFields.join(', ') + ' WHERE VehicleID = $' + (updateValues.length + 1) + ' RETURNING *;';
-      updateValues.push(vehicleID);
+      const [affectedRows] = await VehicleInfo.update(updateValues, { where: { uuid: vehicleID } });
   
-      const result = await pool.query(query, updateValues);
-  
-      if (result.rowCount > 0) {
-        res.status(200).json({ message: 'VehicleInfo updated successfully', vehicleInfo: result.rows[0] });
+      if (affectedRows > 0) {
+        res.status(200).json({ message: 'VehicleInfo updated successfully', vehicleInfo: affectedRows });
       } else {
         res.status(404).json({ message: 'VehicleInfo not found' });
       }
@@ -108,16 +99,11 @@ const updateVehicleInfo = async (req, res) => {
   };
 
   const deleteVehicleInfo = async (req, res) => {
-    const vehicleID = req.params.vehicleID; // Assuming vehicleID is passed in the URL
+    const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
   
     try {
-      const result = await pool.query(`
-        DELETE FROM VehicleInfo
-        WHERE VehicleID = $1
-        RETURNING *;
-      `, [vehicleID]);
-  
-      if (result.rowCount > 0) {
+      const result = await VehicleInfo.destroy({ where: { uuid: vehicleID } });
+      if (result) {
         res.status(200).json({ message: 'VehicleInfo deleted successfully' });
       } else {
         res.status(404).json({ message: 'VehicleInfo not found' });
