@@ -21,19 +21,35 @@ module.exports = (sequelize, DataTypes) => {
         },
         RequestID:{
             type: DataTypes.UUID,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isUUID: 4,
+                notEmpty: true
+            }
         },
         MoverID: {
             type: DataTypes.UUID,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isUUID: 4,
+                notEmpty: true
+            }
         },
         MovingID: {
             type: DataTypes.UUID,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isUUID: 4,
+                notEmpty: true
+            }
         },
         EstimatedCost: {
             type: DataTypes.DECIMAL(10, 2),
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isDecimal: true,
+                notEmpty: true
+            }
         },
     }, {
         sequelize,

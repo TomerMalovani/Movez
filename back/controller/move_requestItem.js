@@ -16,10 +16,10 @@ const getMoveRequestItem = async (req, res) => {
 }
 
 const createMoveRequestItem = async (req, res) => {
-    const { moveRequestID, itemDescription, height, widht, depth, weight, quantity, specialInstructions} = req.body
+    const { moveRequestID, itemDescription, height, width, depth, weight, quantity, specialInstructions} = req.body
     try {
         const result = await MoveRequestItem.create({ moveRequestID, itemDescription, 
-            height, widht, depth, weight, quantity, specialInstructions})
+            height, width, depth, weight, quantity, specialInstructions})
         if (result) {
             res.status(201).json({ message: "Move Request Item Created Successfully", moveRequestItem: result })
         }
@@ -32,49 +32,29 @@ const createMoveRequestItem = async (req, res) => {
 }
 
 const updateMoveRequestItem = async (req, res) => {
-    const { moveRequestID, itemDescription, height, widht, depth, weight, quantity, specialInstructions } = req.body
-    const requestItemID = req.params.uuid
-    if (!requestItemID)
-        return res.status(400).json({ message: 'No Move Request Item given' })
-    if (!moveRequestID && !itemDescription && !height && !widht && !depth && !weight && !quantity && !specialInstructions) {
-        return res.status(400).json({ message: 'No fields to update' })
+    const { moveRequestID, itemDescription, height, width, depth, weight, quantity, specialInstructions } = req.body;
+    const requestItemID = req.params.uuid;
+    
+    // Check if any of the fields are missing
+    if (!moveRequestID && !itemDescription && !height && !width && !depth && !weight && !quantity && !specialInstructions) {
+        return res.status(400).json({ message: 'No fields to update' });
     }
+
     try {
-        let updateValues = {};
-        if (moveRequestID) {
-            updateValues.moveRequestID = moveRequestID
-        }
-        if (itemDescription) {
-            updateValues.itemDescription = itemDescription
-        }
-        if (height) {
-            updateValues.height = height
-        }
-        if (widht) {
-            updateValues.widht = widht
-        }
-        if (depth) {
-            updateValues.depth = depth
-        }
-        if (weight) {
-            updateValues.weight = weight
-        }
-        if (quantity) {
-            updateValues.quantity = quantity
-        }
-        if (specialInstructions) {
-            updateValues.specialInstructions = specialInstructions
-        }
-        const [affectedRows] = await MoveRequestItem.update(updateValues, { where: { uuid: requestItemID } })
+        const updateValues = { moveRequestID, itemDescription, height, width, depth, weight, quantity, specialInstructions };
+
+        const [affectedRows] = await MoveRequestItem.update(updateValues, { where: { uuid: requestItemID } });
+
         if (affectedRows > 0) {
-            res.status(200).json({ message: 'Move Request Item updated successfully' })
+            res.status(200).json({ message: 'Move Request Item updated successfully' });
         } else {
-            res.status(404).json({ message: 'Move Request Item not found' })
+            res.status(404).json({ message: 'Move Request Item not found' });
         }
     } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error', error: error.message })
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-}
+};
+
 
 const deleteMoveRequestItem = async (req, res) => {
     const requestItemID = req.params.uuid

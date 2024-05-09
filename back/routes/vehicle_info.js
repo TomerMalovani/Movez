@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+const {uuIDValidation} = require('../validation/uuidValidation');
+const {vehicleInfoPostValidation} = require('../validation/vehicleInfo_validation');
 
 const {
     getVehicleInfo,
@@ -8,7 +10,8 @@ const {
     deleteVehicleInfo,
 } = require("../controller/vehicle_page")
 
-router.route('/').post(createVehicleInfo)
-router.route('/:vehicleID').get(getVehicleInfo).patch(updateVehicleInfo).delete(deleteVehicleInfo)
+router.route('/').post(vehicleInfoPostValidation, createVehicleInfo)
+router.route('/:vehicleID').get(uuIDValidation, getVehicleInfo)
+.patch(uuIDValidation, updateVehicleInfo).delete(uuIDValidation, deleteVehicleInfo)
 
 module.exports = router;

@@ -5,12 +5,8 @@ const User = require("../models/User")
 dotenv = require('dotenv')
 dotenv.config()
 const register = async(req,res)=>{
-
     const {username, email, password} = req.body
     try{
-        if(!username || !email || !password){
-            return res.status(400).json({message: "Missing required parameters"})
-        }
         // create jwt token
         const token = jwt.sign({username}, process.env.JWT_SECRET, {expiresIn: '7d'})
 
@@ -38,15 +34,10 @@ const login = async(req,res)=>{
     const {username, password} = req.body
     console.log("cehe")
     try{
-        if(!username || !password){
-            return res.status(400).json({message: "Missing required parameters"})
-        }
-
         //const result = await pool.query(
          //   `SELECT * FROM Users WHERE Username = $1`, 
          //   [username])
          const user = await User.findOne({where: {username}})
-
         if(user){
             console.log(user)
             // salt hash

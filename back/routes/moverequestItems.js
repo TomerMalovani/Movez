@@ -1,3 +1,8 @@
+var express = require('express');
+var router = express.Router();
+const {uuIDValidation} = require('../validation/uuidValidation');
+const {moveRequestItemPostValidation} = require('../validation/moveRequestItem_validation');
+
 const {
     getMoveRequestItem,
     createMoveRequestItem,
@@ -5,7 +10,9 @@ const {
     deleteMoveRequestItem
 } = require("../controller/move_requestItem")
 
-router.route('/').post(createMoveRequestItem)
-router.route('/:uuid').get(getMoveRequestItem).patch(updateMoveRequestItem).delete(deleteMoveRequestItem)
+
+router.route('/').post(moveRequestItemPostValidation, createMoveRequestItem)
+router.route('/:uuid').get(uuIDValidation, getMoveRequestItem).
+patch(uuIDValidation, updateMoveRequestItem).delete(uuIDValidation, deleteMoveRequestItem)
 
 module.exports = router;

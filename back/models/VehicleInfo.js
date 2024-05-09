@@ -18,23 +18,42 @@ module.exports = (sequelize, DataTypes) => {
         },
         MoverID: {
             type: DataTypes.UUID,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isUUID: 4,
+                notEmpty: true
+            }
         },
         VehicleType: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
         },
         Depth: {
             type: DataTypes.DECIMAL(10, 2),
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isDecimal: true,
+                notEmpty: true
+            }
         },
         Width: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
+            validate: {
+                isDecimal: true,
+                notEmpty: true
+            }
           },
           Height: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
+            validate: {
+                isDecimal: true,
+                notEmpty: true
+            }
           },
     }, {
         sequelize,

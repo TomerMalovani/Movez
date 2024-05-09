@@ -20,30 +20,48 @@ module.exports = (sequelize, DataTypes) => {
         },
         UserID: {
             type: DataTypes.UUID,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isUUID: 4,
+                notEmpty: true
+            }
         },
         moveStatus: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
         },
-        RequestItemID: {
-            type: DataTypes.ARRAY(DataTypes.UUID),
-          },
         moveDate: {
             type: DataTypes.DATE,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isDate: true,
+                notEmpty: true
+            }
         },
         moveTime: {
             type: DataTypes.TIME,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                isTime: true,
+                notEmpty: true
+            }
         },
         moveFrom: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
         },
         moveTo: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
         },
     }, {
         sequelize,

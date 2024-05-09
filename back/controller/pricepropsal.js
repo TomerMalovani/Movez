@@ -20,9 +20,6 @@ const getPriceProposal = async(req,res) => {
 const createPriceProposal = async(req,res) => {
     const {requestID, moverID, movingID, estimatedCost, status} = req.body
     try {
-        if(!requestID || !moverID || !movingID || !estimatedCost || !status){
-            return res.status(400).json({message: "Missing required parameters"})
-        }
         //const result = await pool.query(
         //    `INSERT INTO PriceProposal 
         //    (PriceProposalID, RequestID, MoverID, MovingID, EstimatedCost, Status)
@@ -43,8 +40,6 @@ const createPriceProposal = async(req,res) => {
 const updatePriceProposal = async(req,res) => {
     const {requestID, moverID, movingID, estimatedCost, status} = req.body
     const priceProposalID = req.params.uuid
-    if(!priceProposalID)
-        return res.status(400).json({message: 'No Price Proposal given'})
     if(!status && !requestID && !moverID && !movingID && !estimatedCost){
         return res.status(400).json({message: 'No fields to update'})
     }
@@ -78,8 +73,6 @@ const updatePriceProposal = async(req,res) => {
 
 const deletePriceProposal = async(req,res) => {
     const priceProposalID = req.params.uuid
-    if(!priceProposalID)
-        return res.status(400).json({message: 'No Price Proposal given'})
     try {
         const result = await PriceProposal.destroy({where: {uuid: priceProposalID}})
         if(result){

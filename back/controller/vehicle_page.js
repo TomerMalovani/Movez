@@ -31,15 +31,8 @@ const createVehicleInfo = async(req, res) => {
     //const Weight = req.params.Weight
     const { moverID, vehicleType, depth, width ,weight, height } = req.body;
     // Check if any required parameters are missing
-    if (!moverID || !vehicleType || !depth || !width || !weight || !height) {
-    return res.status(400).json({ message: 'Missing required parameters' });
-  }
-  
   // Check if any parameters are invalid (e.g., non-numeric values for depth, weight, height)
-  if (isNaN(Number(depth)) || isNaN(Number(weight)) || isNaN(Number(height))) {
-    return res.status(400).json({ message: 'Invalid parameter values' });
-  }
-    try {
+  try {
         //const result = await pool.query(`
         //INSERT INTO VehicleInfo (MoverID, VehicleType, Depth, Width ,Weight, Height)
         //VALUES ($1, $2, $3, $4, $5, $6)
@@ -57,6 +50,7 @@ const createVehicleInfo = async(req, res) => {
 }
 
 //chatgpt generated
+/*
 const updateVehicleInfo = async (req, res) => {
     const { moverID, vehicleType, depth, weight, height } = req.body;
     const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
@@ -97,25 +91,43 @@ const updateVehicleInfo = async (req, res) => {
       res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
   };
+*/
+const updateVehicleInfo = async (req, res) => {
+  const { moverID, vehicleType, depth, weight, height } = req.body;
+  const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
+  try {
+      const [affectedRows] = await VehicleInfo.update(
+          { moverID, vehicleType, depth, weight, height },
+          { where: { uuid: vehicleID } }
+      );
 
-  const deleteVehicleInfo = async (req, res) => {
-    const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
-  
-    try {
-      const result = await VehicleInfo.destroy({ where: { uuid: vehicleID } });
-      if (result) {
-        res.status(200).json({ message: 'VehicleInfo deleted successfully' });
+      if (affectedRows > 0) {
+          res.status(200).json({ message: 'VehicleInfo updated successfully', vehicleInfo: affectedRows });
       } else {
-        res.status(404).json({ message: 'VehicleInfo not found' });
+          res.status(404).json({ message: 'VehicleInfo not found' });
       }
-    } catch (error) {
+  } catch (error) {
       res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
+
+const deleteVehicleInfo = async (req, res) => {
+  const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
+  try {
+    const result = await VehicleInfo.destroy({ where: { uuid: vehicleID } });
+    if (result) {
+      res.status(200).json({ message: 'VehicleInfo deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'VehicleInfo not found' });
     }
-  };
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
   
-  module.exports = {
+module.exports = {
     getVehicleInfo,
     createVehicleInfo,
     updateVehicleInfo,
     deleteVehicleInfo
-  };
+};
