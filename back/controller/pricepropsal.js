@@ -37,39 +37,30 @@ const createPriceProposal = async(req,res) => {
     }
 }
 
-const updatePriceProposal = async(req,res) => {
-    const {requestID, moverID, movingID, estimatedCost, status} = req.body
-    const priceProposalID = req.params.uuid
-    if(!status && !requestID && !moverID && !movingID && !estimatedCost){
-        return res.status(400).json({message: 'No fields to update'})
+const updatePriceProposal = async (req, res) => {
+    const { requestID, moverID, movingID, estimatedCost, status } = req.body;
+    const priceProposalID = req.params.uuid;
+
+    if (!status && !requestID && !moverID && !movingID && !estimatedCost) {
+        return res.status(400).json({ message: 'No fields to update' });
     }
-    try{
-        let updateValues = {};
-        if(requestID){
-            updateValues.requestID = requestID
+
+    try {
+        const [affectedRows] = await PriceProposal.update(
+            { requestID, moverID, movingID, estimatedCost, status },
+            { where: { uuid: priceProposalID } }
+        );
+
+        if (affectedRows > 0) {
+            res.status(200).json({ message: 'Price Proposal updated successfully' });
+        } else {
+            res.status(404).json({ message: 'Price Proposal not found' });
         }
-        if(moverID){
-            updateValues.moverID = moverID
-        }
-        if(movingID){
-            updateValues.movingID = movingID
-        }
-        if(estimatedCost){
-            updateValues.estimatedCost = estimatedCost
-        }
-        if(status){
-            updateValues.status = status
-        }
-        const [affectedRows] = await PriceProposal.update(updateValues, {where: {uuid: priceProposalID}})
-        if(affectedRows > 0){
-            res.status(200).json({message: 'Price Proposal updated successfully'})
-        }else{
-            res.status(404).json({message: 'Price Proposal not found'})
-        }
-    }catch(error){
-        res.status(500).json({message: 'Internal Server Error', error: error.message})
+    } catch (error) {
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-}
+};
+
 
 const deletePriceProposal = async(req,res) => {
     const priceProposalID = req.params.uuid
