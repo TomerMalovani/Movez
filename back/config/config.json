@@ -3,27 +3,21 @@
     "username": "postgres",
     "password": "newsmart0f",
     "database": "movez",
-    "host": "localhost",
-    "port": 5432,
-    "dialect": "postgres",
-    "logging": false
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   },
   "test": {
     "username": "postgres",
     "password": "newsmart0f",
     "database": "movez",
-    "host": "localhost",
-    "port": 5432,
-    "dialect": "postgres",
-    "logging": false
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   },
   "production": {
     "username": "postgres",
     "password": "newsmart0f",
     "database": "movez",
-    "host": "localhost",
-    "port": 5432,
-    "dialect": "postgres",
-    "logging": false
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   }
 }

@@ -1,4 +1,5 @@
 let createError = require('http-errors');
+const { sequelize } = require('./models');
 let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
@@ -68,4 +69,15 @@ app.use(function(err, req, res, next) {
   console.log('error'+  res.locals.message );
 });
 
-module.exports = app;
+const port = process.env.PORT || 3000;
+app.set('port', port);
+
+app.listen(port, async () => {
+  console.log(`Server running on port ${port}`);
+  try {
+    await sequelize.authenticate();
+    console.log('Database connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+});

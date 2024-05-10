@@ -1,51 +1,77 @@
-const {Model} = require('sequelize');
+'use strict';
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Users extends Model {
-        static associate(PriceProposal, MoveRequestItems, MoveRequest, VehicleInfo) {
-            this.hasMany(MoveRequest, { foreignKey: 'UserID' });
-            this.hasMany(PriceProposal, { foreignKey: 'MoverID' });
-            this.hasMany(PriceProposal, { foreignKey: 'MovingID' });
-            this.hasMany(VehicleInfo, { foreignKey: 'MoverID' });
-            this.hasMany(MoveRequestItems, { foreignKey: 'UserID' });
-        }
-    };
-    Users.init({
-        id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            autoIncrement: true,
-        },
-        uuid: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            primaryKey: true
-        },
-        username: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-            validate: {
-                notEmpty: true
-            }
-        },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true
-            }
-        },
-        email: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                notEmpty: true,
-                isEmail: true
-            }
-        },
-    }, {
-        sequelize,
-        modelName: 'Users',
-    });
-    return Users;
-}
+  class Users extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+      this.hasMany(models.MoveRequest, { foreignKey: 'UserID' });
+      this.hasMany(models.PriceProposal, { foreignKey: 'MoverID' });
+      this.hasMany(models.PriceProposal, { foreignKey: 'MovingID' });
+      this.hasMany(models.VehicleInfo, { foreignKey: 'MoverID' });
+      this.hasMany(models.MoveRequestItems, { foreignKey: 'UserID' });
+    }
+  }
+  Users.init({
+    uuid: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+  },
+  username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+          notEmpty: true
+      }
+  },
+  password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+          notEmpty: true
+      }
+  },
+  email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+          notEmpty: true,
+          isEmail: true
+      }
+  },
+  salt: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+          notEmpty: true
+      }
+  },
+  token: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+          notEmpty: true
+      }
+    },
+    token_exp: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+          isDate: true,
+          notEmpty: true
+      }
+    }
+  }, {
+    sequelize,
+    modelName: 'Users',
+  });
+  return Users;
+};
