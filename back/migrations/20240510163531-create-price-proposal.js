@@ -20,6 +20,10 @@ module.exports = {
           isUUID: 4,
           notEmpty: true,
         },
+        references: {
+          model: 'MoveRequest',
+          key: 'uuid'
+        }
       },
       MoverID: {
         type: Sequelize.UUID,

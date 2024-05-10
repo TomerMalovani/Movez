@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('MoveRequests', {
+    await queryInterface.createTable('MoveRequest', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,77 +11,48 @@ module.exports = {
       uuid: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        primaryKey: true,
+        allowNull: false,
+        primaryKey: true
       },
-      MoveRequestID: {
+      UserID: {
         type: Sequelize.UUID,
         allowNull: false,
-        validate: {
-          isUUID: 4,
-          notEmpty: true,
-        },
+        references: {
+          model: 'Users',
+          key: 'uuid'
+        }
       },
-      ItemDescription: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
+      moveStatus: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      Height: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          isNumeric: true,
-        },
+      moveDate: {
+        type: Sequelize.DATE,
+        allowNull: false
       },
-      Width: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          isNumeric: true,
-        },
+      moveTime: {
+        type: Sequelize.TIME,
+        allowNull: false
       },
-      Depth: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          isNumeric: true,
-        },
+      moveFrom: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
-      Weight: {
-        type: Sequelize.FLOAT,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          isNumeric: true,
-        },
-      },
-      Quantity: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-          isNumeric: true,
-        },
-      },
-      SpecialInstructions: {
-        type: Sequelize.TEXT,
+      moveTo: {
+        type: Sequelize.STRING,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-      },
+        type: Sequelize.DATE
+      }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('MoveRequests');
+    await queryInterface.dropTable('MoveRequest');
   }
 };

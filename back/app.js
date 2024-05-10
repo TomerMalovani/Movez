@@ -31,7 +31,7 @@ app.use(function(req, res, next) {
     if (token) {
       jwt.verify(token, 'secret', (err, decoded) => {
         if (err) {
-          res.status(401).json({ message: 'Unauthorized' });
+          res.status(401).json({ message: 'Unauthorized', error: err.message });
         } else {
           console.log(decoded);
           next();
@@ -75,6 +75,7 @@ app.set('port', port);
 app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
   try {
+    console.log(sequelize);
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
   } catch (error) {

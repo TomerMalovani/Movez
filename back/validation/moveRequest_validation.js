@@ -3,7 +3,7 @@ const { move } = require('../routes/moverequests');
 
 const moveRequestSchema = yup.object({
     uuid: yup.string(),
-    UserID: yup.string().required(),
+    UserID: yup.string().uuid().required(),
     moveStatus: yup.string().required(),
     moveDate: yup.date().required(),
     moveTime: yup.string().required(),
