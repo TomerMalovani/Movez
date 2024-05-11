@@ -54,12 +54,12 @@ const updatePriceProposal = async (req, res) => {
         );
 
         if (numOfRowsAffected > 0) {
-            res.PriceStatus(200).json({ message: 'Price Proposal updated successfully', priceProposal: affectedRows[0]});
+            res.status(200).json({ message: 'Price Proposal updated successfully', priceProposal: affectedRows[0]});
         } else {
-            res.PriceStatus(404).json({ message: 'Price Proposal not found' });
+            res.status(404).json({ message: 'Price Proposal not found' });
         }
     } catch (error) {
-        res.PriceStatus(500).json({ message: 'Internal Server Error', error: error.message });
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
 
@@ -69,12 +69,12 @@ const deletePriceProposal = async(req,res) => {
     try {
         const result = await priceProposal.destroy({where: {uuid: priceProposalID}})
         if(result){
-            res.PriceStatus(200).json({message: 'Price Proposal deleted successfully'})
+            res.status(200).json({message: 'Price Proposal deleted successfully'})
         }else{
-            res.PriceStatus(404).json({message: `No Price Proposal with ID = ${PriceProposalID} found`})
+            res.status(404).json({message: `No Price Proposal with ID = ${PriceProposalID} found`})
         }
     } catch (error) {
-        res.PriceStatus(500).json({message: 'Internal Server Error', error: error.message})
+        res.status(500).json({message: 'Internal Server Error', error: error.message})
     }
 }
 

@@ -36,9 +36,9 @@ const updateMoveRequestItem = async (req, res) => {
     const requestItemID = req.query.uuid;
     
     // Check if any of the fields are missing
-    if (!moveRequestID && !itemDescription && !height && !width && !depth && !weight && !quantity && !specialInstructions) {
-        return res.status(400).json({ message: 'No fields to update' });
-    }
+   // if (!moveRequestID && !itemDescription && !height && !width && !depth && !weight && !quantity && !specialInstructions) {
+    //    return res.status(400).json({ message: 'No fields to update' });
+   // }
 
     try {
         const updateValues = { moveRequestID, itemDescription, height, width, depth, weight, quantity, specialInstructions };
