@@ -53,6 +53,13 @@ module.exports = (sequelize, DataTypes) => {
           isDecimal: true,
           notEmpty: true
       }
+    },
+  PriceStatus: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+          notEmpty: true
+    }
   }
   }, {
     sequelize,

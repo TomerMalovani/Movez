@@ -1,7 +1,7 @@
-const MoveRequestItem = require('../models/MoveRequestItems');
+const MoveRequestItem = require('../models/index').MoveRequestItems
 
 const getMoveRequestItem = async (req, res) => {
-    const requestItemID = req.params.uuid
+    const requestItemID = req.query.uuid
     try {
         const result = await MoveRequestItem.findByPk(requestItemID)
         if (result) {
@@ -33,7 +33,7 @@ const createMoveRequestItem = async (req, res) => {
 
 const updateMoveRequestItem = async (req, res) => {
     const { moveRequestID, itemDescription, height, width, depth, weight, quantity, specialInstructions } = req.body;
-    const requestItemID = req.params.uuid;
+    const requestItemID = req.query.uuid;
     
     // Check if any of the fields are missing
     if (!moveRequestID && !itemDescription && !height && !width && !depth && !weight && !quantity && !specialInstructions) {
@@ -57,7 +57,7 @@ const updateMoveRequestItem = async (req, res) => {
 
 
 const deleteMoveRequestItem = async (req, res) => {
-    const requestItemID = req.params.uuid
+    const requestItemID = req.query.uuid
     if (!requestItemID)
         return res.status(400).json({ message: 'No Move Request Item given' })
     try {

@@ -11,7 +11,7 @@ const {
 } = require("../controller/vehicle_page")
 
 router.route('/').post(vehicleInfoPostValidation, createVehicleInfo)
-router.route('/:vehicleID').get(uuIDValidation, getVehicleInfo)
+.get(uuIDValidation, getVehicleInfo)
 .patch(uuIDValidation, validateUpdateVehicleInfo, updateVehicleInfo)
 .delete(uuIDValidation, deleteVehicleInfo)
 

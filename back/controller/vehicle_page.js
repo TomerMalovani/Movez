@@ -2,7 +2,7 @@ const pool = require("../db")
 const VehicleInfo = require("../models/VehicleInfo")
 
 const getVehicleInfo = async(req,res)=>{
-    const vehicleID = req.params.vehicleID
+    const vehicleID = req.query.vehicleID
     try {
     //const cargoCapacity = await pool.query(
       //  "SELECT Depth, Height, Width, Weight FROM VehicleInfo Where VehicleID = $1",
@@ -23,12 +23,12 @@ const getVehicleInfo = async(req,res)=>{
 //note: vehicle id should'nt be required from the user
 // the vehicle id should be an internal DB value and be provided by us
 const createVehicleInfo = async(req, res) => {
-    //const vehicleID = req.params.vehicleID
-    //const moverID = req.params.moverID
-    //const vehicleType = req.params.vehicleType
-    //const Depth = req.params.depth
-    //const Height = req.params.height
-    //const Weight = req.params.Weight
+    //const vehicleID = req.query.vehicleID
+    //const moverID = req.query.moverID
+    //const vehicleType = req.query.vehicleType
+    //const Depth = req.query.depth
+    //const Height = req.query.height
+    //const Weight = req.query.Weight
     const { moverID, vehicleType, depth, width ,weight, height } = req.body;
     // Check if any required parameters are missing
   // Check if any parameters are invalid (e.g., non-numeric values for depth, weight, height)
@@ -53,7 +53,7 @@ const createVehicleInfo = async(req, res) => {
 /*
 const updateVehicleInfo = async (req, res) => {
     const { moverID, vehicleType, depth, weight, height } = req.body;
-    const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
+    const vehicleID = req.query.uuid; // Assuming vehicleID is passed in the URL
     // Check if any required parameters are missing
     if (!moverID && !vehicleType && !depth && !weight && !height) {
       return res.status(400).json({ message: 'No fields to update' });
@@ -94,7 +94,7 @@ const updateVehicleInfo = async (req, res) => {
 */
 const updateVehicleInfo = async (req, res) => {
   const { moverID, vehicleType, depth, weight, height } = req.body;
-  const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
+  const vehicleID = req.query.uuid; // Assuming vehicleID is passed in the URL
   try {
       const [affectedRows] = await VehicleInfo.update(
           { moverID, vehicleType, depth, weight, height },
@@ -112,7 +112,7 @@ const updateVehicleInfo = async (req, res) => {
 };
 
 const deleteVehicleInfo = async (req, res) => {
-  const vehicleID = req.params.uuid; // Assuming vehicleID is passed in the URL
+  const vehicleID = req.query.uuid; // Assuming vehicleID is passed in the URL
   try {
     const result = await VehicleInfo.destroy({ where: { uuid: vehicleID } });
     if (result) {

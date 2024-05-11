@@ -11,8 +11,8 @@ const {
 } = require("../controller/move_requestItem")
 
 
-router.route('/').post(moveRequestItemPostValidation, createMoveRequestItem)
-router.route('/:uuid').get(uuIDValidation, getMoveRequestItem).
+router.route('/').post(moveRequestItemPostValidation, createMoveRequestItem).
+get(uuIDValidation, getMoveRequestItem).
 patch(uuIDValidation, validateUpdateMoveRequestItem, updateMoveRequestItem).
 delete(uuIDValidation, deleteMoveRequestItem)
 

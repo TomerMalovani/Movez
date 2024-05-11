@@ -9,8 +9,8 @@ const {getPriceProposal,
     deletePriceProposal
 } = require("../controller/pricepropsal")
 
-router.route('/').post(priceProposalPostValidation, createPriceProposal)
-router.route('/:priceProposalID').get(uuIDValidation, getPriceProposal).
+router.route('/').post(priceProposalPostValidation, createPriceProposal).
+get(uuIDValidation, getPriceProposal).
 patch(uuIDValidation, validateUpdatePriceProposal, updatePriceProposal).
 delete(uuIDValidation, deletePriceProposal)
 

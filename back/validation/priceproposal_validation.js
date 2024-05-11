@@ -6,6 +6,7 @@ const priceProposalSchema = yup.object({
     MoverID: yup.string().required(),
     MovingID: yup.string().required(),
     EstimatedCost: yup.number().required(),
+    PriceStatus: yup.string().required(),
 })
 
 const priceProposalUpdateSchema = yup.lazy((values) =>

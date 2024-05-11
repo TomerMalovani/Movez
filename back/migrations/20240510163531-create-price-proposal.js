@@ -47,7 +47,14 @@ module.exports = {
         validate: {
           isDecimal: true,
           notEmpty: true,
-        },
+        }
+      },
+      PriceStatus: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+          notEmpty: true,
+        }
       },
       createdAt: {
         allowNull: false,
@@ -56,7 +63,7 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-      },
+      }
     });
   },
   async down(queryInterface, Sequelize) {

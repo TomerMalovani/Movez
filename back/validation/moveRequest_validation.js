@@ -1,5 +1,4 @@
 const yup = require('yup');
-const { move } = require('../routes/moverequests');
 
 const moveRequestSchema = yup.object({
     uuid: yup.string(),
