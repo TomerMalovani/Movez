@@ -2,13 +2,13 @@ const pool = require("../db")
 const vehicleInfo = require("../models/index").VehicleInfo
 
 const getVehicleInfo = async(req,res)=>{
-    const vehicleID = req.query.vehicleID
+    const vehicleID = req.query.uuid
     try {
-    const cargoCapacity = await vehicleInfo.findbyPk(vehicleID)
-    if(!cargoCapacity.rows.length){
+    const vehicleInformation = await vehicleInfo.findByPk(vehicleID)
+    if(!vehicleInformation){
         return res.status(404).json({msg: `No Vehicle With ${vehicleID} id`});
     }
-    res.status(200).json(cargoCapacity.rows)
+    return res.status(200).json({message: "success", VehicleInfo: vehicleInformation})
     }
     catch(error) {
         return res.status(500).json({msg: "Internal Error", err:
@@ -18,11 +18,11 @@ const getVehicleInfo = async(req,res)=>{
 //note: vehicle id should'nt be required from the user
 // the vehicle id should be an internal DB value and be provided by us
 const createVehicleInfo = async(req, res) => {
-  const { moverID, vehicleType, depth, width ,weight, height } = req.body;
+  const { MoverID, VehicleType, Depth, Width , Height } = req.body;
   try {
-      const result = await vehicleInfo.create({moverID, vehicleType, depth, width, weight, height});
+      const result = await vehicleInfo.create({MoverID, VehicleType, Depth, Width, Height});
       if (result) {
-        res.status(201).json({ msg: 'VehicleInfo created successfully', vehicleInfo: result.rows[0] });
+        res.status(201).json({ msg: 'VehicleInfo created successfully', vehicleInfo: result});
       } else {
         res.status(500).json({ msg: 'Failed to create the vehicle info' });
       }
@@ -31,16 +31,16 @@ const createVehicleInfo = async(req, res) => {
     }
 }
 const updateVehicleInfo = async (req, res) => {
-  const { moverID, vehicleType, depth, weight, height } = req.body;
+  const { MoverID, VehicleType, Depth, Width, Height } = req.body;
   const vehicleID = req.query.uuid; // Assuming vehicleID is passed in the URL
   try {
-      const [affectedRows] = await vehicleInfo.update(
-          { moverID, vehicleType, depth, weight, height },
-          { where: { uuid: vehicleID } }
+      const [affectedRows, updatedRows] = await vehicleInfo.update(
+          { MoverID, VehicleType, Depth, Width, Height },
+          { where: { uuid: vehicleID }, returning: true}
       );
 
       if (affectedRows > 0) {
-          res.status(200).json({ message: 'VehicleInfo updated successfully', vehicleInfo: affectedRows });
+          res.status(200).json({ message: 'VehicleInfo updated successfully', vehicleInfo: updatedRows[0] });
       } else {
           res.status(404).json({ message: 'VehicleInfo not found' });
       }

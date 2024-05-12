@@ -16,10 +16,10 @@ const getMoveRequestItem = async (req, res) => {
 }
 
 const createMoveRequestItem = async (req, res) => {
-    const { moveRequestID, itemDescription, height, width, depth, weight, quantity, specialInstructions} = req.body
+    const { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions} = req.body
     try {
-        const result = await MoveRequestItem.create({ moveRequestID, itemDescription, 
-            height, width, depth, weight, quantity, specialInstructions})
+        const result = await MoveRequestItem.create({ MoveRequestID, ItemDescription, 
+            Height, Width, Depth, Weight, Quantity, SpecialInstructions})
         if (result) {
             res.status(201).json({ message: "Move Request Item Created Successfully", moveRequestItem: result })
         }
@@ -32,21 +32,21 @@ const createMoveRequestItem = async (req, res) => {
 }
 
 const updateMoveRequestItem = async (req, res) => {
-    const { moveRequestID, itemDescription, height, width, depth, weight, quantity, specialInstructions } = req.body;
+    const { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions } = req.body;
     const requestItemID = req.query.uuid;
     
     // Check if any of the fields are missing
-   // if (!moveRequestID && !itemDescription && !height && !width && !depth && !weight && !quantity && !specialInstructions) {
+   // if (!MoveRequestID && !ItemDescription && !Height && !Width && !Depth && !Weight && !Quantity && !SpecialInstructions) {
     //    return res.status(400).json({ message: 'No fields to update' });
    // }
 
     try {
-        const updateValues = { moveRequestID, itemDescription, height, width, depth, weight, quantity, specialInstructions };
+        const updateValues = { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions };
 
-        const [affectedRows] = await MoveRequestItem.update(updateValues, { where: { uuid: requestItemID } });
+        const [affectedRows, updatedRows] = await MoveRequestItem.update(updateValues, { where: { uuid: requestItemID },returning: true });
 
         if (affectedRows > 0) {
-            res.status(200).json({ message: 'Move Request Item updated successfully' });
+            res.status(200).json({ message: 'Move Request Item updated successfully', moveRequestItem: updatedRows[0]});
         } else {
             res.status(404).json({ message: 'Move Request Item not found' });
         }

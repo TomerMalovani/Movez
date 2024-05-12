@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.PriceProposal, { foreignKey: 'MoverID' });
       this.hasMany(models.PriceProposal, { foreignKey: 'MovingID' });
       this.hasMany(models.VehicleInfo, { foreignKey: 'MoverID' });
-      this.hasMany(models.MoveRequestItems, { foreignKey: 'UserID' });
     }
   }
   Users.init({
