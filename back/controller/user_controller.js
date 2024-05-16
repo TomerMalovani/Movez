@@ -1,4 +1,3 @@
-const pool = require('../db')
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const User  = require('../models/index').Users

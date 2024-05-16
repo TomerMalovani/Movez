@@ -1,4 +1,3 @@
-const pool = require("../db")
 const priceProposal = require("../models/index").PriceProposal
 
 const getPriceProposal = async(req,res) => {

@@ -1,4 +1,3 @@
-const pool = require("../db")
 const vehicleInfo = require("../models/index").VehicleInfo
 
 const getVehicleInfo = async(req,res)=>{
