@@ -9,6 +9,7 @@ Password VARCHAR(200) NOT NULL,
 
 CREATE TABLE MoveRequestItems (
 RequestItemID SERIAL PRIMARY KEY,
+MoveRequestID INT,
 UserID INT,
 ItemDescription TEXT NOT NULL,
 Height float NOT NULL,
@@ -18,6 +19,7 @@ Weight float NOT NULL,
 Quantity INT NOT NULL,
 SpecialInstructions TEXT,
 FOREIGN KEY (UserID) REFERENCES Users(UserID)
+FOREIGN KEY (RequestID) REFERENCES MoveRequest(RequestID)
 );
 
 --each move request will have a list of items
@@ -26,10 +28,10 @@ CREATE TABLE MoveRequest (
 RequestID SERIAL PRIMARY KEY,
 UserID INT,
 Status VARCHAR NOT NULL, DEFAULT "In Progress"
-RequestItemID INTEGER[], --array of RequestItemID
 MovingDate DATE NOT NULL,
 MovingTime TIME NOT NULL,
 MovingFrom VARCHAR(100) NOT NULL,
+--GoogleMaps GeoLocation
 MovingTo VARCHAR(100) NOT NULL,
 FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
@@ -37,8 +39,8 @@ FOREIGN KEY (UserID) REFERENCES Users(UserID)
 CREATE TABLE PriceProposals (
 ProposalID SERIAL PRIMARY KEY,
 RequestID INT,
-MoverID INT NOT NULL,
-MovingID INT NOT NULL,
+MoverID VARCHAR(100) NOT NULL,
+MovingID VARCHAR(100) NOT NULL,
 EstimatedCost DECIMAL(10, 2) NOT NULL,
 Status VARCHAR(10) DEFAULT 'Pending',
 FOREIGN KEY (RequestID) REFERENCES MovingRequests(RequestID),

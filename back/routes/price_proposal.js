@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+const {uuIDValidation} = require('../validation/uuidValidation');
+const {priceProposalPostValidation, validateUpdatePriceProposal} = require('../validation/priceproposal_validation');
 
 const {getPriceProposal,
     createPriceProposal,
@@ -7,7 +9,9 @@ const {getPriceProposal,
     deletePriceProposal
 } = require("../controller/pricepropsal")
 
-router.route('/').post(createPriceProposal)
-router.route('/:priceProposalID').get(getPriceProposal).patch(updatePriceProposal).delete(deletePriceProposal)
+router.route('/').post(priceProposalPostValidation, createPriceProposal).
+get(uuIDValidation, getPriceProposal).
+patch(uuIDValidation, validateUpdatePriceProposal, updatePriceProposal).
+delete(uuIDValidation, deletePriceProposal)
 
 module.exports = router;
