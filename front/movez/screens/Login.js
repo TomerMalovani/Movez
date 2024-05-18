@@ -1,21 +1,34 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
-
-const LoginScreen = () => {
-    const [email, setEmail] = useState('');
+import React, { useState,useEffect } from 'react';
+import { View, TextInput, Button, StyleSheet,Text } from 'react-native';
+import {login,getProfile } from '../utils/user_api_calls';
+const LoginScreen = ({navigation}) => {
     const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
+    const [token, setToken] = useState('');
 
-    const handleLogin = () => {
-        // Add your login logic here
+    useEffect(() => {
+        console.log("token",token)
+    }, [token])
+
+    const handleLogin = async () => {
+        if (username && password) {
+           const res = await  login(username, password)
+            setToken(res.data.user.token)
+            }
+        
     };
 
     return (
         <View style={styles.container}>
+        {/* header for form */}
+            <Text style={{fontSize: 30, marginBottom: 20}}>Login</Text>
+            <Text style={{fontSize: 30, marginBottom: 20}}>{token}</Text>
+
             <TextInput
                 style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
             />
             <TextInput
                 style={styles.input}
@@ -24,7 +37,10 @@ const LoginScreen = () => {
                 value={password}
                 onChangeText={setPassword}
             />
+            <Text style={{fontSize: 20, marginBottom: 20}} onPress={() => navigation.navigate('Register')}
+ >new here?</Text>
             <Button title="Login" onPress={handleLogin} />
+            <Button title = "test jwt" onPress={()=>getProfile(token)}/>
         </View>
     );
 };

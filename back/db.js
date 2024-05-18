@@ -1,11 +1,16 @@
 const Pool = require("pg").Pool;
+const bcrypt = require("bcrypt");
 
+/*
 const pool = new Pool({
-  user: "postgres",
-  password: "movezSadna",
-  host: "localhost",
-  port: 5432,
-  database: "movez"
+  user: ,
+  password: ,
+  host: ,
+  port: ,
+  database: 
 });
+*/
+pool = 1
+
 
 module.exports = pool;

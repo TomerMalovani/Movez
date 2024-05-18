@@ -1,26 +1,52 @@
 let createError = require('http-errors');
+const { sequelize } = require('./models');
 let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
-
+let bodyParser = require('body-parser');
+let jwt = require('jsonwebtoken');
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let vehicleInfoRouter = require('./routes/vehicle_info');
 let moveRequestsRouter = require('./routes/moverequests');
+let moveRequestItemsRouter = require('./routes/moverequestItems');
 let priceProposalRouter = require('./routes/price_proposal');
 let app = express();
 
-
+app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// middleware that skip only login and register
+app.use(function(req, res, next) {
+  if (req.url === '/users/login' || req.url === '/users/register') {
+    next();
+  } else {
+    const token = req.headers['authorization'];
+    console.log("token", req.headers)
+    if (token) {
+      jwt.verify(token, 'secret', (err, decoded) => {
+        if (err) {
+          res.status(401).json({ message: 'Unauthorized', error: err.message });
+        } else {
+          console.log(decoded);
+          next();
+        }
+      });
+    } else {
+      res.status(401).json({ message: 'Unauthorized' });
+    }
+  }
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/vehicle_info', vehicleInfoRouter);
+app.use('/moverequestitems', moveRequestItemsRouter);
 app.use('/moverequests', moveRequestsRouter);
 app.use('/priceproposal', priceProposalRouter);
 
@@ -28,6 +54,8 @@ app.use('/priceproposal', priceProposalRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -37,7 +65,19 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json('error'+  res.locals.message );
+  console.log('error'+  res.locals.message );
 });
 
-module.exports = app;
+const port = process.env.PORT || 3000;
+app.set('port', port);
+
+app.listen(port, async () => {
+  console.log(`Server running on port ${port}`);
+  try {
+    await sequelize.authenticate();
+    console.log('Database connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+});
