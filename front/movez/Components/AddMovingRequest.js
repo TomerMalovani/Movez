@@ -43,7 +43,7 @@ const AddMovingRequest = ({setLocation}) => {
             setLngDelta(  (northeastLat - southwestLat) * ASPECT_RATIO);
           }}
           query={{
-            key: 'AIzaSyBffe6fU4K0UYRJG6MFue5VM7lxsKphEnM',
+            key: 'API KEY HERE',
             language: 'en',
           }}
         />
