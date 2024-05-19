@@ -4,22 +4,33 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './screens/Login';
 import RegisterScreen from './screens/Register';
 import HomePage from './screens/Home';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ProfilePage from './screens/Profile';
+import  {  TokenProvider } from './tokenContext';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createNativeStackNavigator  } from '@react-navigation/native-stack';
+import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 
+const Drawer = createDrawerNavigator();
 
-const Stack = createNativeStackNavigator();
+function DrawerComponent() {
+  return (
+    <Drawer.Navigator initialRouteName="Start">
+      <Drawer.Screen name="Home" component={HomePage} />
+      <Drawer.Screen name="Login" component={LoginScreen} />
+      <Drawer.Screen name="Register" component={RegisterScreen} />
+      <Drawer.Screen name="Profile" component={ProfilePage} />
+      {/* other screens */}
+    </Drawer.Navigator>
+  );
+}
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomePage} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-
-        </Stack.Navigator>
-
-    </NavigationContainer>
+    <TokenProvider>
+      <NavigationContainer>
+      <DrawerComponent/>
+      </NavigationContainer>
+    </TokenProvider>
   );
 }
 
