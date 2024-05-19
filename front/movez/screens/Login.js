@@ -1,20 +1,21 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet,Text } from 'react-native';
 import {login,getProfile } from '../utils/user_api_calls';
+import {TokenContext} from '../tokenContext';
 const LoginScreen = ({navigation}) => {
+    // use TokenContext
+    const { token, updateToken,setUser } = React.useContext(TokenContext);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
-    const [token, setToken] = useState('');
-
-    useEffect(() => {
-        console.log("token",token)
-    }, [token])
 
     const handleLogin = async () => {
         if (username && password) {
            const res = await  login(username, password)
-            setToken(res.data.user.token)
-            }
+           updateToken(res.data.user.token)
+           console.log("username",res.data)
+
+           setUser(res.data.user)
+        }
         
     };
 
@@ -22,7 +23,7 @@ const LoginScreen = ({navigation}) => {
         <View style={styles.container}>
         {/* header for form */}
             <Text style={{fontSize: 30, marginBottom: 20}}>Login</Text>
-            <Text style={{fontSize: 30, marginBottom: 20}}>{token}</Text>
+
 
             <TextInput
                 style={styles.input}
@@ -40,7 +41,7 @@ const LoginScreen = ({navigation}) => {
             <Text style={{fontSize: 20, marginBottom: 20}} onPress={() => navigation.navigate('Register')}
  >new here?</Text>
             <Button title="Login" onPress={handleLogin} />
-            <Button title = "test jwt" onPress={()=>getProfile(token)}/>
+          
         </View>
     );
 };

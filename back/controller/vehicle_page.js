@@ -61,10 +61,24 @@ const deleteVehicleInfo = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 };
-  
+
+const getVehiclesByMoverId = async (req, res) => {
+  const moverID = req.query.mover;
+  try {
+    const vehicles = await vehicleInfo.findAll({ where: { MoverID: moverID } });
+    if (vehicles.length === 0) {
+      return res.status(404).json({ msg: `No vehicles found for mover with ID ${moverID}` });
+    }
+    return res.status(200).json({ message: "success", vehicles });
+  } catch (error) {
+    return res.status(500).json({ msg: "Internal Error", error: error.message });
+  }
+};
 module.exports = {
     getVehicleInfo,
     createVehicleInfo,
     updateVehicleInfo,
-    deleteVehicleInfo
+    deleteVehicleInfo,
+    getVehiclesByMoverId
 };
+

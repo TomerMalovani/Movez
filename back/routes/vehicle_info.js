@@ -15,4 +15,6 @@ router.route('/').post(vehicleInfoPostValidation, createVehicleInfo)
 .patch(uuIDValidation, validateUpdateVehicleInfo, updateVehicleInfo)
 .delete(uuIDValidation, deleteVehicleInfo)
 
+router.get('/user/:mover', getVehicleInfo);
+
 module.exports = router;

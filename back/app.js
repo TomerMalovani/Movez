@@ -72,12 +72,15 @@ app.use(function(err, req, res, next) {
 const port = process.env.PORT || 3000;
 app.set('port', port);
 
-app.listen(port, async () => {
-  console.log(`Server running on port ${port}`);
+async function dbConnect() {
   try {
     await sequelize.authenticate();
     console.log('Database connection has been established successfully.');
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
-});
+};
+
+dbConnect();
+
+module.exports = app
