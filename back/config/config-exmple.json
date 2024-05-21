@@ -1,0 +1,26 @@
+
+
+{
+    "development": {
+      "username": "movez",
+      "password": "movez",
+      "database": "balance",
+      "host": "4.156.32.216",
+      "dialect": "postgres"
+    },
+    "test": {
+      "username": "postgres",
+      "password": "password",
+      "database": "movez",
+      "host": "127.0.0.1",
+      "dialect": "postgres"
+    },
+    "production": {
+      "username": "postgres",
+      "password": "password",
+      "database": "movez",
+      "host": "127.0.0.1",
+      "dialect": "postgres"
+    }
+  }
+  

@@ -1,18 +1,53 @@
 import React, { useState } from 'react';
-import { Button, Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {  Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { PureNativeButton } from 'react-native-gesture-handler';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, {Marker} from 'react-native-maps';
+import {Button} from 'react-native-paper';
+import { google_maps_api_key } from '../config/config';
+import MapViewDirections from 'react-native-maps-directions';
 
-const AddMovingRequest = ({setLocation}) => {
+function calculateDelta(fromCoor, toCoor) {
+  const R = 6371; // Radius of the earth in km
+  const lat1 = fromCoor.latitude * Math.PI / 180; // Convert degrees to radians
+  const lat2 = toCoor.latitude * Math.PI / 180;
+  const lng1 = fromCoor.longitude * Math.PI / 180;
+  const lng2 = toCoor.longitude * Math.PI / 180;
+
+  const dLat = lat2 - lat1;
+  const dLng = lng2 - lng1;
+
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1) * Math.cos(lat2) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distance = R * c; // Distance in km
+
+  return {
+      latDelta: dLat * (180 / Math.PI), // Convert radians to degrees
+      lngDelta: dLng * (180 / Math.PI)
+  };
+}
+
+
+const AddMovingRequest = ({setLocationFrom,setLocationTo}) => {
     const { width, height } = Dimensions.get('window');
     const ASPECT_RATIO = width / height;
     const [address, setAddress] = useState('');
-    const [coordinates, setCoordinates] = useState({latitude: 37.78825, longitude: -122.4324});
+    const [coordinatesFrom, setCoordinatesFrom] = useState(undefined);
+    const [coordinatesTo, setCoordinatesTo] = useState(undefined);
+
     const [latitude, setLatitude] = useState();
     const [longitude, setLongitude] = useState();
     const [latDelta, setLatDelta] = useState();
     const [lngDelta, setLngDelta] = useState();
+
+    const onsubmit = () => {
+        setLocationFrom({coor:coordinatesFrom, address: address});
+        setLocationTo({coor:coordinatesTo,latitude: latitude, longitude: longitude, address: address})
+    }
+
     return (
         <View >
   
@@ -28,12 +63,12 @@ const AddMovingRequest = ({setLocation}) => {
             },
         }}
        autoFillOnNotFound
-          placeholder='Search'
+          placeholder='From'
           fetchDetails={true}
           onPress={(data, details = null) => {
             console.log(details.geometry);
 
-            setCoordinates({latitude: details.geometry.location.lat, longitude: details.geometry.location.lng });
+            setCoordinatesFrom({latitude: details.geometry.location.lat, longitude: details.geometry.location.lng });
             setAddress(data.description);
             setLatitude(details.geometry.location.lat);
             setLongitude(details.geometry.location.lng);
@@ -43,7 +78,36 @@ const AddMovingRequest = ({setLocation}) => {
             setLngDelta(  (northeastLat - southwestLat) * ASPECT_RATIO);
           }}
           query={{
-            key: 'AIzaSyBffe6fU4K0UYRJG6MFue5VM7lxsKphEnM',
+            key: google_maps_api_key,
+            language: 'en',
+          }}
+        />
+
+<GooglePlacesAutocomplete
+          styles={{
+            container: {
+                flex: 0,
+            },
+            listView: {
+                maxHeight: 200, // Set a maximum height for the dropdown list
+            },
+        }}
+       autoFillOnNotFound
+          placeholder='To'
+          fetchDetails={true}
+          onPress={(data, details = null) => {
+            console.log(details.geometry);
+
+            setCoordinatesTo({latitude: details.geometry.location.lat, longitude: details.geometry.location.lng });
+            setAddress(data.description);
+
+            const { latDelta, lngDelta } = calculateDelta(coordinatesFrom, coordinatesTo);
+            setLatDelta( latDelta);
+            setLngDelta(  lngDelta);
+
+          }}
+          query={{
+            key: google_maps_api_key,
             language: 'en',
           }}
         />
@@ -57,23 +121,40 @@ const AddMovingRequest = ({setLocation}) => {
             longitudeDelta: lngDelta,
         }}
        
-    style={{zIndex:-1, width: Dimensions.get('window').width, height: Dimensions.get('window').height/2}}
+    style={{ zIndex:-1, width: Dimensions.get('window').width, height: Dimensions.get('window').height/2}}
 
        >
 
-        <Marker
-          coordinate={coordinates}
+     {coordinatesFrom!==undefined &&    <Marker
+          coordinate={coordinatesFrom}
           title={"title"}
           description={"description"}
+        />}
+
+ {coordinatesTo!==undefined &&     <Marker
+          coordinate={coordinatesTo}
+          title={"title"}
+          description={"description"}
+        />}
+
+        {
+          (coordinatesFrom!==undefined && coordinatesTo!==undefined) &&
+          <MapViewDirections
+          origin={coordinatesFrom}
+          destination={coordinatesTo}
+          apikey={google_maps_api_key}
+          strokeWidth={3}
+          strokeColor='red'
         />
+        }
 
 
        </MapView>
 
-       <Button title='Continue'
-        onPress={() => setLocation({latitude: latitude, longitude: longitude, address: address})}
-       style={{marginTop: '20px', color: 'red',borderradius: 10, backgroundColor: 'red'}}
-       />
+       <Button 
+        onPress={() => onsubmit()}
+        mode='contained'
+       >Continue</Button>
        
         </View>
       );

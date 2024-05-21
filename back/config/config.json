@@ -1,10 +1,12 @@
+
+
 {
   "development": {
-    "username": "",
-    "password": "",
-    "database": "",
-    "host": "",
-    "dialect": ""
+    "username": "movez",
+    "password": "movez",
+    "database": "balance",
+    "host": "4.156.32.216",
+    "dialect": "postgres"
   },
   "test": {
     "username": "postgres",

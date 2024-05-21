@@ -35,7 +35,7 @@ const register = async (req, res) => {
 
 const login = async(req,res)=>{
     const {username, password} = req.body
-    console.log("cehe")
+   
     try{
         const user = await User.findOne({where: {username}})
         if(user){

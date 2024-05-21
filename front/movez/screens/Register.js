@@ -1,7 +1,8 @@
 // react native register screen
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet,Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { TextInput, Button, Text} from 'react-native-paper';
 import { register } from '../utils/user_api_calls';
 const RegisterScreen = () => {
     const [password, setPassword] = useState('');
@@ -23,24 +24,24 @@ const RegisterScreen = () => {
             <Text style={{fontSize: 30, marginBottom: 20}}>Register</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Username"
+                label="Username"
                 value={username}
                 onChangeText={setUsername}
             />
             <TextInput
                 style={styles.input}
-                placeholder="Email"
+                label="Email"
                 value={email}
                 onChangeText={setEmail}
             />
             <TextInput
                 style={styles.input}
-                placeholder="Password"
+                label="Password"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
             />
-            <Button title="Register" onPress={handleRegister} />
+            <Button mode='contained' onPress={handleRegister} >Register</Button>
         </View>
     );
 }
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     },
     input: {
         width: '100%',
-        height: 40,
+
         borderColor: 'gray',
         borderWidth: 1,
         marginBottom: 12,

@@ -1,21 +1,24 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React,{useContext} from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import { createNativeStackNavigator  } from '@react-navigation/native-stack';
 import NewMovingRequestScreen from './NewMovingRequestScreen';
+import { Button } from 'react-native-paper';
 
 
 const Stack = createNativeStackNavigator();
 
 function HomePage({navigation}) {
 
+
     const HomeScreen = ({navigation}) => {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Home</Text>
                 <Button
-                    title="New Moving Request"
+                icon="camera" mode="contained"
+              
                     onPress={() => navigation.navigate('NewMovingRequestScreen')}
-                />
+                >New Moving Request</Button>
             </View>
         );
     }

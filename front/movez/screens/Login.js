@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet,Text } from 'react-native';
+import React, { useState,useContext } from 'react';
+import { View, StyleSheet } from 'react-native';
+import {Button,TextInput,Text } from 'react-native-paper';
 import {login,getProfile } from '../utils/user_api_calls';
 import {TokenContext} from '../tokenContext';
 const LoginScreen = ({navigation}) => {
     // use TokenContext
-    const { token, updateToken,setUser } = React.useContext(TokenContext);
+    const { token, updateToken,setUser } = useContext(TokenContext);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
 
@@ -27,20 +28,20 @@ const LoginScreen = ({navigation}) => {
 
             <TextInput
                 style={styles.input}
-                placeholder="Username"
+                label="Username"
                 value={username}
                 onChangeText={setUsername}
             />
             <TextInput
                 style={styles.input}
-                placeholder="Password"
+                label="Password"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
             />
-            <Text style={{fontSize: 20, marginBottom: 20}} onPress={() => navigation.navigate('Register')}
- >new here?</Text>
-            <Button title="Login" onPress={handleLogin} />
+            <Button mode='text' style={{fontSize: 20, marginBottom: 20}} onPress={() => navigation.navigate('Register')}
+ >new here?</Button>
+            <Button mode="contained" onPress={handleLogin} >Login</Button>
           
         </View>
     );
@@ -55,7 +56,6 @@ const styles = StyleSheet.create({
     },
     input: {
         width: '100%',
-        height: 40,
         borderColor: 'gray',
         borderWidth: 1,
         marginBottom: 12,

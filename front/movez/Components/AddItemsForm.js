@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Button, Modal, TextInput, StyleSheet, ScrollView, TouchableHighlight } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { View, StyleSheet, TouchableHighlight, ScrollView } from 'react-native';
+import { TextInput, Button,Modal, Portal, Text,Card } from 'react-native-paper';
+import {IconButton, MD3Colors } from 'react-native-paper';
+
+
+
 
 const AddItemsForm = () => {
     const [items, setItems] = useState([]);
@@ -22,10 +26,8 @@ const AddItemsForm = () => {
 
     const handleSubmit = (item) => {
         setEditedItem(item);
-
     }
     const handleChange = (e,item) =>{
-        console.log("wow",e)
         setNewItem(prev=>({...prev,[`${item.name}`]:e}));
     }
 
@@ -48,13 +50,9 @@ const AddItemsForm = () => {
 
     const handleEditItem = (e) => {
         setItems(items.filter((i,ind)=>i!==e))
-
         setNewItem(e);
-        // if one of the values are not string then convert it to string
         Object.keys(e).forEach(key=>{ if(typeof e[key] !== 'string'){ e[key] = e[key].toString()}});
-
         setEditedItem(e);
-
         setIsModalVisible(true);
     }
 
@@ -73,75 +71,82 @@ const AddItemsForm = () => {
 { 
     items.length === 0 ? <Text style={styles.text}>No items added yet</Text>       
    :
-   items.map((item, index) => (
+   <ScrollView>
+   {items.map((item, index) => (
                 // box with the item details
-               
-                <View style={{fontSize:10,marginTop:5,padding:10,borderRadius:15,backgroundColor:"grey"}} key={index}>
-                    <View style={{display:'flex',flexDirection:'row',justifyContent:'flex-end'}}>
-                    <Icon name="trash" style={{padding:5}} size={30} color="black" onPress={()=>setItems(items.filter((i,ind)=>ind!==index))}/>
-                    <Icon name="edit" style={{padding:5}}  size={30} color="black" onPress={()=>handleEditItem(item)}/>
-                    </View>
-                    <Text>Item Description {item.ItemDescription}</Text>
-                    <Text> Height  {item.Height}</Text>
-                    <Text> Width  {item.Width}</Text>
-                    <Text> Depth  {item.Depth}</Text>
-                    <Text> Weight  {item.Weight}</Text>
-                    <Text> Quantity  {item.Quantity}</Text>
-                    <Text>Special Instructions {item.SpecialInstructions}</Text>
-                </View>
-            ))}
+    <Card mode='outlined'>
 
+    <Card.Actions>
+    <IconButton
+    icon="trash-can"
+    iconColor={MD3Colors.error50}
+    key={index+"delete"}
+    mode='contained'
+    size={20}
+    onPress={()=>setItems(items.filter((i,ind)=>ind!==index))}
+    />
+          <IconButton
+    key={index+"edit"}
+    mode='contained'
+    icon="pencil"
+    iconColor={MD3Colors.error50}
+    size={20}
+    onPress={()=>handleEditItem(item)}
+    />
+    </Card.Actions>
+    <Card.Content>
+        <Text key={index+"ItemDescription"} variant="titleLarge">{item.ItemDescription}</Text>
+        <Text key={index+"Height"} variant="bodyMedium"> Height  {item.Height}</Text>
+        <Text key={index+"Width"} variant="bodyMedium"> Width  {item.Width}</Text>
+        <Text key={index+"Depth"} variant="bodyMedium"> Depth  {item.Depth}</Text>
+        <Text key={index+"Weight"} variant="bodyMedium"> Weight  {item.Weight}</Text>
+        <Text key={index+"Quantity"} variant="bodyMedium"> Quantity  {item.Quantity}</Text>
+        <Text key={index+"SpecialInstructions"} variant="bodyMedium">Special Instructions {item.SpecialInstructions}</Text>
+    </Card.Content>
+
+  </Card>
+            ))}
+    </ScrollView>
+}
    
 
             {/* Render the form */}
-            <Modal  style={styles.modal} visible={isModalVisible}>
-            <ScrollView contentContainerStyle={{justifyContent:"center"}} style={{flex:1}}>
+            <Portal>
+            <Modal  style={styles.modal} onDismiss={handleCancel}  visible={isModalVisible}>
+                <Text style={{textAlign:'center',fontSize:20,marginBottom:10}}>Add Item</Text>
                 {inputs.map((input, index) => (
                         
-                <View key={index+"view"}>
-                    <Text   key={index+input.name} style={styles.text}>{input.placeholder}</Text>
+              
                     <TextInput
+                        label={input.placeholder}
                         keyboardType ={input.type}
                         value = {newItem[input.name] || ''}
                         onChangeText ={(e)=>handleChange(e,input)}
                         key={index+"input"}
-                        style={styles.input}
+                        mode="outlined"
                         />
-                </View>
-                
-                 
-
                     ))}
-                </ScrollView>
-                    <View style={styles.ButtonContiner}>
-                    <TouchableHighlight  onPress={handleAddItem} style={styles.AddButton}>
-                    <Text>Add</Text>
-                    </TouchableHighlight>
+                    <View style={{justifyContent:'space-evenly',marginTop:20,flexDirection:'row'}} >
+               <Button buttonColor='green'  mode="contained" onPress={handleAddItem}>Add</Button>
 
-                    <TouchableHighlight onPress={() => handleCancel()}  style={styles.CancelButton}>
-
-                    <Text   
-                      >Cancel</Text>
-                    </TouchableHighlight>
-
+               <Button buttonColor='red' mode="contained" onPress={handleCancel}>Cancel</Button>
                     </View>
             </Modal>
+            </Portal>
             <View style={{justifyContent:'center',alignItems:'center'}}>
 
-                     {/* Button to open the form */}
-                     <TouchableHighlight  onPress={() => setIsModalVisible(true)} style={styles.AddItemBtn}>
-              
-             
-              <Text style={{flex:1,textAlign:'center'}}>Add Item</Text>
-          </TouchableHighlight>
+                
+          <Button onPress={() => setIsModalVisible(true)}
+                        mode='contained'>
+                           Add Item
+                        </Button>
                     {
                         items.length > 0 && 
-                        
-                        <TouchableHighlight  onPress={() => handleSubmit()} style={styles.AddItemBtn}>
-              
-             
-                          <Text style={{flex:1,textAlign:'center'}}>That's all</Text>
-                            </TouchableHighlight>
+                        <Button onPress={() => handleSubmit()} 
+                        mode='contained'>
+                            That's all 
+                        </Button>
+                     
                     }
           
           </View>
@@ -182,8 +187,9 @@ const styles = StyleSheet.create({
     },
     modal:{
         backgroundColor: 'white',
-        margin: 0, // This is the important style you need to set
-        // padding: 20,
+        borderWidth: 2,
+        height: 'fit-content',
+        padding: 20,
         // height: '80%',
        
     },
