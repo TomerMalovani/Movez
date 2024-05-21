@@ -1,4 +1,4 @@
 ./k8s/
 ./back/node_modules/
 ./front/movez/node_modules
-
+./front/movez/package-lock.json
