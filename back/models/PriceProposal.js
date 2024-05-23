@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.Users, { foreignKey: 'MoverID' });
       this.belongsTo(models.Users, { foreignKey: 'MovingID' });
-      this.hasOne(models.MoveRequest, { foreignKey: 'uuid' })
+      this.belongsTo(models.MoveRequest, { foreignKey: 'uuid' })
     }
   }
   PriceProposal.init({

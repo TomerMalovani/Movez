@@ -6,8 +6,17 @@ const moveRequestSchema = yup.object({
     moveStatus: yup.string().required(),
     moveDate: yup.date().required(),
     moveTime: yup.string().required(),
-    moveFrom: yup.string().required(),
-    moveTo: yup.string().required(),
+    moveFromCoor:  yup.object().shape({
+        type:yup.string().required(),
+        coordinates:yup.array().of(yup.number())
+    }),
+    moveToCoor: yup.object().shape({
+        type:yup.string().required(),
+        coordinates:yup.array().of(yup.number())
+    }),
+    fromAddress: yup.string().required(),
+    toAddress: yup.string().required(),
+
 })
 
 const updateMoveRequestSchema = yup.lazy((value) =>
@@ -16,8 +25,16 @@ const updateMoveRequestSchema = yup.lazy((value) =>
     moveStatus: yup.string(),
     moveDate: yup.date(),
     moveTime: yup.string(),
-    moveFrom: yup.string(),
-    moveTo: yup.string()
+    moveFromCoor:  yup.object().shape({
+        type:yup.string().required(),
+        coordinates:yup.array().of(yup.number())
+    }),
+    moveToCoor: yup.object().shape({
+        type:yup.string().required(),
+        coordinates:yup.array().of(yup.number())
+    }),
+    fromAddress: yup.string().required(),
+    toAddress: yup.string().required()
     }).test({
         name: 'at-least-one-field',
         exclusive: true,
@@ -29,17 +46,23 @@ const updateMoveRequestSchema = yup.lazy((value) =>
                     key === 'moveStatus' ||
                     key === 'moveDate' ||
                     key === 'moveTime' ||
-                    key === 'moveFrom' ||
-                    key === 'moveTo'
+                    key === 'moveFromCoor' ||
+                    key === 'moveToCoor' ||
+                    key === 'fromAddress' ||
+                    key === 'toAddress'
             ),
 })
 );
 
 const moveRequestPostValidation = async (req, res, next) => {
     try {
+        const {userId} = req
+        req.body.UserID = userId
+        console.log(req.body)
         await moveRequestSchema.validate(req.body);
         next();
     } catch (error) {
+        console.log(error.message)
         res.status(400).json({ message: error.message });
     }
 }

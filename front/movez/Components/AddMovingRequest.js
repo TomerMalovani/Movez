@@ -3,9 +3,10 @@ import {  Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { PureNativeButton } from 'react-native-gesture-handler';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, {Marker} from 'react-native-maps';
-import {Button} from 'react-native-paper';
+import {Button,} from 'react-native-paper';
 import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
+import DateInput from './DateInput';
 
 function calculateDelta(fromCoor, toCoor) {
   const R = 6371; // Radius of the earth in km
@@ -31,21 +32,22 @@ function calculateDelta(fromCoor, toCoor) {
 }
 
 
-const AddMovingRequest = ({setLocationFrom,setLocationTo}) => {
+const AddMovingRequest = ({dateState,setLocationFrom,setLocationTo}) => {
     const { width, height } = Dimensions.get('window');
     const ASPECT_RATIO = width / height;
-    const [address, setAddress] = useState('');
+    const [fromAddress, setfromAddress] = useState('');
+    const [toAddress, settoAddress] = useState('');
+
     const [coordinatesFrom, setCoordinatesFrom] = useState(undefined);
     const [coordinatesTo, setCoordinatesTo] = useState(undefined);
-
     const [latitude, setLatitude] = useState();
     const [longitude, setLongitude] = useState();
     const [latDelta, setLatDelta] = useState();
     const [lngDelta, setLngDelta] = useState();
 
     const onsubmit = () => {
-        setLocationFrom({coor:coordinatesFrom, address: address});
-        setLocationTo({coor:coordinatesTo,latitude: latitude, longitude: longitude, address: address})
+        setLocationFrom({coor:coordinatesFrom, address: fromAddress});
+        setLocationTo({coor:coordinatesTo, address: toAddress})
     }
 
     return (
@@ -66,10 +68,9 @@ const AddMovingRequest = ({setLocationFrom,setLocationTo}) => {
           placeholder='From'
           fetchDetails={true}
           onPress={(data, details = null) => {
-            console.log(details.geometry);
 
             setCoordinatesFrom({latitude: details.geometry.location.lat, longitude: details.geometry.location.lng });
-            setAddress(data.description);
+            setfromAddress(data.description);
             setLatitude(details.geometry.location.lat);
             setLongitude(details.geometry.location.lng);
             const northeastLat = parseFloat(details.geometry.viewport.northeast.lat);
@@ -96,12 +97,10 @@ const AddMovingRequest = ({setLocationFrom,setLocationTo}) => {
           placeholder='To'
           fetchDetails={true}
           onPress={(data, details = null) => {
-            console.log(details.geometry);
-
             setCoordinatesTo({latitude: details.geometry.location.lat, longitude: details.geometry.location.lng });
-            setAddress(data.description);
+            settoAddress(data.description);
 
-            const { latDelta, lngDelta } = calculateDelta(coordinatesFrom, coordinatesTo);
+            const { latDelta, lngDelta } = calculateDelta(coordinatesFrom, coorTo);
             setLatDelta( latDelta);
             setLngDelta(  lngDelta);
 
@@ -150,6 +149,8 @@ const AddMovingRequest = ({setLocationFrom,setLocationTo}) => {
 
 
        </MapView>
+
+       <DateInput dateState={dateState}/>
 
        <Button 
         onPress={() => onsubmit()}

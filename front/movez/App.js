@@ -1,4 +1,4 @@
-import react , {useContext} from 'react';
+import react , {useContext,useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -10,39 +10,58 @@ import  {  TokenProvider,TokenContext } from './tokenContext';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import { MD3LightTheme as DefaultTheme,PaperProvider } from 'react-native-paper';
-const Drawer = createDrawerNavigator();
+import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 
+
+
+  
+const Drawer = createDrawerNavigator();
 const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: 'tomato',
+    primary: '#1f2835',
     secondary: 'yellow',
   },
 };
 
-function DrawerComponent() {
-  const {user } = useContext(TokenContext);
+function DrawerComponent(props) {
+  const {user,removeToken } = useContext(TokenContext);
+  
+  useEffect(() => {
 
-  if(user){
-    return (
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomePage} />
-        <Drawer.Screen name="Profile" component={ProfilePage} />
-        <Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
-        {/* other screens */}
-      </Drawer.Navigator>
-    );
+    if(!user){
+      props.navigation.navigate('Login');
+    }
   }
-  else{
+  ,[user]);
+
     return (
-      <Drawer.Navigator initialRouteName="Login">
-        <Drawer.Screen name="Login" component={LoginScreen} />
-        <Drawer.Screen name="Register" component={RegisterScreen} />
-        {/* other screens */}
-      </Drawer.Navigator>
+      <DrawerContentScrollView>
+      {(user !== null) ?
+        <>
+              <DrawerItem
+          label="Logout"
+          onPress={async () => {
+            // Perform logout operation here
+            // Then navigate to the login screen (replace 'Login' with the actual name of your login screen)
+            await removeToken()
+          
+          }}/>
+          <DrawerItem label="Home" onPress={() => props.navigation.navigate('Home')} />
+          <DrawerItem label="Profile" onPress={() => props.navigation.navigate('Profile')} />
+          <DrawerItem label="New Moving Request" onPress={() => props.navigation.navigate('NewMovingRequestScreen')} />
+        </>
+     
+:
+<>
+<DrawerItem label="Login" onPress={() => props.navigation.navigate('Login')} />
+          <DrawerItem label="Register" onPress={() => props.navigation.navigate('Register')} />
+</>
+}
+</DrawerContentScrollView>
     );
-  }
+ 
 }
 
 export default function App() {
@@ -50,7 +69,13 @@ export default function App() {
     <TokenProvider>
        <PaperProvider theme={theme}>
       <NavigationContainer>
-      <DrawerComponent/>
+      <Drawer.Navigator drawerContent={props => <DrawerComponent {...props} />}>
+        <Drawer.Screen name="Home" component={HomePage} />
+        <Drawer.Screen name="Profile" component={ProfilePage} />
+        <Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
+        <Drawer.Screen name="Login" component={LoginScreen} />
+        <Drawer.Screen name="Register" component={RegisterScreen} />
+      </Drawer.Navigator>
       </NavigationContainer>
       </PaperProvider>
     </TokenProvider>

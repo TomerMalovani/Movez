@@ -6,8 +6,8 @@ import {IconButton, MD3Colors } from 'react-native-paper';
 
 
 
-const AddItemsForm = () => {
-    const [items, setItems] = useState([]);
+const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
+    const [items, setItems] = itemsState;
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [newItem, setNewItem] = useState({});
     const [editedItem, setEditedItem] = useState(undefined);
@@ -22,7 +22,6 @@ const AddItemsForm = () => {
         { name: 'Quantity', type: 'numeric', placeholder: 'Quantity' },
         { name: 'SpecialInstructions', checkbox:true, type: 'default', placeholder: 'Special Instructions' }
     ]
-    console.log(items)
 
     const handleSubmit = (item) => {
         setEditedItem(item);
@@ -142,7 +141,7 @@ const AddItemsForm = () => {
                         </Button>
                     {
                         items.length > 0 && 
-                        <Button onPress={() => handleSubmit()} 
+                        <Button onPress={handleCreateNewRequest} 
                         mode='contained'>
                             That's all 
                         </Button>

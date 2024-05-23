@@ -53,14 +53,30 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
-    moveFrom: {
+    moveFromCoor: {
+      type: DataTypes.GEOMETRY('POINT'),
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
+    },
+
+
+    moveToCoor: {
+      type: DataTypes.GEOMETRY('POINT'),
+      allowNull: false,
+      validate: {
+        notEmpty: true
+      }
+    },
+    fromAddress:{
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: true
       }
     },
-    moveTo: {
+    toAddress:{
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
@@ -74,3 +90,5 @@ module.exports = (sequelize, DataTypes) => {
   });
   return MoveRequest;
 };
+
+// npx sequelize-cli migration:generate --name change-moveFrom-type-in-MoveRequest

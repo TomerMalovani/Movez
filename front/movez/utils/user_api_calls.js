@@ -1,10 +1,10 @@
 import { postRequest ,getRequest} from './api_calls'
+import {URL} from './consts'
 // accept env variables
 // import dotenv from 'dotenv'
 // dont = dotenv.config()
 // const {URL} = process.env
 
-const URL = "http://10.0.2.2:3000"
 
 export const register = async (username, email, password) => {
     const body = {
@@ -34,7 +34,7 @@ export const login = async (username, password) => {
 
 export const getProfile = async (token) => {
     try {
-        console.log("token",token)
+        // console.log("token",token)
         const res =  await getRequest(`${URL}/`, token)
         console.log("res",res)
         return res

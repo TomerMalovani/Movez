@@ -1,4 +1,8 @@
 'use strict';
+
+const jwt = require("jsonwebtoken")
+const dotenv = require('dotenv')
+dotenv.config()
 const {
   Model
 } = require('sequelize');
@@ -72,5 +76,14 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Users',
   });
+
+
+  // Method 3 via the direct method
+  Users.beforeValidate((user, options) => {
+  console.log("test before create",user.uuid)
+  const {uuid,username} = user
+  user.token = jwt.sign({uuid:uuid,username:username  }, process.env.JWT_SECRET, { expiresIn: '7d' });
+});
+
   return Users;
 };

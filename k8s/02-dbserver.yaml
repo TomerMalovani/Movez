@@ -23,7 +23,7 @@ items:
           deployment: dbserver
       spec:
         containers:
-        - image: docker.io/postgres:15.1
+        - image: docker.io/postgis/postgis
           name: postgresql
           ports:
           - containerPort: 5432

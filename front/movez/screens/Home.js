@@ -1,18 +1,21 @@
 import React,{useContext} from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { createNativeStackNavigator  } from '@react-navigation/native-stack';
 import NewMovingRequestScreen from './NewMovingRequestScreen';
-import { Button } from 'react-native-paper';
+import { Button,Text } from 'react-native-paper';
+import { TokenContext } from '../tokenContext';
 
 
 const Stack = createNativeStackNavigator();
 
 function HomePage({navigation}) {
+    const {user} = useContext(TokenContext)
 
 
     const HomeScreen = ({navigation}) => {
         return (
             <View style={styles.container}>
+                <Text>hello {user}!</Text>
                 <Text style={styles.title}>Home</Text>
                 <Button
                 icon="camera" mode="contained"
@@ -26,7 +29,7 @@ function HomePage({navigation}) {
     return (
 
         <View style={styles.container}>
-            <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false}}>
+            <Stack.Navigator  screenOptions={{ headerShown: false}}>
                 <Stack.Screen name="Start" component={HomeScreen} />
                 <Stack.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
 

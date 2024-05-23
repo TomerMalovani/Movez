@@ -27,13 +27,18 @@ app.use(function(req, res, next) {
     next();
   } else {
     const token = req.headers['authorization'];
-    console.log("token", req.headers)
+    console.log("headers", req.headers)
     if (token) {
       jwt.verify(token, 'secret', (err, decoded) => {
         if (err) {
+          console.log("error: ",err)
           res.status(401).json({ message: 'Unauthorized', error: err.message });
         } else {
-          console.log(decoded);
+          console.log("decoded",decoded);
+          const {uuid,username} = decoded
+          req.userId = uuid
+          req.user = username
+          // register.user =
           next();
         }
       });

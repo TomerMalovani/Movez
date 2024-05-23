@@ -5,18 +5,23 @@ import {login,getProfile } from '../utils/user_api_calls';
 import {TokenContext} from '../tokenContext';
 const LoginScreen = ({navigation}) => {
     // use TokenContext
-    const { token, updateToken,setUser } = useContext(TokenContext);
+    const { token, updateToken,setUser,user } = useContext(TokenContext);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
 
     const handleLogin = async () => {
-        if (username && password) {
-           const res = await  login(username, password)
-           updateToken(res.data.user.token)
-           console.log("username",res.data)
-
-           setUser(res.data.user)
+        try{
+            if (username && password) {
+                const res = await  login(username, password)
+                console.log("user token check " , res.data.user)
+                const data = {username: res.data.user.username,token:res.data.user.token}
+                await updateToken(data)
+                navigation.navigate('Home')
+             }
         }
+        catch(err){
+            console.log(err)
+        }   
         
     };
 

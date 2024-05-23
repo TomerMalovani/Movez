@@ -1,4 +1,6 @@
 ./k8s/
 ./back/node_modules/
+./back/config/config.json
 ./front/movez/node_modules
 ./front/movez/package-lock.json
+./front/movez/config/config.js

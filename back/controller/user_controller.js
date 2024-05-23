@@ -7,18 +7,15 @@ dotenv.config()
 const register = async (req, res) => {
     const { username, email, password } = req.body;
     try {
-        // create jwt token
-        const token = jwt.sign({ username }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        console.log(User)
         const user = await User.create({
             username: username,
             email: email,
             password: hashedPassword,
             salt: salt,
-            token: token,
+            token: "",
             token_exp: new Date(Date.now() + 604800000) // Use new Date() to create a date object
         });
         
@@ -39,11 +36,11 @@ const login = async(req,res)=>{
     try{
         const user = await User.findOne({where: {username}})
         if(user){
-            console.log(user)
             // salt hash
             const isMatch = await bcrypt.compare(password, user.password)
             if(isMatch){
-                const token = jwt.sign({username}, process.env.JWT_SECRET, {expiresIn: '7d'})
+                const {uuid,username} = user
+                const token = jwt.sign({uuid:uuid,username:username  }, process.env.JWT_SECRET, {expiresIn: '7d'})
                 await user.update({ token: token, token_exp: Date.now() + 604800000 });
                 res.status(200).json({message: "Login Successful", user: user})
             }

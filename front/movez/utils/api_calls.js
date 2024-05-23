@@ -2,10 +2,14 @@
 
 import axios from 'axios'
 
-export const postRequest = async (url, body) => {
+export const postRequest = async (url, body,token) => {
+    console.log("before send token", token)
     try {
-        console.log(url,body)
-        let response = await axios.post(url, body)   
+        headers = {
+            'authorization': token,
+          
+        }
+        let response = await axios.post(url,body, {headers})   
         return response
     } catch (error) {
         return error.response
@@ -18,7 +22,6 @@ export const getRequest = async (url,token) => {
             'authorization': token
         }
         const response = await axios.get(url , {headers})
-        console.log(response)
         return response.data
     } catch (error) {
         return error.response.data
