@@ -13,10 +13,14 @@ const LoginScreen = ({navigation}) => {
         try{
             if (username && password) {
                 const res = await  login(username, password)
+                console.log(res.data)
+                if (res.status !== 200 ) throw new Error(res.data.message)
                 console.log("user token check " , res.data.user)
                 const data = {username: res.data.user.username,token:res.data.user.token}
                 await updateToken(data)
                 navigation.navigate('Home')
+            
+            
              }
         }
         catch(err){

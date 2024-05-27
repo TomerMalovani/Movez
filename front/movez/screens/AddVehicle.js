@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { Text,TextInput,Button, View, StyleSheet } from 'react-native';
-
+import React, { useContext, useState } from 'react';
+import { Text, TextInput, Button, Icon, MD3Colors } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { createVehicle } from '../utils/vehicle_api_calls';
+import { TokenContext } from '../tokenContext';
 const AddVehicle = () => {
+	const {token} = useContext(TokenContext)
+
 
     const [vehicle, setVehicle] = useState({
-        MoverID:'',
         VehicleType:'',
         Depth:'',
         Width:'', 
@@ -13,35 +16,47 @@ const AddVehicle = () => {
 
     const inputs = [
         { name: 'VehicleType', type: 'text' , placeholder: 'Vehicle Type'},
-        { name: 'Depth', type: 'text' , placeholder: 'Depth'},
-        { name: 'Width', type: 'text' , placeholder: 'Width'},
-        { name: 'Height', type: 'text' , placeholder: 'Height'}
+        { name: 'Depth', type: 'number' , placeholder: 'Depth'},
+		{ name: 'Width', type: 'number' , placeholder: 'Width'},
+		{ name: 'Height', type: 'number' , placeholder: 'Height'}
         
     ]
 
-    const handleChange = (e) => {
-        setVehicle({ ...vehicle, [e.target.name]: e.target.value });
+    const handleChange = (e,input) => {
+		setVehicle(prev => ({ ...prev, [`${input.name}`]: e }));
     };
 
-    const handleSubmit = (e) => {
-        // Add your logic here to handle the form submission
-        console.log(vehicle);
+    const handleSubmit = async (e) => {
+		try{
+			// Add your logic here to handle the form submission
+			console.log(vehicle, token);
+			const res = await createVehicle(token, vehicle)
+			if(res.status !== 201)
+				throw new Error(res.message)
+			console.log(res)
+		}catch(err){
+			console.log(err)
+		}
+  
     };
 
     return (
         <View >
-            <Text>Add Vehicle</Text>
+			
+			<Text variant="displayLarge">Add vehicle</Text>
+			<Icon name="car-estate" size={100} color={MD3Colors.error50} />
          <View>
                 {inputs.map((input, index) => (
                     <TextInput
+						mode="outlined"
                         key={index}
-                        style={styles.input}
+                        // style={styles.input}
                         placeholder={input.placeholder}
                         value={vehicle[input.name]}
-                        onChangeText={handleChange}
+						onChangeText={(e) => handleChange(e, input)}
                     />
                 ))}
-                <Button title="Add Vehicle" onPress={handleSubmit} />
+				<Button mode='outlined' onPress={handleSubmit} >Add Vehicle</Button>
 </View>
             </View>          
     );

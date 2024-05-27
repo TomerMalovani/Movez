@@ -8,14 +8,15 @@ import HomePage from './screens/Home';
 import ProfilePage from './screens/Profile';
 import  {  TokenProvider,TokenContext } from './tokenContext';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import {createStackNavigator} from '@react-navigation/stack';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import { MD3LightTheme as DefaultTheme,PaperProvider } from 'react-native-paper';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-
-
+import  AddVehicle  from './screens/AddVehicle';
 
   
 const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator();
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -27,14 +28,6 @@ const theme = {
 
 function DrawerComponent(props) {
   const {user,removeToken } = useContext(TokenContext);
-  
-  useEffect(() => {
-
-    if(!user){
-      props.navigation.navigate('Login');
-    }
-  }
-  ,[user]);
 
     return (
       <DrawerContentScrollView>
@@ -64,19 +57,60 @@ function DrawerComponent(props) {
  
 }
 
+const LoggedInRouths = () => {
+	return (
+	
+			<Drawer.Navigator drawerContent={props => <DrawerComponent {...props} />}>
+				<Drawer.Screen name="Home" component={HomePage} />
+				<Drawer.Screen name="Profile" component={ProfilePage} />
+				<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
+			<Drawer.Screen name="AddVehicle" component={AddVehicle} />
+
+			</Drawer.Navigator>
+	
+	)
+}
+
+const NotloggedInRouths = () => {
+	return (
+	
+			<Drawer.Navigator drawerContent={props => <DrawerComponent {...props} />}>
+				<Drawer.Screen name="Login" component={LoginScreen} />
+				<Drawer.Screen name="Register" component={RegisterScreen} />
+			</Drawer.Navigator>
+		
+	)
+}
+
+const AuthRouths = () => {
+	const { user, removeToken } = useContext(TokenContext);
+
+	return (
+		<NavigationContainer >
+			<Stack.Navigator screenOptions={{
+				headerShown: false
+			}}>
+{
+					user ?
+						<Stack.Screen name="loggedin" component={LoggedInRouths} />
+						:
+						<Stack.Screen name="notloggedin" component={NotloggedInRouths} />
+}
+			</Stack.Navigator>
+		</NavigationContainer>
+
+			
+			
+		
+	)
+}
+
 export default function App() {
+
   return (
     <TokenProvider>
        <PaperProvider theme={theme}>
-      <NavigationContainer>
-      <Drawer.Navigator drawerContent={props => <DrawerComponent {...props} />}>
-        <Drawer.Screen name="Home" component={HomePage} />
-        <Drawer.Screen name="Profile" component={ProfilePage} />
-        <Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
-        <Drawer.Screen name="Login" component={LoginScreen} />
-        <Drawer.Screen name="Register" component={RegisterScreen} />
-      </Drawer.Navigator>
-      </NavigationContainer>
+			  <AuthRouths/>
       </PaperProvider>
     </TokenProvider>
   );

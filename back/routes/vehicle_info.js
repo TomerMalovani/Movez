@@ -7,14 +7,15 @@ const {
     getVehicleInfo,
     createVehicleInfo,
     updateVehicleInfo,
+	getVehiclesByMoverId,
     deleteVehicleInfo,
 } = require("../controller/vehicle_page")
+router.get('/user/', uuIDValidation, getVehiclesByMoverId);
 
 router.route('/').post(vehicleInfoPostValidation, createVehicleInfo)
 .get(uuIDValidation, getVehicleInfo)
 .patch(uuIDValidation, validateUpdateVehicleInfo, updateVehicleInfo)
 .delete(uuIDValidation, deleteVehicleInfo)
 
-router.get('/user/:mover', getVehicleInfo);
 
 module.exports = router;

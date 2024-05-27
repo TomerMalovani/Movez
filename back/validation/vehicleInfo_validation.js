@@ -35,7 +35,7 @@ const vehicleInfoUpdateSchema = yup.lazy((values) =>
 
 const vehicleInfoPostValidation = async (req, res, next) => {
     try {
-        await vehicleInfoSchema.validate(req.body);
+		await vehicleInfoSchema.validate({ ...req.body, MoverID: req.userId});
         next();
     } catch (error) {
         res.status(400).json({ message: error.message });

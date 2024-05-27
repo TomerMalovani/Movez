@@ -1,7 +1,7 @@
 const vehicleInfo = require("../models/index").VehicleInfo
 
 const getVehicleInfo = async(req,res)=>{
-    const vehicleID = req.query.uuid
+    const vehicleID = req.userId
     try {
     const vehicleInformation = await vehicleInfo.findByPk(vehicleID)
     if(!vehicleInformation){
@@ -17,7 +17,8 @@ const getVehicleInfo = async(req,res)=>{
 //note: vehicle id should'nt be required from the user
 // the vehicle id should be an internal DB value and be provided by us
 const createVehicleInfo = async(req, res) => {
-  const { MoverID, VehicleType, Depth, Width , Height } = req.body;
+  const {  VehicleType, Depth, Width , Height } = req.body;
+	const MoverID = req.userId;
   try {
       const result = await vehicleInfo.create({MoverID, VehicleType, Depth, Width, Height});
       if (result) {
@@ -63,12 +64,9 @@ const deleteVehicleInfo = async (req, res) => {
 };
 
 const getVehiclesByMoverId = async (req, res) => {
-  const moverID = req.query.mover;
+	const moverID = req.userId;
   try {
     const vehicles = await vehicleInfo.findAll({ where: { MoverID: moverID } });
-    if (vehicles.length === 0) {
-      return res.status(404).json({ msg: `No vehicles found for mover with ID ${moverID}` });
-    }
     return res.status(200).json({ message: "success", vehicles });
   } catch (error) {
     return res.status(500).json({ msg: "Internal Error", error: error.message });

@@ -6,7 +6,7 @@ const uuidSchema = yup.object({
 
 const uuIDValidation = async (req, res, next) => {
     try {
-        await uuidSchema.validate({ uuid: req.query.uuid });
+		await uuidSchema.validate({ uuid: req.userId });
         next();
     } catch (error) {
         res.status(400).json({ message: error.message });

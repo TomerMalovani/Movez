@@ -39,6 +39,7 @@ const TokenProvider = ({ children }) => {
     // Function to update the token
     const updateToken = async (newToken) => {
         try{
+            console.log("update token", newToken)
             if(newToken.token && newToken.username) 
             await _storeStorage(JSON.stringify( newToken ) ,"token");
          

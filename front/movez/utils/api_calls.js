@@ -18,8 +18,9 @@ export const postRequest = async (url, body,token) => {
 
 export const getRequest = async (url,token) => {
     try {
+		console.log("token",token)
         headers = {
-            'authorization': token
+            'Authorization': token
         }
         const response = await axios.get(url , {headers})
         return response.data
