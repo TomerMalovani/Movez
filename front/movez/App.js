@@ -6,6 +6,9 @@ import LoginScreen from './screens/Login';
 import RegisterScreen from './screens/Register';
 import HomePage from './screens/Home';
 import ProfilePage from './screens/Profile';
+import MyActivity from './screens/MyActivity';
+import MovesRequested from './screens/MovesRequested';
+import MovesProvided from './screens/MovesProvided';
 import  {  TokenProvider,TokenContext } from './tokenContext';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
@@ -51,6 +54,7 @@ function DrawerComponent(props) {
           <DrawerItem label="Home" onPress={() => props.navigation.navigate('Home')} />
           <DrawerItem label="Profile" onPress={() => props.navigation.navigate('Profile')} />
           <DrawerItem label="New Moving Request" onPress={() => props.navigation.navigate('NewMovingRequestScreen')} />
+          <DrawerItem label="My Activity" onPress={() => props.navigation.navigate('MyActivity')} />
         </>
      
 :
@@ -73,8 +77,12 @@ export default function App() {
         <Drawer.Screen name="Home" component={HomePage} />
         <Drawer.Screen name="Profile" component={ProfilePage} />
         <Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
+        <Drawer.Screen name="MyActivity" component={MyActivity} />
         <Drawer.Screen name="Login" component={LoginScreen} />
         <Drawer.Screen name="Register" component={RegisterScreen} />
+        <Drawer.Screen name="MovesRequested" component={MovesRequested} />
+        <Drawer.Screen name="MovesProvided" component={MovesProvided} />
+
       </Drawer.Navigator>
       </NavigationContainer>
       </PaperProvider>

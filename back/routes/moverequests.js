@@ -7,12 +7,21 @@ const {
     getMoveRequest,
     createMoveRequest,
     updateMoveRequest,
-    deleteMoveRequest
+    deleteMoveRequest,
+    getMoveRequestsViaUser
 } = require("../controller/move_request")
 
 router.route('/').post(moveRequestPostValidation, createMoveRequest)
 .get(uuIDValidation, getMoveRequest)
 .patch(uuIDValidation , validateUpdateMoveRequest, updateMoveRequest).
 delete(uuIDValidation ,deleteMoveRequest)
+
+router.get('/user',getMoveRequestsViaUser)
+
+
+
+
+
+
 
 module.exports = router;

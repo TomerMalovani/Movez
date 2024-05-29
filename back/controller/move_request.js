@@ -1,6 +1,23 @@
 const moveRequest = require("../models/index").MoveRequest
 const moveRequestItem = require("../models/index").MoveRequestItems
 
+const getMoveRequestsViaUser = async (req,res) =>{
+    const userId = req.userId
+    try{
+        const result = await moveRequest.findAll({where: {UserID: userId}})
+        // get all move requests items for the move request
+        
+        if(result){
+            res.status(200).json(result)
+        }else{
+            res.status(404).json({message: 'MoveRequest not found'})
+        }
+    }
+    catch(error){
+        res.status(500).json({message: 'Internal Server Error', error: error.message})
+    }
+}
+
 const getMoveRequest = async(req,res)=>{
     const requestID = req.query.uuid
     try{
@@ -97,4 +114,4 @@ module.exports = {
     getMoveRequest,
     createMoveRequest,
     updateMoveRequest,
-    deleteMoveRequest}
+    deleteMoveRequest,getMoveRequestsViaUser}
