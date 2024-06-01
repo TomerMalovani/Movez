@@ -27,3 +27,15 @@ export const createNewMoveRequest = async (token,body) => {
 
  
 }
+
+export const showRequestedMoves = async (token) => {
+    try {
+        const url = `${URL}/moverequests/user`
+        const response = await getRequest(url,token)
+		console.log("API Response:", response); // Log API response for debugging
+        return response;
+    } catch (error) {
+        console.error('Error fetching move requests via user:', error);
+        throw error;
+    }
+};

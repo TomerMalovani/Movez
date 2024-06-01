@@ -1,1 +1,1 @@
-export const google_maps_api_key = '';
+export const google_maps_api_key = ''

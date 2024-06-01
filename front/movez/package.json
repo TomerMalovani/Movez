@@ -21,6 +21,7 @@
     "expo": "~50.0.14",
     "expo-location": "^17.0.1",
     "expo-status-bar": "~1.11.1",
+    "join-component": "^1.1.0",
     "react": "18.2.0",
     "react-native": "0.73.6",
     "react-native-gesture-handler": "~2.14.0",
