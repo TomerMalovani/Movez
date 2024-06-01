@@ -3,9 +3,9 @@ import { Text, TextInput, Button, Icon, MD3Colors } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native';
 import { createVehicle } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
-const AddVehicle = () => {
+const AddVehicle = ({ handleAddVehicle }) => {
 	const {token} = useContext(TokenContext)
-
+	
 
     const [vehicle, setVehicle] = useState({
         VehicleType:'',
@@ -30,10 +30,12 @@ const AddVehicle = () => {
 		try{
 			// Add your logic here to handle the form submission
 			console.log(vehicle, token);
-			const res = await createVehicle(token, vehicle)
-			if(res.status !== 201)
-				throw new Error(res.message)
-			console.log(res)
+			const newCar = await createVehicle(token, vehicle)
+			console.log("create car response", newCar)
+
+			handleAddVehicle(newCar)
+		
+
 		}catch(err){
 			console.log(err)
 		}
@@ -43,20 +45,20 @@ const AddVehicle = () => {
     return (
         <View >
 			
-			<Text variant="displayLarge">Add vehicle</Text>
+			<Text style={{textAlign:"center",marginBottom:10}} variant="headlineMedium">Add vehicle</Text>
 			<Icon name="car-estate" size={100} color={MD3Colors.error50} />
          <View>
                 {inputs.map((input, index) => (
                     <TextInput
 						mode="outlined"
                         key={index}
-                        // style={styles.input}
-                        placeholder={input.placeholder}
+                        style={styles.input}
+                        label={input.placeholder}
                         value={vehicle[input.name]}
 						onChangeText={(e) => handleChange(e, input)}
                     />
                 ))}
-				<Button mode='outlined' onPress={handleSubmit} >Add Vehicle</Button>
+				<Button style={styles.btn} mode='contained' onPress={handleSubmit} >Add Vehicle</Button>
 </View>
             </View>          
     );
@@ -72,12 +74,14 @@ const styles = StyleSheet.create({
        
     },
     input: {
-        width: '100vw',
+   
         height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginBottom: 16,
-        padding: 8,
+   
+        marginBottom: 20,
+        // padding: 8,
     },
+	btn:{
+		marginTop: 20
+	}
 });
 export default AddVehicle;

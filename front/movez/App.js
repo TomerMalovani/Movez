@@ -13,6 +13,7 @@ import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import { MD3LightTheme as DefaultTheme,PaperProvider } from 'react-native-paper';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import  AddVehicle  from './screens/AddVehicle';
+import UserVehicles from './screens/UserVehicles';
 
   
 const Drawer = createDrawerNavigator();
@@ -64,8 +65,13 @@ const LoggedInRouths = () => {
 				<Drawer.Screen name="Home" component={HomePage} />
 				<Drawer.Screen name="Profile" component={ProfilePage} />
 				<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
-			<Drawer.Screen name="AddVehicle" component={AddVehicle} />
+			
+				<Drawer.Screen name="My Vehicles" component={UserVehicles} />
+	
 
+
+		
+			
 			</Drawer.Navigator>
 	
 	)

@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text } from 'react-native';
-import { Card, DataTable, IconButton, TouchableRipple } from 'react-native-paper';
+import { Card, DataTable, IconButton, Paragraph, TouchableRipple } from 'react-native-paper';
+import { deateVehicle } from '../utils/vehicle_api_calls';
+import { TokenContext } from '../tokenContext';
 
-const ProfileVehicleCard = ({ vehicles, navigation }) => {
+const ProfileVehicleCard = ({ handleDelete, vehicles, handleModalOpen }) => {
+	
 	const columns = [
 		{
 			// "Depth": "10.00", "Height": "15.00", "MoverID": "736bad7e-05c6-4a09-8a56-06e847ea6255", "VehicleType": "cool", "Width": "10.00"}
@@ -28,42 +31,37 @@ const ProfileVehicleCard = ({ vehicles, navigation }) => {
 		
 		return (
 			<>
-						<DataTable>
-					<IconButton
-						icon="plus"
-						size={30}
-						onPress={() => {
-							navigation.navigate('AddVehicle');
-						}}
-					/>
-							
-						<DataTable.Header>
-						{
-								columns.map((column, index) => (
-									
-										<DataTable.Title>{column.name}</DataTable.Title>
-									
-								))}
-						</DataTable.Header>
-							
+				<IconButton
+					icon="plus"
+					size={20}
+					onPress={handleModalOpen}
+					mode = 'contained'
+				/>
+				{
+					vehicles.map((vehicle, index) => (
+						<Card key={index + vehicle.uuid}>
+							<Card.Actions>
 						
+								<IconButton
+									icon="delete"
+									onPress={() => {
+										handleDelete(vehicle.uuid);
 
-							{vehicles.map((vechile) => (
-								<TouchableRipple
-									onPress={() => console.log('Pressed')}
-									rippleColor="rgba(0, 0, 0, .32)"
-								>
-								<DataTable.Row key={vechile.key}>
-									{columns.map((column, index) => (
-
-										<DataTable.Cell key={index}>{vechile[column.selector]}</DataTable.Cell>
-									))}
-								</DataTable.Row>
-								</TouchableRipple>
-							))}
-
-							
-						</DataTable>
+									}}
+								/>
+							</Card.Actions>
+							<Card.Title title="Vehicle Information" />
+							<Card.Content>
+								{columns.map((column) => (
+									<Paragraph key={index + column.selector}>
+										{column.name}: {vehicle[column.selector]}
+									</Paragraph>
+								))}
+							</Card.Content>
+						
+						</Card>
+					))
+}
 		</>
 				
 		);
@@ -73,9 +71,7 @@ const ProfileVehicleCard = ({ vehicles, navigation }) => {
 				<IconButton
 					icon="plus"
 					size={30}
-					onPress={() => {
-						navigation.navigate('AddVehicle');
-					}}
+					onPress={handleModalOpen}
 				/>
 				<Text>Add Vehicle</Text>
 			</View>

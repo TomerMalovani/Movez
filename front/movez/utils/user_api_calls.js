@@ -35,10 +35,14 @@ export const login = async (username, password) => {
 export const getProfile = async (token) => {
     try {
         // console.log("token",token)
-        const res =  await getRequest(`${URL}/`, token)
-        console.log("res",res)
-        return res
+		const res = await getRequest(`${URL}/users`, token)
+		if (res.user){
+			console.log("res", res)
+			return res.user
+		}else throw new Error(res.message)
+      
     } catch (error) {
         console.log(error)
+		throw new Error(error)
     }
 }

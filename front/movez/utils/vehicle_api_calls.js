@@ -1,6 +1,6 @@
 const axios = require('axios');
 import { URL } from './consts'
-import { getRequest, postRequest } from './api_calls'
+import { deleteRequest, getRequest, postRequest } from './api_calls'
 
 export const getAllVehicles = async (token) => {
 	try{
@@ -9,8 +9,7 @@ export const getAllVehicles = async (token) => {
 		if (data.message !== "success") {
 			throw new Error(data.message)
 		}
-		console.log(data.vehicles)
-		return data
+		return data.vehicles
 	}catch(err){
 		console.log(err)
 		throw new Error(err)
@@ -22,12 +21,24 @@ export const getAllVehicles = async (token) => {
 export const createVehicle = async (token, vehicle) => {
 
 	const url = `${URL}/vehicle_info/`
-	const body = {
-		...vehicle
-	}
+
 	try {
-		const response = await postRequest(url, body, token)
-		console.log(response)
+		const response = await postRequest(url, vehicle, token)
+		if (response.status !== 201)
+			throw new Error(response.message)
+		
+		return response.vehicleInfo
+	} catch (error) {
+		console.log(error)
+		throw new Error(error)
+	}
+}
+
+export const deleteVehicle = async (token, vehicleId) => {
+	const url = `${URL}/vehicle_info/?uuid=${vehicleId}`
+	try {
+		const response = await deleteRequest(url, token)
+		console.log("car delete",response)
 		return response.data
 	} catch (error) {
 		console.log(error)

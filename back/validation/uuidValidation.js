@@ -13,6 +13,16 @@ const uuIDValidation = async (req, res, next) => {
     }
 }
 
+const uuIDVehicleValidation = async (req, res, next) => {
+	try {
+		await uuidSchema.validate({ uuid: req.query.uuid });
+		next();
+	} catch (error) {
+		res.status(400).json({ message: error.message });
+	}
+}
+
 module.exports = {
-    uuIDValidation
+    uuIDValidation,
+	uuIDVehicleValidation
 }

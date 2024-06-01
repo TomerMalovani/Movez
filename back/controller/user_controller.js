@@ -4,6 +4,23 @@ const User  = require('../models/index').Users
 dotenv = require('dotenv')
 dotenv.config()
 
+const getUser = async (req, res) => {
+	const uuid = req.userId;
+	try {
+		const user = await User.findOne({ where: { uuid }, attributes: { exclude: ['password', 'salt', 'token', 'token_exp'] }});
+		if (user) {
+			res.status(200).json({ message: "User found", user: user });
+		}
+		else {
+			res.status(404).json({ message: "User not found" });
+		}
+	}
+	catch (error) {
+		console.log(error);
+		res.status(500).json({ message: "Internal Server Error", error: error.message });
+	}
+}
+
 const register = async (req, res) => {
     const { username, email, password } = req.body;
     try {
@@ -59,5 +76,6 @@ const login = async(req,res)=>{
 
 module.exports = {
     register,
-    login
+    login,
+	getUser
 }

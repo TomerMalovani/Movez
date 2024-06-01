@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {uuIDValidation} = require('../validation/uuidValidation');
+const { uuIDValidation, uuIDVehicleValidation } = require('../validation/uuidValidation');
 const {vehicleInfoPostValidation, validateUpdateVehicleInfo} = require('../validation/vehicleInfo_validation');
 
 const {
@@ -13,9 +13,9 @@ const {
 router.get('/user/', uuIDValidation, getVehiclesByMoverId);
 
 router.route('/').post(vehicleInfoPostValidation, createVehicleInfo)
-.get(uuIDValidation, getVehicleInfo)
-.patch(uuIDValidation, validateUpdateVehicleInfo, updateVehicleInfo)
-.delete(uuIDValidation, deleteVehicleInfo)
+	.get(uuIDVehicleValidation, getVehicleInfo)
+	.patch(uuIDVehicleValidation, validateUpdateVehicleInfo, updateVehicleInfo)
+	.delete(uuIDVehicleValidation, deleteVehicleInfo)
 
 
 module.exports = router;

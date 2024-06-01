@@ -72,7 +72,7 @@ const TokenProvider = ({ children }) => {
     }
 
     else return (
-        <TokenContext.Provider value={{ token, removeToken,updateToken,user,setUser }}>
+        <TokenContext.Provider value={{ token, removeToken,updateToken,user,setUser,loading,setLoading }}>
             {children}
         </TokenContext.Provider>
     );

@@ -1,7 +1,7 @@
 const vehicleInfo = require("../models/index").VehicleInfo
 
 const getVehicleInfo = async(req,res)=>{
-    const vehicleID = req.userId
+	const vehicleID = req.query.uuid
     try {
     const vehicleInformation = await vehicleInfo.findByPk(vehicleID)
     if(!vehicleInformation){

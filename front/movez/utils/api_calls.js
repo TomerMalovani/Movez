@@ -28,3 +28,18 @@ export const getRequest = async (url,token) => {
         return error.response.data
     }
 }
+
+export const deleteRequest = async (url,token) => {
+	try {
+		headers = {
+			'Authorization': token
+		}
+		const response = await axios.delete(url , {headers})
+		if (response.status !== 200)
+			throw new Error(response.message)
+		return response.data
+	} catch (error) {
+		throw new Error(error.response.data) 
+
+	}
+}
