@@ -17,6 +17,7 @@ import { MD3LightTheme as DefaultTheme,PaperProvider } from 'react-native-paper'
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import  AddVehicle  from './screens/AddVehicle';
 import UserVehicles from './screens/UserVehicles';
+import SingleMoveRequest from './screens/SingleMoveRequest';
 
   
 const Drawer = createDrawerNavigator();
@@ -54,8 +55,8 @@ function DrawerComponent(props) {
      
 :
 <>
-<DrawerItem label="Login" onPress={() => props.navigation.navigate('Login')} />
-          <DrawerItem label="Register" onPress={() => props.navigation.navigate('Register')} />
+		<DrawerItem label="Login" onPress={() => props.navigation.navigate('Login')} />
+        <DrawerItem label="Register" onPress={() => props.navigation.navigate('Register')} />
 </>
 }
 </DrawerContentScrollView>
@@ -66,17 +67,15 @@ function DrawerComponent(props) {
 const LoggedInRouths = () => {
 	return (
 	
-			<Drawer.Navigator drawerContent={props => <DrawerComponent {...props} />}>
+		<Drawer.Navigator screenOptions={{ headerTitle:"" }}  drawerContent={props => <DrawerComponent {...props} />}>
 				<Drawer.Screen name="Home" component={HomePage} />
 				<Drawer.Screen name="Profile" component={ProfilePage} />
 				<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
-			<Drawer.Screen name="MyActivity" component={MyActivity} />
-
+				<Drawer.Screen name="MyActivity" component={MyActivity} />
 				<Drawer.Screen name="My Vehicles" component={UserVehicles} />
-			<Drawer.Screen name="MovesRequested" component={MovesRequested} />
-			<Drawer.Screen name="MovesProvided" component={MovesProvided} />
-
-
+				<Drawer.Screen name="MovesRequested" component={MovesRequested} />
+				<Drawer.Screen name="MovesProvided" component={MovesProvided} />
+				<Drawer.Screen name="SingleMoveRequest" component={SingleMoveRequest} />
 		
 			
 			</Drawer.Navigator>

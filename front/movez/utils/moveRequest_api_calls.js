@@ -39,3 +39,18 @@ export const showRequestedMoves = async (token) => {
         throw error;
     }
 };
+
+export const showSingleMoveRequestItems = async (token, moveRequestId) => {
+	try {
+		const url = `${URL}/moverequestitems/request?uuid=${moveRequestId}`
+		const response = await getRequest(url,token)
+		console.log("response", response)
+		if (response.message !== "success") {
+			throw new Error(response.message)
+		}
+		return response.moveRequestItems;
+	} catch (error) {
+		console.error('Error fetching move request items:', error);
+		throw error;
+	}
+}

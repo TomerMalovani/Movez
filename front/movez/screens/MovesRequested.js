@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { Text, Card, Title, Paragraph } from 'react-native-paper';
+import { Text, Card, Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { showRequestedMoves } from '../utils/moveRequest_api_calls';
 import { TokenContext } from '../tokenContext';
 
-const MovesRequested = () => {
+const MovesRequested = ({ navigation }) => {
     const [moveRequests, setMoveRequests] = useState([]);
     const [loading, setLoading] = useState(true);
     const { token } = useContext(TokenContext);
@@ -12,7 +12,7 @@ const MovesRequested = () => {
     const fetchMoveRequests = async () => {
         try {
             const data = await showRequestedMoves(token);
-            console.log("API Response:", data); // Log API response for debugging
+            console.log("test", data); // Log API response for debugging
             if (data && Array.isArray(data)) {
                 setMoveRequests(data);
             } else {
@@ -24,6 +24,12 @@ const MovesRequested = () => {
             setLoading(false); // Ensure loading is set to false after request completes
         }
     };
+
+	const handleMoveRequestClick = (item) => {
+		navigation.navigate('SingleMoveRequest', {
+			moveRequest:item
+		});
+	}
 
     useEffect(() => {
         fetchMoveRequests();
@@ -39,6 +45,10 @@ const MovesRequested = () => {
                 <FlatList
                     data={moveRequests}
                     renderItem={({ item }) => (
+						<TouchableRipple
+							onPress={() => {
+								handleMoveRequestClick(item)
+							}}>
                         <Card style={styles.card}>
                             <Card.Content>
                                 <Title>{item.moveStatus}</Title>
@@ -47,6 +57,7 @@ const MovesRequested = () => {
                                 <Paragraph>{`To: ${item.toAddress}`}</Paragraph>
                             </Card.Content>
                         </Card>
+						</TouchableRipple>
                     )}
                     keyExtractor={item => item.uuid}
                     contentContainerStyle={styles.list}

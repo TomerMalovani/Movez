@@ -7,7 +7,8 @@ const {
     getMoveRequestItem,
     createMoveRequestItem,
     updateMoveRequestItem,
-    deleteMoveRequestItem
+    deleteMoveRequestItem,
+	getMoveRequestItems
 } = require("../controller/move_requestItem")
 
 
@@ -16,4 +17,5 @@ get(uuIDValidation, getMoveRequestItem).
 patch(uuIDValidation, validateUpdateMoveRequestItem, updateMoveRequestItem).
 delete(uuIDValidation, deleteMoveRequestItem)
 
+router.get('/request', getMoveRequestItems)
 module.exports = router;

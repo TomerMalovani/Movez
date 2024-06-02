@@ -15,6 +15,20 @@ const getMoveRequestItem = async (req, res) => {
     }
 }
 
+const getMoveRequestItems = async (req, res) => {
+	const moveRequestID = req.query.uuid
+	try{
+		const result = await MoveRequestItem.findAll({where:{MoveRequestID:moveRequestID}})
+		if(result){
+			res.status(200).json({message:"success", moveRequestItems:result})
+		}else{
+			res.status(404).json({message:`No Move Request Items with ID = ${moveRequestID} found`})
+		}
+	}catch(error){
+		res.status(500).json({message:"Internal Server error", error:error.message})
+	}
+}
+
 const createMoveRequestItem = async (req, res) => {
     const { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions} = req.body
     try {
@@ -76,5 +90,6 @@ module.exports = {
     getMoveRequestItem,
     createMoveRequestItem,
     updateMoveRequestItem,
-    deleteMoveRequestItem
+    deleteMoveRequestItem,
+	getMoveRequestItems
 }

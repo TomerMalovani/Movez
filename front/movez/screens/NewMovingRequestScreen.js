@@ -5,7 +5,7 @@ import AddItemsForm from '../Components/AddItemsForm';
 import { createNewMoveRequest } from '../utils/moveRequest_api_calls';
 import { TokenContext } from '../tokenContext';
 
-const NewMovingRequestScreen = () => {
+const NewMovingRequestScreen = ({ navigation }) => {
     const [locationfrom, setLocationTo] = useState(undefined);
     const [locationto, setLocationFrom] = useState(undefined);
     const [items, setItems] = useState([])
@@ -29,7 +29,7 @@ const NewMovingRequestScreen = () => {
             const res = await createNewMoveRequest(token,body)
             if(res.status===201){
                 console.log("res",res)
-
+				navigation.navigate('MovesRequested')
             }else {
                 console.log(res)
                 throw new Error(res.message)}

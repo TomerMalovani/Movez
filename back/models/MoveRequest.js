@@ -83,11 +83,30 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true
       }
     },
-  }, {
+	distance: {
+		type: DataTypes.DECIMAL,
+		allowNull: true,
+		validate: {
+			isDecimal: true
+		}
+
+  }}
+  , {
     sequelize,
     modelName: 'MoveRequest',
     tableName: 'MoveRequest'
   });
+
+	MoveRequest.beforeCreate(async (moveRequest) => {
+		const distance = await sequelize.query(
+			`SELECT ST_DistanceSphere(ST_GeomFromText('POINT(${moveRequest.moveFromCoor.coordinates[0]} ${moveRequest.moveFromCoor.coordinates[1]})'), ST_GeomFromText('POINT(${moveRequest.moveToCoor.coordinates[0]} ${moveRequest.moveToCoor.coordinates[1]})'))`
+		);
+		console.log("4447", distance[0][0].st_distancesphere);
+		moveRequest.distance = distance[0][0].st_distancesphere;
+
+
+	});
+
   return MoveRequest;
 };
 

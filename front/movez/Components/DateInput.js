@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, TextInput } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { View } from 'react-native';
 
 export default function DateInput({dateState}) {
 
@@ -14,7 +15,7 @@ export default function DateInput({dateState}) {
   };
 
   return (
-    <React.Fragment>
+    <View style={{flex:1}}>
       <Button onPress={() => setShow(true)}>Select date</Button>
       <TextInput label="Date" value={moveDate.toDateString()} editable={false} />
       {show && (
@@ -25,6 +26,6 @@ export default function DateInput({dateState}) {
           onChange={onChange}
         />
       )}
-    </React.Fragment>
+	  </View>
   );
 }

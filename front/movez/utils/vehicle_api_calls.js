@@ -26,8 +26,9 @@ export const createVehicle = async (token, vehicle) => {
 		const response = await postRequest(url, vehicle, token)
 		if (response.status !== 201)
 			throw new Error(response.message)
-		
-		return response.vehicleInfo
+		console.log("vehicleInfo", response.data)
+
+		return response.data.vehicleInfo
 	} catch (error) {
 		console.log(error)
 		throw new Error(error)

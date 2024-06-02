@@ -4,3 +4,5 @@
 ./front/movez/node_modules
 ./front/movez/package-lock.json
 ./front/movez/config/config.js
+./postgres/
+postgres

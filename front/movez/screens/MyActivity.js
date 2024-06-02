@@ -1,15 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Button, Text, Provider as PaperProvider } from 'react-native-paper';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MovesRequested from './MovesRequested';
-import MovesProvided from './MovesProvided';
-
-const Stack = createNativeStackNavigator();
+import { Button, Text } from 'react-native-paper';
 
 const MyActivity = ({ navigation }) => {
     return (
-        <PaperProvider>
             <View style={styles.container}>
                 <Text style={styles.title}>My Activity</Text>
                 <View style={styles.buttonContainer}>
@@ -28,12 +22,9 @@ const MyActivity = ({ navigation }) => {
                         Moves Provided
                     </Button>
                 </View>
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="MovesRequested" component={MovesRequested} />
-                    <Stack.Screen name="MovesProvided" component={MovesProvided} />
-                </Stack.Navigator>
+          
             </View>
-        </PaperProvider>
+     
     );
 };
 
