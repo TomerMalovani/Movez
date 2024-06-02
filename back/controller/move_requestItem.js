@@ -85,11 +85,34 @@ const deleteMoveRequestItem = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error', error: error.message })
     }
 }
+function calculateVolume(item){
+    return item.height * item.depth * item.width;
+    }
+
+    const allPermutationsOfItem = (item)=>{
+        return [
+    
+            {height: item.height, width: item.width, depth: item.depth},
+    
+            {height: item.height, width: item.depth, depth: item.width},
+    
+            {height: item.width, width: item.height, depth: item.depth},
+    
+            {height: item.width, width: item.depth, depth: item.height},
+    
+            {height: item.depth, width: item.height, depth: item.width},
+    
+            {height: item.depth, width: item.width, depth: item.height}
+    
+        ]
+    }
 
 module.exports = {
     getMoveRequestItem,
     createMoveRequestItem,
     updateMoveRequestItem,
     deleteMoveRequestItem,
-	getMoveRequestItems
+	getMoveRequestItems,
+    calculateVolume,
+    allPermutationsOfItem
 }
