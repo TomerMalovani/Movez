@@ -1,5 +1,7 @@
 const moveRequest = require("../models/index").MoveRequest
 const moveRequestItem = require("../models/index").MoveRequestItems
+const  {calculateVolume, allPermutationsOfItem} = require('../controller/move_requestItem');
+const VehicleInfo = require("../models/VehicleInfo");
 
 const getMoveRequestsViaUser = async (req,res) =>{
     const userId = req.userId
@@ -110,6 +112,72 @@ const deleteMoveRequest = async(req,res) =>{
     }
 }
 
+const isThereMatchBetweenMoveRequestToVehicle = (itemsArr, vehicleHeight,vehicleWidth,vehicleDepth ) =>{
+    itemsArr.sort((a,b)=> {
+        return calculateVolume(b) - calculateVolume(a);
+     });
+    let itemsArrLength = itemsArr.length;
+    let freeSpace =  { 
+        height: vehicleHeight,
+        width: vehicleWidth,
+        depth: vehicleDepth
+    }
+   for(let i =0; i< itemsArrLength ;i++)
+    {
+       let isItemFits = false;
+       let permutations = allPermutationsOfItem(itemsArr[i]);
+       let permutationsLength = permutations.length;
+       for(let j =0 ; j< permutationsLength; j++)
+        {
+            let permutation = permutations[j];
+           if(permutation.height <= freeSpace.height && permutation.width <= freeSpace.width && permutation.depth <= freeSpace.depth)
+            {
+                freeSpace.height -= permutation.height;
+                freeSpace.width -= permutation.width;
+                freeSpace.depth -= permutation.depth;
+                isItemFits = true;
+                break;
+            }
+        }
+        if(!isItemFits)
+            return false;
+    }
+    return true;
+   
+}
+
+getAdjustedMoveRequests = async (req,res) =>{
+    const mover_id = req.query.moverId;
+    try{
+        const moverVehicle = await VehicleInfo.find({where: {moverId: mover_id}});
+        const moveRequsts = await moveRequest.findAll({where: {moveStatus: "pending"}});
+
+        if(moveRequests.length ==0)
+           return res.status(404).json({message: 'there are no pending move requests'});
+        if(!moverVehicle)
+            return res.status(404).json({message: 'mover id does not exists'});
+        const adjustedmoveRequests = [];
+        for(moveRequest in moveRequests){
+            const requestItems = await moveRequestItem.findAll({ where: { MoveRequestID: moveRequest.uuid } });
+            if(!Array.isArray(requestItems)){
+               return res.status(404).json({ message: 'MoveRequestItems not found' });
+            }
+            if(isThereMatchBetweenMoveRequestToVehicle(requestItems, moverVehicle.Height, moverVehicle.Width, moverVehicle.Depth))
+                {
+                    adjustedmoveRequests.push(moveRequest);
+
+                }
+
+    }
+    if(adjustedmoveRequests.length !=0)
+    return res.status(200).json({message: 'matching move requests were found', adjustedmoveRequests});
+   return res.status(200).json({message: 'there are no matching mover requests right now'});
+}
+    catch(error)
+    {
+        res.status(500).json({message: 'Internal Server Error', error: error.message});
+    }
+}
 module.exports = {
     getMoveRequest,
     createMoveRequest,
