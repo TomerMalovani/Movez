@@ -1,15 +1,14 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View} from 'react-native';
-import { Button, Card, Icon, IconButton, Surface, Text, MD2Colors, Chip,ActivityIndicator } from 'react-native-paper';
+import { Button, Card, Icon, IconButton, DataTable, Surface, Text, MD2Colors, Chip,ActivityIndicator } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
 import { showSingleMoveRequestItems } from '../utils/moveRequest_api_calls';
-import MapView, { Marker } from 'react-native-maps';
+import { Marker } from 'react-native-maps';
 import CustomMapView from '../Components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
 import AcordionMoreInfo from '../Components/AcordionMoreInfo';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { DataTable } from 'react-native-paper';
 
 const SingleMoveRequest = ({ route, navigation }) => {
 	const [items, setItems] = useState([]);
@@ -27,8 +26,6 @@ const SingleMoveRequest = ({ route, navigation }) => {
 		
 		setIsLoaded(true)
 		const data = await showSingleMoveRequestItems(token, moveRequest.uuid)
-
-			console.log("Items", data)
 		setItems(data)
 		setIsLoaded(false)
 		}catch(e){
@@ -50,7 +47,7 @@ const SingleMoveRequest = ({ route, navigation }) => {
 		{title: 'Depth', value: 'Depth'},
 		{title: 'Height', value: 'Height'},
 		{title: 'Width', value: 'Width'},
-		{title: 'Weight', value: 'Weight'},
+		{title: 'Weight', value: 'Weight'}
 
 
 	]
@@ -72,8 +69,9 @@ const SingleMoveRequest = ({ route, navigation }) => {
 
 	return (
 		<Surface style={{height:"100%"}}>
-			<Text variant="bodyMedium" style={{textAlign:"center"}}> {moveRequest.fromAddress} </Text>
-			<Text variant="bodyMedium" style={{textAlign:"center"}}> {moveRequest.toAddress} </Text>
+			
+			<Text variant="bodyMedium" style={{textAlign:"center", borderWidth:1}}>From: {moveRequest.fromAddress} </Text>
+			<Text variant="bodyMedium" style={{textAlign:"center", borderWidth:1}}>To: {moveRequest.toAddress} </Text>
 
 			<View style={{ height: "50%" }}>
 				<CustomMapView region={
@@ -110,7 +108,7 @@ const SingleMoveRequest = ({ route, navigation }) => {
 			
 				{
 					moveRequestInfo.map((item, index) => (
-						<Chip icon={item.icon} onPress={() => console.log('Pressed')}>{item.title} : {item.info}</Chip>
+						<Chip mode="outlined" icon={item.icon}>{item.title} : {item.info}</Chip>
 
 						// <View style={{ width: '100%',justifyContent:"center",padding:'5%', marginBottom: 5 }} key={index} >
 						// 	<Card>

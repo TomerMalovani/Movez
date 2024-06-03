@@ -1,12 +1,16 @@
-import React,{useContext} from 'react';
+import React,{useContext, useEffect} from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button,Text } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
+import { ToastContext } from '../toastContext';
 
 
 
 function HomePage({navigation}) {
     const {user} = useContext(TokenContext)
+	const { showError, showSuccess } = useContext(ToastContext)
+
+
 
 
     
@@ -20,6 +24,8 @@ function HomePage({navigation}) {
 
 				onPress={() => navigation.navigate('NewMovingRequestScreen')}
 			>New Moving Request</Button>
+
+	
 		</View>
     );
 }

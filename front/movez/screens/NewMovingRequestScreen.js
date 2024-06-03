@@ -4,6 +4,7 @@ import AddMovingRequest from '../Components/AddMovingRequest';
 import AddItemsForm from '../Components/AddItemsForm';
 import { createNewMoveRequest } from '../utils/moveRequest_api_calls';
 import { TokenContext } from '../tokenContext';
+import { ToastContext } from '../toastContext';
 
 const NewMovingRequestScreen = ({ navigation }) => {
     const [locationfrom, setLocationTo] = useState(undefined);
@@ -11,12 +12,9 @@ const NewMovingRequestScreen = ({ navigation }) => {
     const [items, setItems] = useState([])
     const [moveDate, setMoveDate] = useState(new Date());
     const {token} = useContext(TokenContext)
+	const { showError, showSuccess } = useContext(ToastContext)
 
     const handleCreateNewRequest = async () => {
-        console.log("Location From: ", locationfrom);
-        console.log("Location To: ", locationto);
-        console.log("Items: ", items);
-        console.log("Move Date: ", moveDate);
         const body = {
             moveDate: moveDate,
             moveFromCoor: {type:"Point", coordinates: [locationfrom.coor.longitude,locationfrom.coor.latitude]},
@@ -26,15 +24,14 @@ const NewMovingRequestScreen = ({ navigation }) => {
             items: items
         }
         try{
-            const res = await createNewMoveRequest(token,body)
-            if(res.status===201){
-                console.log("res",res)
-				navigation.navigate('MovesRequested')
-            }else {
-                console.log(res)
-                throw new Error(res.message)}
+            await createNewMoveRequest(token,body)
+			showSuccess("Request created successfully")
+			navigation.navigate('MovesRequested')
+          
         }catch(err){
             console.log("Error: ",err) 
+			showError(err.toString())
+
         }
     };
 

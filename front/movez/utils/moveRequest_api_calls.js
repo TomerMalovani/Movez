@@ -20,9 +20,10 @@ export const createNewMoveRequest = async (token,body) => {
             items: body.items
         }
         const response = await postRequest(url,reqBody,token)
+		if(response.status !== 201) throw new Error(response.message)
         return response
     }catch(error){
-        console.log("ERROR IN POST",error)
+		throw error
     }
 
  

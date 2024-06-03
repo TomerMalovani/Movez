@@ -18,6 +18,7 @@ import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import  AddVehicle  from './screens/AddVehicle';
 import UserVehicles from './screens/UserVehicles';
 import SingleMoveRequest from './screens/SingleMoveRequest';
+import { ToastProvider } from './toastContext';
 
   
 const Drawer = createDrawerNavigator();
@@ -121,8 +122,11 @@ export default function App() {
 
   return (
     <TokenProvider>
+		
        <PaperProvider theme={theme}>
+			  <ToastProvider>
 			  <AuthRouths/>
+			  </ToastProvider>
       </PaperProvider>
     </TokenProvider>
   );

@@ -3,28 +3,31 @@ import { View, StyleSheet } from 'react-native';
 import {Button,TextInput,Text } from 'react-native-paper';
 import {login,getProfile } from '../utils/user_api_calls';
 import {TokenContext} from '../tokenContext';
+import { ToastContext } from '../toastContext';
 const LoginScreen = ({navigation}) => {
     // use TokenContext
     const { token, updateToken,setUser,user } = useContext(TokenContext);
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
+	const { showError, showSuccess } = useContext(ToastContext)
 
     const handleLogin = async () => {
         try{
             if (username && password) {
-                const res = await  login(username, password)
-                console.log(res.data)
-                if (res.status !== 200 ) throw new Error(res.data.message)
-                console.log("user token check " , res.data.user)
-                const data = {username: res.data.user.username,token:res.data.user.token}
+                const res = await login(username, password)
+				
+                const data = {username: res.user.username,token:res.user.token}
                 await updateToken(data)
+				console.log("res!!", res)
+				showSuccess("Welcome back! " + res.user.username  )
                 navigation.navigate('Home')
             
             
              }
         }
         catch(err){
-            console.log(err)
+			console.log("test", err)
+			showError(err.toString())
         }   
         
     };

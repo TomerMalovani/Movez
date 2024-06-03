@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, StyleSheet, TouchableHighlight, ScrollView } from 'react-native';
-import { TextInput, Button,Modal, Portal, Text,Card } from 'react-native-paper';
+
+import { TextInput, Button,Modal, Portal, Text,Card, Snackbar, HelperText } from 'react-native-paper';
 import {IconButton, MD3Colors } from 'react-native-paper';
+import { ToastContext } from '../toastContext';
 
 
 
@@ -11,6 +13,8 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [newItem, setNewItem] = useState({});
     const [editedItem, setEditedItem] = useState(undefined);
+	const { showError, showSuccess } = useContext(ToastContext)
+	const [errors, setErrors] = useState({})
 
     const inputs = [
         //  ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions
@@ -23,6 +27,12 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
         { name: 'SpecialInstructions', checkbox:true, type: 'default', placeholder: 'Special Instructions' }
     ]
 
+
+	const hasErrors = (field) => {
+		console.log("errors",errors[field])
+		return errors[field]
+	};
+
     const handleSubmit = (item) => {
         setEditedItem(item);
     }
@@ -31,6 +41,7 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
     }
 
     const handleAddItem = (e) => {
+		try{
         // if quantity is not a number, return qunatity = 1
         if(isNaN(newItem.Quantity)){
             newItem.Quantity = 1;
@@ -40,10 +51,28 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
             newItem.SpecialInstructions = "None";
         }
 
+		// check if every key in inputs is in newItem
+		inputs.forEach(input => {
+			if (!newItem[input.name]) {
+				setErrors(prev => ({...prev, [input.name]: `${input.placeholder} is required`}))
+				throw new Error(`${input.placeholder} is required`)
+				
+			}else{
+				setErrors(prev => ({...prev, [input.name]: null}))
+			}
+		})
+
+
         setItems([...items, newItem]);
         setIsModalVisible(false);
         setEditedItem(undefined);
         setNewItem({});
+		showSuccess("Item added successfully")
+		}
+		catch(err){
+			console.log("Error: ",err)
+		
+		}
         
     };
 
@@ -58,6 +87,7 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
     const handleCancel = () => {
         if(editedItem){
             setItems([...items, editedItem]);
+			setEditedItem(undefined);
         }else{
             setNewItem({});
         }
@@ -115,21 +145,29 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
                 <Text style={{textAlign:'center',fontSize:20,marginBottom:10}}>Add Item</Text>
                 {inputs.map((input, index) => (
                         
-              
+              <>
                     <TextInput
                         label={input.placeholder}
                         keyboardType ={input.type}
-                        value = {newItem[input.name] || ''}
+						value={newItem[input.name] || ''}
                         onChangeText ={(e)=>handleChange(e,input)}
-                        key={index+"input"}
-                        mode="outlined"
+                        key={index+" " + input.name}
+                        mode="flat"
                         />
+						
+						
+					
+						<HelperText type="error" visible={ hasErrors(input.name)}>
+								{errors[input.name]}
+							</HelperText>
+					</>
                     ))}
                     <View style={{justifyContent:'space-evenly',marginTop:20,flexDirection:'row'}} >
                <Button buttonColor='green'  mode="contained" onPress={handleAddItem}>Add</Button>
 
                <Button buttonColor='red' mode="contained" onPress={handleCancel}>Cancel</Button>
                     </View>
+		
             </Modal>
             </Portal>
             <View style={{justifyContent:'center',alignItems:'center'}}>

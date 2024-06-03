@@ -5,32 +5,28 @@ import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text} from 'react-native-paper';
 import { register } from '../utils/user_api_calls';
 import {TokenContext} from '../tokenContext';
+import { ToastContext } from '../toastContext';
 const RegisterScreen = ({navigation}) => {
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const { updateToken} = useContext(TokenContext);
+	const {showError, showSuccess} = useContext(ToastContext)
 
     const handleRegister = async () => {
         try{
         if (username && email && password) {
             const response = await register(username, email, password   );
-            if(response.status === 201){
-                const data = {username: response.data.user.username,token:response.data.user.token}
-                await updateToken(data)
-
-                console.log("post reg",response)
-                navigation.navigate('Home')
-            }else{
-                throw new Error()
-            }
-          
-
-            
-        }
-    }catch(err){
+            const data = {username: response.user.username,token:response.user.token}
+            await updateToken(data)
+            console.log("post reg",response)
+			showSuccess("Welcome! " + response.user.username)
+            navigation.navigate('Home')  
+       		 }
+    	}catch(err){
         console.log(err.message)
-    }
+			showError(err.toString())
+    	}
       
     };
 

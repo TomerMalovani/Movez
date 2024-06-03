@@ -3,13 +3,14 @@
 import axios from 'axios'
 
 export const postRequest = async (url, body,token) => {
-    console.log("before send token", token)
+    console.log("before send token", token,url)
     try {
         headers = {
             'authorization': token,
           
         }
         let response = await axios.post(url,body, {headers})   
+		console.log("response",response)
         return response
     } catch (error) {
         return error.response

@@ -13,9 +13,11 @@ export const register = async (username, email, password) => {
         password
     }
     try {
-        return postRequest(`${URL}/users/register`, body)
+		const respone = await postRequest(`${URL}/users/register`, body)
+		if (respone.status !== 201) throw new Error(respone.data.message)
+			return respone.data
     } catch (error) {
-        console.log(error)
+		throw error
     }
 }
 
@@ -25,10 +27,12 @@ export const login = async (username, password) => {
         password
     }
     try {
-        return await postRequest(`${URL}/users/login`, body)
+     const respone = await  postRequest(`${URL}/users/login`, body)
 
+		if (respone.status !== 200) throw new Error(respone.data.message)
+	return respone.data
     } catch (error) {
-        console.log(error)
+		throw error
     }
 }
 
