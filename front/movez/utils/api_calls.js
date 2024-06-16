@@ -30,17 +30,23 @@ export const getRequest = async (url,token) => {
     }
 }
 
-export const deleteRequest = async (url,token) => {
-	try {
-		headers = {
-			'Authorization': token
-		}
-		const response = await axios.delete(url , {headers})
-		if (response.status !== 200)
-			throw new Error(response.message)
-		return response.data
-	} catch (error) {
-		throw new Error(error.response.data) 
+export const deleteRequest = async (url, token) => {
+    try {
+        const headers = {
+            'Authorization': token
+        };
 
-	}
-}
+        const response = await axios.delete(url, { headers });
+
+        if (response.status !== 200) {
+            console.error(`Error: ${response.status} - ${response.statusText}`);
+            throw new Error(response.statusText); // Throw an error with the status text
+        }
+
+        console.log(`DELETE request to ${url} successful.`);
+        return response.data;
+    } catch (error) {
+        console.error('Error in deleteRequest:', error);
+        throw error; // Re-throw the error to propagate it further
+    }
+};

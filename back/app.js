@@ -21,6 +21,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
 // middleware that skip only login and register
 app.use(function(req, res, next) {
   if (req.url === '/users/login' || req.url === '/users/register') {

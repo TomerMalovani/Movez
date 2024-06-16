@@ -1,4 +1,4 @@
-import { postRequest ,getRequest} from './api_calls'
+import { postRequest ,getRequest, deleteRequest} from './api_calls'
 import {URL} from './consts'
 
 // UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo,items
@@ -37,6 +37,18 @@ export const showRequestedMoves = async (token) => {
         return response;
     } catch (error) {
         console.error('Error fetching move requests via user:', error);
+        throw error;
+    }
+};
+
+export const deleteMoveRequest = async (token, uuid) => {
+    try {
+        const url = `${URL}/moverequests/?uuid=${uuid}`;
+        const response = await deleteRequest(url, token);
+        console.log(`Move request with UUID ${uuid} deleted successfully.`); // Logging success message
+        return response;
+    } catch (error) {
+        console.error(`Error deleting move request with UUID ${uuid}:`, error); // Logging error message
         throw error;
     }
 };
