@@ -1,4 +1,8 @@
+const { where } = require("sequelize")
+
 const priceProposal = require("../models/index").PriceProposal
+const User = require('../models/index').Users
+const MoveRequest = require('../models/index').MoveRequest
 
 const getPriceProposal = async(req,res) => {
     const pricePropsalID = req.query.uuid
@@ -77,9 +81,135 @@ const deletePriceProposal = async(req,res) => {
     }
 }
 
+const findMovingRequestProposals = async(req,res) => {
+	const requestID = req.params.requestID
+	try {
+		const result = await priceProposal.findAll({ where: { RequestID: requestID }})
+		// for every proposal, get the provider details from the Users table and add it to the result
+
+		const users = await User.findAll()
+		const usersMap = {}
+		users.forEach(user => {
+			usersMap[user.uuid] = user
+		})
+
+		result.forEach(proposal => {
+			const provider = usersMap[proposal.MoverID]
+			const {email,username} = provider
+			proposal.dataValues.provider = { email, username }
+		})
+
+		if(result){
+			res.status(200).json({message: "success", proposals: result})
+		}
+		else{
+			res.status(404).json({message: `No proposals found for Moving Request with ID = ${movingID}`})
+		}
+	} catch (error) {
+		console.log("error", error)
+		res.status(500).json({message: "Internal Server Error", error: error.message})
+	}
+}
+
+const findProposalByMoverAndRequest = async(req,res) => {
+	const moverID = req.params.moverID
+	const requestID = req.params.RequestID
+	try {
+		const result = await priceProposal.findAll({where: {MoverID: moverID, RequestID: requestID}})
+		if(result){
+			res.status(200).json({message: "success", proposals: result})
+		}
+		else{
+			res.status(404).json({message: `No proposals found for Mover with ID = ${moverID} and Request with ID = ${requestID}`})
+		}
+	} catch (error) {
+		console.log(error)
+		res.status(500).json({message: "Internal Server Error", error: error.message})
+	}
+}
+
+const getProviderPricePropasal = async (req, res) => {
+	const moverID = req.params.moverID;
+	try {
+		const result = await priceProposal.findAll({ where: { MoverID: moverID } });
+
+		for (const proposal of result) {
+			const request = await MoveRequest.findOne({ where: { uuid: proposal.RequestID } });
+			if (request) {
+				
+				proposal.dataValues.request = request;
+			}
+		}
+
+		if (result.length > 0) {
+			res.status(200).json({ message: "success", proposals: result });
+		} else {
+			res.status(404).json({ message: `No proposals found for Mover with ID = ${moverID}` });
+		}
+	} catch (error) {
+		res.status(500).json({ message: "Internal Server Error", error: error.message });
+	}
+};
+
+
+
+const moverAgreePriceProposal = async(req,res) => {
+	const priceProposalID = req.params.uuid
+	let newStatus;
+	try {
+		const currRequest = await priceProposal.findOne({where: {uuid: priceProposalID}})
+		if(currRequest.PriceStatus === "Pending"){
+		const result = await priceProposal.update({PriceStatus: "AcceptedByMover"}, {where: {uuid: priceProposalID}})
+		newStatus = "AcceptedByMover"
+	}else {
+			// if (currRequest.PriceStatus === "AcceptedByClient")
+			const result = await priceProposal.update({PriceStatus: "Accepted"}, {where: {uuid: priceProposalID}})
+			await MoveRequest.update({MoveStatus: "Accepted"}, {where: {uuid: currRequest.RequestID}})
+			newStatus = "Accepted"
+
+		}
+		if(result){
+			res.status(200).json({ message: "Price Proposal Accepted", newStatus: newStatus })
+		}
+		else{
+			res.status(404).json({message: `No Price Proposal with ID = ${priceProposalID} found`})
+		}
+	} catch (error) {
+		res.status(500).json({message: "Internal Server Error", error: error.message})
+	}
+}
+
+const clientAgreePriceProposal = async (req, res) => {
+	const priceProposalID = req.params.uuid
+	try {
+		const currRequest = await priceProposal.findOne({ where: { uuid: priceProposalID } })
+		if (currRequest.PriceStatus === "Pending") {
+			const result = await priceProposal.update({ PriceStatus: "AcceptedByClient" }, { where: { uuid: priceProposalID } })
+		} else {
+			// if (currRequest.PriceStatus === "AcceptedByClient")
+			const result = await priceProposal.update({ PriceStatus: "Accepted" }, { where: { uuid: priceProposalID } })
+			await MoveRequest.update({ MoveStatus: "Accepted" }, { where: { uuid: currRequest.RequestID } })
+
+		}
+		if (result) {
+			res.status(200).json({ message: "Price Proposal Accepted" })
+		}
+		else {
+			res.status(404).json({ message: `No Price Proposal with ID = ${priceProposalID} found` })
+		}
+	} catch (error) {
+		res.status(500).json({ message: "Internal Server Error", error: error.message })
+	}
+}
+
 module.exports = {
     getPriceProposal,
     createPriceProposal,
     updatePriceProposal,
-    deletePriceProposal
+    deletePriceProposal,
+	findMovingRequestProposals,
+	findProposalByMoverAndRequest,
+	getProviderPricePropasal,
+	clientAgreePriceProposal,
+	moverAgreePriceProposal
 }

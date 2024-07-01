@@ -17,7 +17,7 @@ const RegisterScreen = ({navigation}) => {
         try{
         if (username && email && password) {
             const response = await register(username, email, password   );
-            const data = {username: response.user.username,token:response.user.token}
+            const data = {username: response.user.username,token:response.user.token, uuid: response.user.uuid}
             await updateToken(data)
             console.log("post reg",response)
 			showSuccess("Welcome! " + response.user.username)

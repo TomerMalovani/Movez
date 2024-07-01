@@ -6,4 +6,6 @@ ENV POSTGRES_USER=movezdb
 ENV POSTGRES_PASSWORD=strongpassword
 ENV POSTGRES_DB=movez
 
-# docker run -p 5432:5432 -v D:/studying/sadna/postgres:/var/lib/postgresql/data postgis-preist
+# cd .\k8s\
+# docker build -t  postgis-preist .
+#docker run -p 5432:5432 -v D:/studying/sadna/postgres:/var/lib/postgresql/data postgis-preist

@@ -16,7 +16,7 @@ const LoginScreen = ({navigation}) => {
             if (username && password) {
                 const res = await login(username, password)
 				
-                const data = {username: res.user.username,token:res.user.token}
+				const data = { username: res.user.username, token: res.user.token, uuid: res.user.uuid }
                 await updateToken(data)
 				console.log("res!!", res)
 				showSuccess("Welcome back! " + res.user.username  )

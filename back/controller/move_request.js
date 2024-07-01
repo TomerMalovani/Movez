@@ -1,7 +1,56 @@
 const moveRequest = require("../models/index").MoveRequest
 const moveRequestItem = require("../models/index").MoveRequestItems
 const  {calculateVolume, allPermutationsOfItem} = require('../controller/move_requestItem');
+
+
 const VehicleInfo = require("../models/VehicleInfo");
+
+const searchRequest = async (req,res) => {
+	// given {lat ,lng} and radius find all move requests that are within the radius 
+	const userUUid = req.userId
+	const { lat, lng, radius } = req.body;
+	console.log("searchRequest", lat, lng)
+	try{
+
+		const [results, metadata] = await moveRequest.sequelize.query(`
+      SELECT 
+        "uuid", 
+        "UserID", 
+        "moveStatus", 
+        "moveDate", 
+        "moveTime", 
+        "moveFromCoor", 
+        "moveToCoor", 
+        "fromAddress", 
+        "toAddress", 
+        "distance", 
+        "createdAt", 
+        "updatedAt" 
+      FROM 
+        "MoveRequest" 
+      WHERE 
+        "UserID" != :userUUid AND
+     ST_DWithin(
+          "moveFromCoor", 
+          ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography,
+          :radius
+        );
+    `, {
+			replacements: { userUUid, lat, lng, radius }
+		});
+		console.log(results)
+		if (results){
+			res.status(200).json(results)
+		}else{
+			res.status(404).json({message: 'MoveRequest not found'})
+		}
+	}
+	catch(error){
+		console.log(error)
+		res.status(500).json({message: 'Internal Server Error', error: error.message})
+	}
+}
+
 
 const getMoveRequestsViaUser = async (req,res) =>{
     const userId = req.userId
@@ -182,4 +231,5 @@ module.exports = {
     getMoveRequest,
     createMoveRequest,
     updateMoveRequest,
-    deleteMoveRequest,getMoveRequestsViaUser}
+	deleteMoveRequest, getMoveRequestsViaUser, searchRequest
+}

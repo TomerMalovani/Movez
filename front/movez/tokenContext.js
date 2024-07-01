@@ -7,6 +7,7 @@ const TokenProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
+	const [myUuid, setMyUuid] = useState(null);
 
     const retrievingToken = async () => {
         try{
@@ -17,7 +18,7 @@ const TokenProvider = ({ children }) => {
             if(userToken){
             setToken(userToken.token)
             setUser(userToken.username)
-            
+			setMyUuid(userToken.uuid)
             }
             setLoading(false)
         }
@@ -45,7 +46,8 @@ const TokenProvider = ({ children }) => {
          
 
             setToken(newToken.token);
-            setUser(newToken.username)
+            setUser(newToken.username);
+			setMyUuid(newToken.uuid)
         }
         catch(e){
             console.log(e)
@@ -59,6 +61,7 @@ const TokenProvider = ({ children }) => {
             await _removeToken("token");
             setToken(undefined)
             setUser(undefined)
+			setMyUuid(undefined)
         }
         catch(e){
             console.log(e)
@@ -72,7 +75,7 @@ const TokenProvider = ({ children }) => {
     }
 
     else return (
-        <TokenContext.Provider value={{ token, removeToken,updateToken,user,setUser,loading,setLoading }}>
+        <TokenContext.Provider value={{ token, myUuid,removeToken,updateToken,user,setUser,loading,setLoading }}>
             {children}
         </TokenContext.Provider>
     );

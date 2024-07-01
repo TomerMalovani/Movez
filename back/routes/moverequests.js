@@ -8,13 +8,16 @@ const {
     createMoveRequest,
     updateMoveRequest,
     deleteMoveRequest,
-    getMoveRequestsViaUser
+    getMoveRequestsViaUser,
+	searchRequest
 } = require("../controller/move_request")
 
 router.route('/').post(moveRequestPostValidation, createMoveRequest)
 .get(uuIDValidation, getMoveRequest)
 .patch(uuIDValidation , validateUpdateMoveRequest, updateMoveRequest).
 delete(uuIDValidation ,deleteMoveRequest)
+
+router.post('/search',searchRequest)
 
 router.get('/user',getMoveRequestsViaUser)
 
