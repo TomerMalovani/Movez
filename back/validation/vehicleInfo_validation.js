@@ -7,7 +7,6 @@ const vehicleInfoSchema = yup.object({
     Depth: yup.number().required(),
     Width: yup.number().required(),
     Height: yup.number().required(),
-    PhotoUrl: yup.string().url()
 })
 
 const vehicleInfoUpdateSchema = yup.lazy((values) =>
@@ -17,7 +16,6 @@ const vehicleInfoUpdateSchema = yup.lazy((values) =>
         Depth: yup.number(),
         Width: yup.number(),
         Height: yup.number(),
-        PhotoUrl: yup.string().url()
     }).test({
         name: 'at-least-one-field',
         exclusive: true,
@@ -30,8 +28,7 @@ const vehicleInfoUpdateSchema = yup.lazy((values) =>
                     key === 'VehicleType' ||
                     key === 'Depth' ||
                     key === 'Width' ||
-                    key === 'Height' ||
-                    key === 'PhotoUrl'
+                    key === 'Height'
             ),
     })
 );
@@ -47,7 +44,10 @@ const vehicleInfoPostValidation = async (req, res, next) => {
 
 const validateUpdateVehicleInfo = async (req, res, next) => {
     try {
-        await vehicleInfoUpdateSchema.validate(req.body);
+        if(!req.file)
+        {
+            await vehicleInfoUpdateSchema.validate(req.body);
+        }
         next();
     } catch (error) {
         res.status(400).json({ message: error.message });

@@ -100,10 +100,38 @@ const deleteMoveRequestItem = async (req, res) => {
     }
 }
 
+const deleteMoveRequestPhoto = async (req, res) => {
+    const requestItemID = req.query.uuid;
+    try {
+        const item = await MoveRequestItem.findByPk(requestItemID);
+        if (!item) {
+            return res.status(404).json({ message: 'item not found' });
+        }
+        else if (item.PhotoUrl) {
+           await deletePhoto(item.PhotoUrl);
+        }
+        else {
+            return res.status(409).json({ message: 'No Item Photo found' });
+        }
+        const [affectedRows, updatedRows] = await User.update(
+            { PhotoUrl: '' },{ where: { uuid }, returning: true });
+            if(affectedRows > 0){
+                res.status(200).json({message: 'Item Photo deleted successfully', user: updatedRows[0]});
+            }
+            else{
+                res.status(500).json({message: 'Failed to delete Item Photo'});
+            }
+    }
+    catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+};
+
 module.exports = {
     getMoveRequestItem,
     createMoveRequestItem,
     updateMoveRequestItem,
     deleteMoveRequestItem,
 	getMoveRequestItems,
+    deleteMoveRequestPhoto
 }

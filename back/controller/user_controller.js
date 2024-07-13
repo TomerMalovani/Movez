@@ -80,6 +80,7 @@ const login = async(req,res)=>{
     }
 }
 
+//should replace later with an overload update not just photo
 const uploadProfilePhoto = async (req, res) => {
     const uuid = req.userId;
     let PhotoUrl = '';
@@ -89,7 +90,7 @@ const uploadProfilePhoto = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        else if (user.PhotoUrl) {
+        else if (user.PhotoUrl !== '') {
            PhotoUrl = await updatePhoto(req.file ,user.PhotoUrl);
         }
         else {

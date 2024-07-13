@@ -95,11 +95,39 @@ const getVehiclesByMoverId = async (req, res) => {
   }
 };
 
+const deletePhoto = async (req, res) => {
+  const vehicleID = req.query.uuid;
+  try {
+    const vehicle = await User.findOne({ where: { vehicleID } });
+    if (!vehicle) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    else if (vehicle.PhotoUrl) {
+      await deletePhoto(user.PhotoUrl);
+    }
+    else {
+      return res.status(409).json({ message: 'No Vehicle Photo found' });
+    }
+    const [affectedRows, updatedRows] = await User.update(
+      { PhotoUrl: '' }, { where: { uuid }, returning: true });
+    if (affectedRows > 0) {
+      res.status(200).json({ message: 'Vehicle Photo deleted successfully', user: updatedRows[0] });
+    }
+    else {
+      res.status(500).json({ message: 'Failed to delete Vehicle Photo' });
+    }
+  }
+  catch (error) {
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
 module.exports = {
     getVehicleInfo,
     createVehicleInfo,
     updateVehicleInfo,
     deleteVehicleInfo,
-    getVehiclesByMoverId
-};
+    getVehiclesByMoverId,
+    deletePhoto
+  };
 

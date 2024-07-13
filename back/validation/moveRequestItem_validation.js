@@ -46,7 +46,9 @@ const updateMoveRequestItemSchema = yup.lazy((values) =>
   );
 const validateUpdateMoveRequestItem = async (req, res, next) => {
     try {
+      if (!req.file) {
         await updateMoveRequestItemSchema.validate(req.body);
+      }
         next();
     } catch (error) {
         res.status(400).json({ message: error.message });
