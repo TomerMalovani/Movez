@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const { updatePhoto } = require("./photo_controller")
 const User  = require('../models/index').Users
 dotenv = require('dotenv')
 dotenv.config()
@@ -79,8 +80,67 @@ const login = async(req,res)=>{
     }
 }
 
+const uploadProfilePhoto = async (req, res) => {
+    const uuid = req.userId;
+    let PhotoUrl = '';
+    try{
+    if (req.file) {
+        const user = await User.findOne({ where: { uuid } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        else if (user.PhotoUrl) {
+           PhotoUrl = await updatePhoto(req.file ,user.PhotoUrl);
+        }
+        else {
+            PhotoUrl = await uploadPhoto(req.file);
+        }
+      }
+    const [affectedRows, updatedRows] = await User.update(
+        { PhotoUrl },{ where: { uuid }, returning: true });
+        if(affectedRows > 0){
+            res.status(201).json({message: 'Profile Photo uploaded successfully', user: updatedRows[0]});
+        }
+        else{
+            res.status(500).json({message: 'Failed to upload Profile Photo'});
+        }
+    }
+    catch(error){
+        res.status(500).json({message: "Internal Server Error", error: error.message})
+    }
+}
+
+const deleteProfilePhoto = async (req, res) => {
+    const uuid = req.userId;
+    try {
+        const user = await User.findOne({ where: { uuid } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        else if (user.PhotoUrl) {
+           await deletePhoto(user.PhotoUrl);
+        }
+        else {
+            return res.status(409).json({ message: 'No Profile Photo found' });
+        }
+        const [affectedRows, updatedRows] = await User.update(
+            { PhotoUrl: '' },{ where: { uuid }, returning: true });
+            if(affectedRows > 0){
+                res.status(200).json({message: 'Profile Photo deleted successfully', user: updatedRows[0]});
+            }
+            else{
+                res.status(500).json({message: 'Failed to delete Profile Photo'});
+            }
+    }
+    catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+}
+
 module.exports = {
     register,
     login,
-	getUser
+	getUser,
+    uploadProfilePhoto,
+    deleteProfilePhoto
 }

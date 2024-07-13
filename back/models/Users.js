@@ -71,6 +71,13 @@ module.exports = (sequelize, DataTypes) => {
           isDate: true,
           notEmpty: true
       }
+    },
+    PhotoUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+          isUrl: true
+      }
     }
   }, {
     sequelize,
