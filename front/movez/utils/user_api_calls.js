@@ -1,4 +1,4 @@
-import { postRequest ,getRequest} from './api_calls'
+import { postRequest ,getRequest, postPhotoRequest} from './api_calls'
 import {URL} from './consts'
 // accept env variables
 // import dotenv from 'dotenv'
@@ -48,5 +48,16 @@ export const getProfile = async (token) => {
     } catch (error) {
         console.log(error)
 		throw new Error(error)
+    }
+}
+
+export const uploadPhoto = async (token, photo) => {
+    try{
+        const res = await postPhotoRequest(`${URL}/users/photo`, photo, token);
+        if(res.status !== 201) throw new Error(res.message)
+        return res.data
+    }
+    catch(error){
+        throw error
     }
 }

@@ -11,7 +11,7 @@ router.post('/register', usersRegisterValidation, register);
 router.post('/login',usersLoginValidation, login);
 
 router.get('/', getUser )
-router.router('/photo').post(upload.single('photo'), uploadProfilePhoto)
+router.route('/photo').post(upload.single('photo'), uploadProfilePhoto)
 .put(photoValidation ,upload.single('photo'), uploadProfilePhoto)
 .delete(photoValidation, deleteProfilePhoto)
 

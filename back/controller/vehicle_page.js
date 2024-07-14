@@ -95,7 +95,7 @@ const getVehiclesByMoverId = async (req, res) => {
   }
 };
 
-const deletePhoto = async (req, res) => {
+const deleteVehiclePhoto = async (req, res) => {
   const vehicleID = req.query.uuid;
   try {
     const vehicle = await User.findOne({ where: { vehicleID } });
@@ -128,6 +128,6 @@ module.exports = {
     updateVehicleInfo,
     deleteVehicleInfo,
     getVehiclesByMoverId,
-    deletePhoto
+    deleteVehiclePhoto
   };
 

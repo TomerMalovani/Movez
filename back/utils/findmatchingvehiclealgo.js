@@ -13,7 +13,7 @@ const allPermutationsOfItem = (item)=> {
     ]
 }
 
-export const isThereMatchBetweenMoveRequestToVehicle = (itemsArr, vehicleHeight,vehicleWidth,vehicleDepth ) =>{
+const isThereMatchBetweenMoveRequestToVehicle = (itemsArr, vehicleHeight,vehicleWidth,vehicleDepth ) =>{
     itemsArr.sort((a,b)=> {
         return calculateVolume(b) - calculateVolume(a);
      });
@@ -47,3 +47,6 @@ export const isThereMatchBetweenMoveRequestToVehicle = (itemsArr, vehicleHeight,
    
 }
 
+module.exports = {
+    isThereMatchBetweenMoveRequestToVehicle
+};

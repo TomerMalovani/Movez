@@ -11,7 +11,7 @@ const {
     updateVehicleInfo,
 	getVehiclesByMoverId,
     deleteVehicleInfo,
-    deletePhoto
+    deleteVehiclePhoto
 } = require("../controller/vehicle_page");
 
 router.get('/user/', uuIDValidation, getVehiclesByMoverId);
@@ -20,6 +20,6 @@ router.route('/').post(vehicleInfoPostValidation, upload.single('photo') , creat
 	.get(uuIDVehicleValidation, getVehicleInfo)
 	.patch(upload.single('photo') ,uuIDVehicleValidation, validateUpdateVehicleInfo, updateVehicleInfo)
 	.delete(uuIDVehicleValidation, deleteVehicleInfo)
-router.delete('/photo', photoValidation ,deletePhoto)
+router.delete('/photo', photoValidation ,deleteVehiclePhoto)
 
 module.exports = router;

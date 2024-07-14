@@ -90,7 +90,7 @@ const uploadProfilePhoto = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        else if (user.PhotoUrl !== '') {
+        else if (user.PhotoUrl !== '' || user.PhotoUrl !== null) {
            PhotoUrl = await updatePhoto(req.file ,user.PhotoUrl);
         }
         else {
@@ -118,7 +118,7 @@ const deleteProfilePhoto = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        else if (user.PhotoUrl) {
+        else if (user.PhotoUrl !== '' || user.PhotoUrl !== null) {
            await deletePhoto(user.PhotoUrl);
         }
         else {
