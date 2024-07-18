@@ -1,5 +1,5 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
-const AZURE_STORAGE_CONNECTION_STRING = 'Your_Azure_Storage_Connection_String'; //change later
+const AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=movezblobstorage;AccountKey=gILwu5lTM+rf/q+qkGRUy4AB4jUXnaKdZd4Gw3BoGkt0vZo4FmMHL2Hbo/S35HkD3HA8/3jLZ+5Z+AStWbKJ4w==;EndpointSuffix=core.windows.net'; //change later
 const containerName = 'photos';
 
 const uploadPhoto = async (file) => {
@@ -26,6 +26,7 @@ const deletePhoto = async (photoUrl) => {
         await blockBlobClient.delete();
     }
     catch(error){
+        console.log('here: ', error.message);
         throw new Error(error.message);
     }
 }
@@ -57,11 +58,17 @@ function getBlobClient(photoUrl) {
     const url = new URL(photoUrl);
     const pathParts = url.pathname.split('/');
     const blobName = pathParts.slice(2).join('/'); // The rest is the blob name
-
-    const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    return blockBlobClient;
+    console.log(blobName);
+    try{
+        const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+        const containerClient = blobServiceClient.getContainerClient(containerName);
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+        return blockBlobClient;
+    }
+    catch(error){
+        console.log('here: ', error.message);
+        throw new Error(error.message);
+    }
 }
 
 async function streamToBuffer(readableStream) {

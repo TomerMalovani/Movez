@@ -42,9 +42,8 @@ export const deleteRequest = async (url, token) => {
             console.error(`Error: ${response.status} - ${response.statusText}`);
             throw new Error(response.statusText); // Throw an error with the status text
         }
-
         console.log(`DELETE request to ${url} successful.`);
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Error in deleteRequest:', error);
         throw error; // Re-throw the error to propagate it further

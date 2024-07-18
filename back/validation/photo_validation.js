@@ -1,3 +1,4 @@
+const { col } = require('sequelize');
 const yup = require('yup');
 
 const photoSchema = yup.object({
@@ -10,6 +11,7 @@ const photoValidation = async (req, res, next) => {
         await photoSchema.validate(req.body);
         next();
     } catch (error) {
+        console.log(error.message);
         res.status(400).json({ message: error.message });
     }
 }
