@@ -1,5 +1,4 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
-const AZURE_STORAGE_CONNECTION_STRING = ''; //make it env later
 const containerName = 'photos';
 
 const uploadPhoto = async (file) => {
