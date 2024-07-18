@@ -1,5 +1,5 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
-const AZURE_STORAGE_CONNECTION_STRING = 'DefaultEndpointsProtocol=https;AccountName=movezblobstorage;AccountKey=gILwu5lTM+rf/q+qkGRUy4AB4jUXnaKdZd4Gw3BoGkt0vZo4FmMHL2Hbo/S35HkD3HA8/3jLZ+5Z+AStWbKJ4w==;EndpointSuffix=core.windows.net'; //change later
+const AZURE_STORAGE_CONNECTION_STRING = ''; //make it env later
 const containerName = 'photos';
 
 const uploadPhoto = async (file) => {
