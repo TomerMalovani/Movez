@@ -1,3 +1,6 @@
+const { move } = require('../routes/vehicle_info')
+const { uploadPhoto, deletePhoto, updatePhoto } = require('../controller/photo_controller')
+
 const MoveRequestItem = require('../models/index').MoveRequestItems
 
 const getMoveRequestItem = async (req, res) => {
@@ -31,9 +34,13 @@ const getMoveRequestItems = async (req, res) => {
 
 const createMoveRequestItem = async (req, res) => {
     const { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions} = req.body
+    let PhotoUrl = ''
     try {
+        if(req.file){
+            PhotoUrl = await uploadPhoto(req.file)
+        }
         const result = await MoveRequestItem.create({ MoveRequestID, ItemDescription, 
-            Height, Width, Depth, Weight, Quantity, SpecialInstructions})
+            Height, Width, Depth, Weight, Quantity, SpecialInstructions, PhotoUrl})
         if (result) {
             res.status(201).json({ message: "Move Request Item Created Successfully", moveRequestItem: result })
         }
@@ -55,7 +62,10 @@ const updateMoveRequestItem = async (req, res) => {
    // }
 
     try {
-        const updateValues = { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions };
+        if (req.file) {
+            PhotoUrl = await updatePhoto(req.file, PhotoUrl);
+        }
+        const updateValues = { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions, PhotoUrl };
 
         const [affectedRows, updatedRows] = await MoveRequestItem.update(updateValues, { where: { uuid: requestItemID },returning: true });
 
@@ -75,6 +85,10 @@ const deleteMoveRequestItem = async (req, res) => {
     if (!requestItemID)
         return res.status(400).json({ message: 'No Move Request Item given' })
     try {
+        const moveRequestItem = await MoveRequestItem.findByPk(requestItemID)
+        if(moveRequestItem.PhotoUrl !== ''){
+            await deletePhoto(moveRequestItem.PhotoUrl)
+        }
         const result = await MoveRequestItem.destroy({ where: { uuid: requestItemID } })
         if (result) {
             res.status(200).json({ message: 'Move Request Item deleted successfully' })
@@ -85,27 +99,33 @@ const deleteMoveRequestItem = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error', error: error.message })
     }
 }
-function calculateVolume(item){
-    return item.height * item.depth * item.width;
-    }
 
-    const allPermutationsOfItem = (item)=>{
-        return [
-    
-            {height: item.height, width: item.width, depth: item.depth},
-    
-            {height: item.height, width: item.depth, depth: item.width},
-    
-            {height: item.width, width: item.height, depth: item.depth},
-    
-            {height: item.width, width: item.depth, depth: item.height},
-    
-            {height: item.depth, width: item.height, depth: item.width},
-    
-            {height: item.depth, width: item.width, depth: item.height}
-    
-        ]
+const deleteMoveRequestPhoto = async (req, res) => {
+    const requestItemID = req.query.uuid;
+    try {
+        const item = await MoveRequestItem.findByPk(requestItemID);
+        if (!item) {
+            return res.status(404).json({ message: 'item not found' });
+        }
+        else if (item.PhotoUrl) {
+           await deletePhoto(item.PhotoUrl);
+        }
+        else {
+            return res.status(409).json({ message: 'No Item Photo found' });
+        }
+        const [affectedRows, updatedRows] = await User.update(
+            { PhotoUrl: '' },{ where: { uuid }, returning: true });
+            if(affectedRows > 0){
+                res.status(200).json({message: 'Item Photo deleted successfully', user: updatedRows[0]});
+            }
+            else{
+                res.status(500).json({message: 'Failed to delete Item Photo'});
+            }
     }
+    catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+};
 
 module.exports = {
     getMoveRequestItem,
@@ -113,6 +133,5 @@ module.exports = {
     updateMoveRequestItem,
     deleteMoveRequestItem,
 	getMoveRequestItems,
-    calculateVolume,
-    allPermutationsOfItem
+    deleteMoveRequestPhoto
 }

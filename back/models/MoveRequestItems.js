@@ -76,6 +76,13 @@ module.exports = (sequelize, DataTypes) => {
   },
   SpecialInstructions: {
       type: DataTypes.TEXT,
+  },
+  PhotoUrl:{
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+        isUrl: true
+    }
   }
   }, {
     sequelize,

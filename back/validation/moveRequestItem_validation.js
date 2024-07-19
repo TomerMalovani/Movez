@@ -9,7 +9,8 @@ const moveRequestItemSchema = yup.object({
     Depth: yup.number().required(),
     Weight: yup.number().required(),
     Quantity: yup.number().required(),
-    SpecialInstructions: yup.string()
+    SpecialInstructions: yup.string(),
+    PhotoUrl: yup.string()
 })
 
 const updateMoveRequestItemSchema = yup.lazy((values) =>
@@ -21,7 +22,8 @@ const updateMoveRequestItemSchema = yup.lazy((values) =>
       Depth: yup.number(),
       Weight: yup.number(),
       Quantity: yup.number(),
-      SpecialInstructions: yup.string()
+      SpecialInstructions: yup.string(),
+      PhotoUrl: yup.string().url()
     }).test({
       name: 'at-least-one-field',
       exclusive: true,
@@ -37,13 +39,16 @@ const updateMoveRequestItemSchema = yup.lazy((values) =>
             key === 'Depth' ||
             key === 'Weight' ||
             key === 'Quantity' ||
-            key === 'SpecialInstructions'
+            key === 'SpecialInstructions' ||
+            key === 'PhotoUrl'
         ),
     })
   );
 const validateUpdateMoveRequestItem = async (req, res, next) => {
     try {
+      if (!req.file) {
         await updateMoveRequestItemSchema.validate(req.body);
+      }
         next();
     } catch (error) {
         res.status(400).json({ message: error.message });

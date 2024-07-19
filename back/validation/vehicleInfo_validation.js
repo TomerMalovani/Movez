@@ -28,7 +28,7 @@ const vehicleInfoUpdateSchema = yup.lazy((values) =>
                     key === 'VehicleType' ||
                     key === 'Depth' ||
                     key === 'Width' ||
-                    key === 'Height',
+                    key === 'Height'
             ),
     })
 );
@@ -44,7 +44,10 @@ const vehicleInfoPostValidation = async (req, res, next) => {
 
 const validateUpdateVehicleInfo = async (req, res, next) => {
     try {
-        await vehicleInfoUpdateSchema.validate(req.body);
+        if(!req.file)
+        {
+            await vehicleInfoUpdateSchema.validate(req.body);
+        }
         next();
     } catch (error) {
         res.status(400).json({ message: error.message });
