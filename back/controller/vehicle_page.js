@@ -20,7 +20,7 @@ const getVehicleInfo = async(req,res)=>{
 const createVehicleInfo = async(req, res) => {
   const {  VehicleType, Depth, Width , Height } = req.body;
 	const MoverID = req.userId;
-  let PhotoUrl = '';
+  let PhotoUrl = null;
   
   try {
       if (req.file) {
@@ -30,18 +30,38 @@ const createVehicleInfo = async(req, res) => {
       if (result) {
         res.status(201).json({ msg: 'VehicleInfo created successfully', vehicleInfo: result});
       } else {
+        console.log('something happend');
         res.status(500).json({ msg: 'Failed to create the vehicle info' });
       }
     } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+      console.log(error);
+      res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 }
 const updateVehicleInfo = async (req, res) => {
-  const { MoverID, VehicleType, Depth, Width, Height, PhotoUrl } = req.body;
+  const { MoverID, VehicleType, Depth, Width, Height} = req.body;
   const vehicleID = req.query.uuid; // Assuming vehicleID is passed in the URL
+  let PhotoUrl = null;
+  vehicle= await vehicleInfo.findByPk(vehicleID);
+  if(!vehicle){
+    return res.status(404).json({ message: 'Vehicle not found' });
+  }
+  if(vehicle.PhotoUrl){
+    PhotoUrl = vehicle.PhotoUrl;
+  }
+  console.log("body: ", req.body);
+  console.log("file: ", req.file);
   try {
       if (req.file) {
-          PhotoUrl = updatePhoto(req.file, PhotoUrl);
+        console.log("the file is detected");
+          if(PhotoUrl){
+            PhotoUrl = await updatePhoto(req.file, PhotoUrl);
+            console.log("PhotoUrl: ", PhotoUrl);
+          }
+          else{
+            PhotoUrl = await uploadPhoto(req.file);
+            console.log("PhotoUrl: ", PhotoUrl);
+          }
       }
       const [affectedRows, updatedRows] = await vehicleInfo.update(
           { MoverID, VehicleType, Depth, Width, Height, PhotoUrl},
@@ -54,6 +74,8 @@ const updateVehicleInfo = async (req, res) => {
           res.status(404).json({ message: 'VehicleInfo not found' });
       }
   } catch (error) {
+      console.log(error);
+      console.log("error: ", error.message);  
       res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 };
@@ -67,7 +89,7 @@ const deleteVehicleInfo = async (req, res) => {
     }
     else{
       if(vehicleInformation.PhotoUrl){
-        deletePhoto(vehicle.PhotoUrl);
+        await deletePhoto(vehicleInformation.PhotoUrl);
       }
       const result = await vehicleInfo.destroy({ where: { uuid: vehicleID } });
       if (result) {
@@ -98,26 +120,27 @@ const getVehiclesByMoverId = async (req, res) => {
 const deleteVehiclePhoto = async (req, res) => {
   const vehicleID = req.query.uuid;
   try {
-    const vehicle = await User.findOne({ where: { vehicleID } });
+    const vehicle = await vehicleInfo.findByPk(vehicleID);
     if (!vehicle) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Vehicle not found' });
     }
     else if (vehicle.PhotoUrl) {
-      await deletePhoto(user.PhotoUrl);
+      await deletePhoto(vehicle.PhotoUrl);
     }
     else {
       return res.status(409).json({ message: 'No Vehicle Photo found' });
     }
-    const [affectedRows, updatedRows] = await User.update(
-      { PhotoUrl: '' }, { where: { uuid }, returning: true });
+    const [affectedRows, updatedRows] = await vehicleInfo.update(
+      { PhotoUrl: null }, { where: { uuid: vehicleID }, returning: true });
     if (affectedRows > 0) {
-      res.status(200).json({ message: 'Vehicle Photo deleted successfully', user: updatedRows[0] });
+      res.status(200).json({ message: 'Vehicle Photo deleted successfully', vehicleInfo: updatedRows[0] });
     }
     else {
       res.status(500).json({ message: 'Failed to delete Vehicle Photo' });
     }
   }
   catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };

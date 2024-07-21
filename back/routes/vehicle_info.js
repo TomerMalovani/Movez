@@ -16,10 +16,10 @@ const {
 
 router.get('/user/', uuIDValidation, getVehiclesByMoverId);
 
-router.route('/').post(vehicleInfoPostValidation, upload.single('photo') , createVehicleInfo)
+router.route('/').post( upload.single('photo'), vehicleInfoPostValidation, createVehicleInfo)
 	.get(uuIDVehicleValidation, getVehicleInfo)
 	.patch(upload.single('photo') ,uuIDVehicleValidation, validateUpdateVehicleInfo, updateVehicleInfo)
 	.delete(uuIDVehicleValidation, deleteVehicleInfo)
-router.delete('/photo', photoValidation ,deleteVehiclePhoto)
+router.delete('/photo',deleteVehiclePhoto)
 
 module.exports = router;

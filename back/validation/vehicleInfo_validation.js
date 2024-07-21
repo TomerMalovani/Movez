@@ -7,6 +7,7 @@ const vehicleInfoSchema = yup.object({
     Depth: yup.number().required(),
     Width: yup.number().required(),
     Height: yup.number().required(),
+    PhotoUrl: yup.string().url().notRequired()
 })
 
 const vehicleInfoUpdateSchema = yup.lazy((values) =>
@@ -38,6 +39,8 @@ const vehicleInfoPostValidation = async (req, res, next) => {
 		await vehicleInfoSchema.validate({ ...req.body, MoverID: req.userId});
         next();
     } catch (error) {
+        console.log(error);
+        console.log(error.message);
         res.status(400).json({ message: error.message });
     }
 }
