@@ -2,18 +2,35 @@
 
 import axios from 'axios'
 
-export const postRequest = async (url, body,token) => {
-    console.log("before send token", token,url)
+export const postRequest = async (url, body,token, image) => {
+    console.log("before send token", token, url);
     try {
-        headers = {
+        const headers = {
             'authorization': token,
-            
+        };
+
+        let formData;
+        if (image) {
+            formData = new FormData();
+            formData.append('file', {
+                uri: image.uri,
+                name: image.name,
+                type: image.type,
+            });
+            Object.keys(body).forEach(key => {
+                formData.append(key, body[key]);
+            });
+            headers['Content-Type'] = 'multipart/form-data';
+        } else {
+            formData = body;
         }
-        let response = await axios.post(url,body, {headers})   
-		console.log("response",response)
-        return response
+
+        let response = await axios.post(url, formData, { headers });
+        console.log("response", response);
+        return response;
     } catch (error) {
-        return error.response
+        console.error("Error in postRequest:", error);
+        return error.response;
     }
 }
 
@@ -50,13 +67,32 @@ export const deleteRequest = async (url, token) => {
     }
 };
 
+
+
+
 export const putRequest = async (url, body, token) => {
     try {
         const headers = {
             'Authorization': token
         };
 
-        const response = await axios.put(url, body, { headers });
+        let formData;
+        if (image) {
+            formData = new FormData();
+            formData.append('file', {
+                uri: image.uri,
+                name: image.name,
+                type: image.type,
+            });
+            Object.keys(body).forEach(key => {
+                formData.append(key, body[key]);
+            });
+            headers['Content-Type'] = 'multipart/form-data';
+        } else {
+            formData = body;
+        }
+
+        const response = await axios.put(url, formData, { headers });
 
         if (response.status !== 200) {
             console.error(`Error: ${response.status} - ${response.statusText}`);

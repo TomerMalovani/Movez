@@ -22,6 +22,11 @@ const UserVehicles = (props) => {
 		}
 	}
 
+	const handleEditVehicle = (vehicle) => {
+		setVehicles(prev => [...prev, vehicle]);
+		setIsOpen(false);
+	}
+
 	const handleAddVehicle = (vehicle) => {
 		setVehicles(prev => [...prev, vehicle]);
 		setIsOpen(false);
@@ -57,10 +62,11 @@ const UserVehicles = (props) => {
 			<Portal>
 				<Modal visible={isOpen} dismissable={true} onDismiss={handleModalToogle} contentContainerStyle={{backgroundColor: 'white', padding: 20}}>
 					<AddVehicle handleAddVehicle={handleAddVehicle}/>
-					</Modal>
+					<AddVehicle handleEditVehicle={handleEditVehicle}/>
+				</Modal>
 			</Portal>
 			
-			<ProfileVehicleCard handleModalOpen={handleModalToogle}  handleDelete={handleDelete}  vehicles={vehicles} {...props}/>
+			<ProfileVehicleCard handleModalOpen={handleModalToogle}  handleDelete={handleDelete} vehicles={vehicles} handleEdit={handleEdit}{...props}/>
 
 		</View>
 	);

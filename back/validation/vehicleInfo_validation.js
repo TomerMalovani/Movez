@@ -7,6 +7,7 @@ const vehicleInfoSchema = yup.object({
     Depth: yup.number().required(),
     Width: yup.number().required(),
     Height: yup.number().required(),
+    PhotoUrl: yup.string().url()
 })
 
 const vehicleInfoUpdateSchema = yup.lazy((values) =>
