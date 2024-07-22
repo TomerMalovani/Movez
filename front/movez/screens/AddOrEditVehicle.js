@@ -6,7 +6,7 @@ import { TokenContext } from '../tokenContext';
 import MyModal from '../Components/UploadPictureModal';
 import * as ImagePicker from 'expo-image-picker';
 
-const AddVehicle = ({ handleAddVehicle, handleEditVehicle, userVehicle }) => {
+const AddOrEditVehicle = ({ handleAddVehicle, handleEditVehicle, userVehicle }) => {
     const { token } = useContext(TokenContext);
     const [image, setImage] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
@@ -196,4 +196,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default AddVehicle;
+export default AddOrEditVehicle;

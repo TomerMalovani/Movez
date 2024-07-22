@@ -14,7 +14,6 @@ import MyActivity from './screens/MyActivity';
 import MovesRequested from './screens/MovesRequested';
 import MovesProvided from './screens/MovesProvided';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
-import AddVehicle from './screens/AddVehicle';
 import UserVehicles from './screens/UserVehicles';
 import SingleMoveRequest from './screens/SingleMoveRequest';
 

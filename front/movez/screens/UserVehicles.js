@@ -4,7 +4,7 @@ import { ActivityIndicator, Button, MD2Colors, Modal, Portal } from 'react-nativ
 import ProfileVehicleCard from '../Components/profileVehicleCard';
 import { deleteVehicle, getAllVehicles } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
-import AddVehicle from './AddVehicle';
+import AddOrEditVehicle from './AddOrEditVehicle';
 
 const UserVehicles = (props) => {
     const { token } = useContext(TokenContext);
@@ -74,7 +74,7 @@ const UserVehicles = (props) => {
                     onDismiss={handleModalToggle}
                     contentContainerStyle={{ backgroundColor: 'white', padding: 20 }}
                 >
-                    <AddVehicle handleAddVehicle={handleAddVehicle} />
+                    <AddOrEditVehicle handleAddVehicle={handleAddVehicle} />
                 </Modal>
                 <Modal
                     visible={isEditOpen}
@@ -82,7 +82,7 @@ const UserVehicles = (props) => {
                     onDismiss={handleSecondModalToggle}
                     contentContainerStyle={{ backgroundColor: 'white', padding: 20 }}
                 >
-                    <AddVehicle handleEditVehicle={handleEditVehicle} userVehicle={selectedVehicle} />
+                    <AddOrEditVehicle handleEditVehicle={handleEditVehicle} userVehicle={selectedVehicle} />
                 </Modal>
             </Portal>
             <ProfileVehicleCard
