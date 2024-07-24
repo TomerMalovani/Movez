@@ -14,7 +14,6 @@ import MyActivity from './screens/MyActivity';
 import MovesRequested from './screens/MovesRequested';
 import MovesProvided from './screens/MovesProvided';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
-import AddVehicle from './screens/AddVehicle';
 import UserVehicles from './screens/UserVehicles';
 import SingleMoveRequest from './screens/SingleMoveRequest';
 
@@ -74,6 +73,9 @@ const LoggedInRoutes = () => (
 		<Drawer.Screen name="Profile" component={ProfilePage} />
 		<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
 		<Drawer.Screen name="MyActivity" component={MyActivity} />
+		<Drawer.Screen name="My Vehicles" component={UserVehicles} />
+
+		
 		<Drawer.Screen name="UserVehicles" component={UserVehicles} />
 		<Drawer.Screen name="MovesRequested" component={MovesRequested} />
 		<Drawer.Screen name="MovesProvided" component={MovesProvided} />
