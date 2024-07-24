@@ -2,18 +2,37 @@
 
 import axios from 'axios'
 
-export const postRequest = async (url, body,token) => {
-    console.log("before send token", token,url)
+export const postRequest = async (url, body,token, image) => {
+    console.log("before send token", token, url);
     try {
-        headers = {
+        const headers = {
             'authorization': token,
-            
+        };
+
+        let formData;
+        if (image) {
+            formData = new FormData();
+            formData.append('photo', {
+                uri: image.uri,
+                name: image.name,
+                type: 'image/jpeg'
+            });
+            Object.keys(body).forEach(key => {
+                formData.append(key, body[key]);
+            });
+            headers['Content-Type'] = 'multipart/form-data';
+            console.log("headers: ", headers);
+            console.log("formdata: ", formData);
+        } else {
+            formData = body;
         }
-        let response = await axios.post(url,body, {headers})   
-		console.log("response",response)
-        return response
+
+        let response = await axios.post(url, formData, { headers });
+        console.log("response", response);
+        return response;
     } catch (error) {
-        return error.response
+        console.error("Error in postRequest:", error);
+        return error.response;
     }
 }
 
@@ -50,13 +69,31 @@ export const deleteRequest = async (url, token) => {
     }
 };
 
-export const putRequest = async (url, body, token) => {
+
+
+
+export const putRequest = async (url, body, token, image) => {
     try {
         const headers = {
             'Authorization': token
         };
+        let formData;
+        if (image) {
+            formData = new FormData();
+            formData.append('photo', {
+                uri: image,
+                type: 'image/jpeg',
+                name: 'photo.jpg',
+            });
+            Object.keys(body).forEach(key => {
+                formData.append(key, body[key]);
+            });
+            headers['Content-Type'] = 'multipart/form-data';
+        } else {
+            formData = body;
+        }
 
-        const response = await axios.put(url, body, { headers });
+        const response = await axios.patch(url, formData, { headers });
 
         if (response.status !== 200) {
             console.error(`Error: ${response.status} - ${response.statusText}`);
@@ -64,7 +101,7 @@ export const putRequest = async (url, body, token) => {
         }
 
         console.log(`PUT request to ${url} successful.`);
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Error in putRequest:', error);
         throw error; // Re-throw the error to propagate it further

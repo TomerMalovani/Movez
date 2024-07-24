@@ -1,6 +1,6 @@
 const axios = require('axios');
 import { URL } from './consts'
-import { deleteRequest, getRequest, postRequest } from './api_calls'
+import { deleteRequest, getRequest, postRequest, postPhotoRequest, putRequest } from './api_calls'
 
 export const getAllVehicles = async (token) => {
 	try{
@@ -18,12 +18,12 @@ export const getAllVehicles = async (token) => {
 
 }
 
-export const createVehicle = async (token, vehicle) => {
+export const createVehicle = async (token, vehicle, image) => {
 
 	const url = `${URL}/vehicle_info/`
-
+	
 	try {
-		const response = await postRequest(url, vehicle, token)
+		const response = await postRequest(url, vehicle, token, image)
 		if (response.status !== 201)
 			throw new Error(response.message)
 		console.log("vehicleInfo", response.data)
@@ -33,6 +33,35 @@ export const createVehicle = async (token, vehicle) => {
 		console.log(error)
 		throw new Error(error)
 	}
+}
+
+export const editVehicle = async (token, vehicle, image) => {
+	const url = `${URL}/vehicle_info/?uuid=${vehicle.uuid}`
+	try {
+		const response = await putRequest(url, vehicle, token, image)
+		console.log(response)
+		if (response.status !== 200)
+			throw new Error(response.message)
+		console.log("vehicleInfo", response.data.vehicleInfo);
+		return response.data.vehicleInfo
+	} catch (error) {
+		console.log(error)
+		throw new Error(error)
+	}
+}
+
+export const deleteVehiclePhoto = async (token, vehicleId) => {
+	const url = `${URL}/vehicle_info/photo/?uuid=${vehicleId}`
+	try {
+		const response = await deleteRequest(url, token)
+		if (response.status !== 200)
+			throw new Error(response.message)
+		return response.data.vehicleInfo
+	} catch (error) {
+		console.log(error)
+		throw new Error(error)
+	}
+
 }
 
 export const deleteVehicle = async (token, vehicleId) => {

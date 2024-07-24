@@ -1,5 +1,5 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
-const AZURE_STORAGE_CONNECTION_STRING = ''; //make it env later
+const AZURE_STORAGE_CONNECTION_STRING = '';
 const containerName = 'photos';
 
 const uploadPhoto = async (file) => {
@@ -13,7 +13,7 @@ const uploadPhoto = async (file) => {
     return blockBlobClient.url;
     }
     catch(error){
-        throw new Error(error.message);
+        throw error;
     }
 }
 
@@ -36,6 +36,7 @@ const updatePhoto = async (newPhoto, oldPhotoUrl) => {
     try{
     newUrl = await uploadPhoto(newPhoto);
     await deletePhoto(oldPhotoUrl);
+    console.log('newUrl: ', newUrl);
     }
     catch(error){
         throw new Error(error.message);
