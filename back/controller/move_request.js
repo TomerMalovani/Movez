@@ -1,7 +1,7 @@
 const moveRequest = require("../models/index").MoveRequest
 const moveRequestItem = require("../models/index").MoveRequestItems
 const  {calculateVolume, allPermutationsOfItem} = require('../controller/move_requestItem');
-
+const isThereMatchBetweenMoveRequestToVehicle = require('../utils/findmatchingvehiclealgo');
 
 const VehicleInfo = require("../models/VehicleInfo");
 
@@ -159,40 +159,6 @@ const deleteMoveRequest = async(req,res) =>{
     catch(error){
         res.status(500).json({message: 'Internal Server Error', error: error.message})
     }
-}
-
-const isThereMatchBetweenMoveRequestToVehicle = (itemsArr, vehicleHeight,vehicleWidth,vehicleDepth ) =>{
-    itemsArr.sort((a,b)=> {
-        return calculateVolume(b) - calculateVolume(a);
-     });
-    let itemsArrLength = itemsArr.length;
-    let freeSpace =  { 
-        height: vehicleHeight,
-        width: vehicleWidth,
-        depth: vehicleDepth
-    }
-   for(let i =0; i< itemsArrLength ;i++)
-    {
-       let isItemFits = false;
-       let permutations = allPermutationsOfItem(itemsArr[i]);
-       let permutationsLength = permutations.length;
-       for(let j =0 ; j< permutationsLength; j++)
-        {
-            let permutation = permutations[j];
-           if(permutation.height <= freeSpace.height && permutation.width <= freeSpace.width && permutation.depth <= freeSpace.depth)
-            {
-                freeSpace.height -= permutation.height;
-                freeSpace.width -= permutation.width;
-                freeSpace.depth -= permutation.depth;
-                isItemFits = true;
-                break;
-            }
-        }
-        if(!isItemFits)
-            return false;
-    }
-    return true;
-   
 }
 
 getAdjustedMoveRequests = async (req,res) =>{

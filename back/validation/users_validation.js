@@ -12,6 +12,7 @@ const usersSchema = yup.object({
     city: yup.string(),
     state: yup.string(),
     zip: yup.string(),
+    PhotoUrl: yup.string().url(),
 })
 
 const loginSchema = yup.object({
