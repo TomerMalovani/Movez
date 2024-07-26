@@ -11,10 +11,12 @@ import { ToastContext } from '../toastContext';
 const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
     const [items, setItems] = itemsState;
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [pictureModalVisible, setPictureModalVisible] = useState(false);
     const [newItem, setNewItem] = useState({});
     const [editedItem, setEditedItem] = useState(undefined);
 	const { showError, showSuccess } = useContext(ToastContext)
 	const [errors, setErrors] = useState({})
+    const [image, setImage] = useState(null);
 
     const inputs = [
         //  ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions
@@ -61,12 +63,25 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
 				setErrors(prev => ({...prev, [input.name]: null}))
 			}
 		})
-
+        let formData;
+        if(image){
+            formData = new FormData();
+            formData.append('photo', {
+                uri: image.uri,
+                name: image.name,
+                type: 'image/jpeg'
+            });
+            newItem.Photo = formData;
+        }
+        else{
+            newItem.Photo = null;
+        }
 
         setItems([...items, newItem]);
         setIsModalVisible(false);
         setEditedItem(undefined);
         setNewItem({});
+        setImage(null);
 		showSuccess("Item added successfully")
 		}
 		catch(err){
@@ -94,49 +109,104 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
         setIsModalVisible(false);
     }
 
+    const handleImage = () => {
+        setPictureModalVisible(true);
+    }
+
+    const hideModal = () => {
+        setPictureModalVisible(false);
+    }
+
+    const pickImageFromGallery = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission Denied', 'Permission to access media library is required.');
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+            setChangedPhoto(true);
+        }
+        setPictureModalVisible(false);
+    };
+
+    const pickImageFromCamera = async () => {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission Denied', 'Permission to access camera is required.');
+            return;
+        }
+
+        const result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri);
+            setChangedPhoto(true);
+        }
+        setPictureModalVisible(false);
+    };
+
+    const removeImage = async () => {
+        setPictureModalVisible(false);
+        setImage(null);
+    };
+
+
     return (
         <View style={{justifyContent:"space-between",height:'90%',padding:10}}>
             {/* Render the list of items */}
-{ 
-    items.length === 0 ? <Text style={styles.text}>No items added yet</Text>       
-   :
-   <ScrollView>
-   {items.map((item, index) => (
-                // box with the item details
-    <Card mode='outlined'>
+        { 
+            items.length === 0 ? <Text style={styles.text}>No items added yet</Text>       
+        :
+        <ScrollView>
+        {items.map((item, index) => (
+                        // box with the item details
+            <Card mode='outlined'>
 
-    <Card.Actions>
-    <IconButton
-    icon="trash-can"
-    iconColor={MD3Colors.error50}
-    key={index+"delete"}
-    mode='contained'
-    size={20}
-    onPress={()=>setItems(items.filter((i,ind)=>ind!==index))}
-    />
-          <IconButton
-    key={index+"edit"}
-    mode='contained'
-    icon="pencil"
-    iconColor={MD3Colors.error50}
-    size={20}
-    onPress={()=>handleEditItem(item)}
-    />
-    </Card.Actions>
-    <Card.Content>
-        <Text key={index+"ItemDescription"} variant="titleLarge">{item.ItemDescription}</Text>
-        <Text key={index+"Height"} variant="bodyMedium"> Height  {item.Height}</Text>
-        <Text key={index+"Width"} variant="bodyMedium"> Width  {item.Width}</Text>
-        <Text key={index+"Depth"} variant="bodyMedium"> Depth  {item.Depth}</Text>
-        <Text key={index+"Weight"} variant="bodyMedium"> Weight  {item.Weight}</Text>
-        <Text key={index+"Quantity"} variant="bodyMedium"> Quantity  {item.Quantity}</Text>
-        <Text key={index+"SpecialInstructions"} variant="bodyMedium">Special Instructions {item.SpecialInstructions}</Text>
-    </Card.Content>
+            <Card.Actions>
+            <IconButton
+            icon="trash-can"
+            iconColor={MD3Colors.error50}
+            key={index+"delete"}
+            mode='contained'
+            size={20}
+            onPress={()=>setItems(items.filter((i,ind)=>ind!==index))}
+            />
+                <IconButton
+            key={index+"edit"}
+            mode='contained'
+            icon="pencil"
+            iconColor={MD3Colors.error50}
+            size={20}
+            onPress={()=>handleEditItem(item)}
+            />
+            </Card.Actions>
+            <Card.Content>
+                <Text key={index+"ItemDescription"} variant="titleLarge">{item.ItemDescription}</Text>
+                <Text key={index+"Height"} variant="bodyMedium"> Height  {item.Height}</Text>
+                <Text key={index+"Width"} variant="bodyMedium"> Width  {item.Width}</Text>
+                <Text key={index+"Depth"} variant="bodyMedium"> Depth  {item.Depth}</Text>
+                <Text key={index+"Weight"} variant="bodyMedium"> Weight  {item.Weight}</Text>
+                <Text key={index+"Quantity"} variant="bodyMedium"> Quantity  {item.Quantity}</Text>
+                <Text key={index+"SpecialInstructions"} variant="bodyMedium">Special Instructions {item.SpecialInstructions}</Text>
+            </Card.Content>
 
-  </Card>
-            ))}
-    </ScrollView>
-}
+        </Card>
+                    ))}
+            </ScrollView>
+        }
    
 
             {/* Render the form */}
@@ -162,6 +232,21 @@ const AddItemsForm = ({itemsState,handleCreateNewRequest}) => {
 							</HelperText>
 					</>
                     ))}
+                    <View>
+                    {!image ? (<Button onPress={handleImage} mode="contained">Add Image</Button>) :
+                    (<Image source={{ uri: image }} style={{ width: 60, height: 60 }} />,
+                    <Button onPress={handleImage} mode="contained">Change Image</Button>
+                    )}
+                        <Portal>
+                            <MyModal
+                                visible={pictureModalVisible}
+                                hideModal={hideModal}
+                                pickImageFromCamera={pickImageFromCamera}
+                                pickImageFromGallery={pickImageFromGallery}
+                                removeImage={removeImage}
+                            />
+                        </Portal>
+                    </View>
                     <View style={{justifyContent:'space-evenly',marginTop:20,flexDirection:'row'}} >
                <Button buttonColor='green'  mode="contained" onPress={handleAddItem}>Add</Button>
 

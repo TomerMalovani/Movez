@@ -1,4 +1,4 @@
-import { postRequest, getRequest, deleteRequest } from './api_calls'
+import { postRequest, getRequest, deleteRequest,postPhotoRequest } from './api_calls'
 import { URL } from './consts'
 
 // UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo,items
@@ -86,4 +86,8 @@ export const showSingleMoveRequestItems = async (token, moveRequestId) => {
 		console.error('Error fetching move request items:', error);
 		throw error;
 	}
+}
+
+export const uploadSingleMoveRequestItemPhoto = async ()=>{
+
 }

@@ -98,22 +98,28 @@ const SingleMoveRequest = ({ route, navigation }) => {
 		return new Date(dateString).toLocaleDateString(undefined, options);
 	};
 
-	const ItemsTable = ()=>{
-		return(
-		<DataTable>
-			<DataTable.Header>
-				{tableInputs.map((header, index) => (
-					<DataTable.Title key={index}>{header.title}</DataTable.Title>
-				))}
-			</DataTable.Header>
-			{items.map((item, index) => (
-				<DataTable.Row key={index}>
-					{tableInputs.map((header, i) => (
-						<DataTable.Cell key={i}>{item[header.value]}</DataTable.Cell>
+	const ItemsTable = () => {
+		return (
+			<DataTable>
+				<DataTable.Header>
+					{tableInputs.map((header, index) => (
+						<DataTable.Title key={index}>{header.title}</DataTable.Title>
 					))}
-				</DataTable.Row>
-			))}
-		</DataTable>)
+				</DataTable.Header>
+				{items.map((item, index) => (
+					<View key={index}>
+						<DataTable.Row>
+							{tableInputs.map((header, i) => (
+								<DataTable.Cell key={i}>{item[header.value]}</DataTable.Cell>
+							))}
+						</DataTable.Row>
+						{item.PhotoUrl ? (
+							<Image source={{ uri: item.PhotoUrl }} style={{ width: 50, height: 50 }} />
+						) : null}
+					</View>
+				))}
+			</DataTable>
+		);
 	}
 
 	return (

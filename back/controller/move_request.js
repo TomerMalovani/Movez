@@ -1,9 +1,11 @@
 const moveRequest = require("../models/index").MoveRequest
 const moveRequestItem = require("../models/index").MoveRequestItems
 const  {calculateVolume, allPermutationsOfItem} = require('../controller/move_requestItem');
+const {createMoveRequestItem} = require('../controller/move_requestItem');
 const isThereMatchBetweenMoveRequestToVehicle = require('../utils/findmatchingvehiclealgo');
 
 const VehicleInfo = require("../models/VehicleInfo");
+const { uploadPhoto } = require("./photo_controller");
 
 const searchRequest = async (req,res) => {
 	// given {lat ,lng} and radius find all move requests that are within the radius 
@@ -89,9 +91,18 @@ const getMoveRequest = async(req,res)=>{
 const createMoveRequest = async(req,res) =>{
     const { UserID,moveStatus, moveDate, moveTime, moveFromCoor, moveToCoor,fromAddress,toAddress,items} = req.body
     console.log("body check",req.body,req.userId)
+    try{
+        items.forEach(item => async () => {
+            item.PhotoUrl = await uploadPhoto(item.Photo);
+        })
+    }
+    catch(error){
+        console.log(error)
+        res.status(500).json({message: 'Internal Server Error', error: error.message})
+        return;
+    }
 
     try{
-
         const result = await moveRequest.create({ UserID,moveStatus, moveDate, moveTime, moveFromCoor, moveToCoor,fromAddress,toAddress})
         console.log(result)
         if(result){
@@ -104,7 +115,8 @@ const createMoveRequest = async(req,res) =>{
                     Depth: item.Depth,
                     Weight: item.Weight,
                     Quantity: item.Quantity,
-                    SpecialInstructions: item.SpecialInstructions
+                    SpecialInstructions: item.SpecialInstructions,
+                    PhotoUrl: item.PhotoUrl
                 }
             })
         const moveRequestItems = await moveRequestItem.bulkCreate(itemsArray)
@@ -149,6 +161,8 @@ const updateMoveRequest = async (req, res) => {
 const deleteMoveRequest = async(req,res) =>{
     const requestID = req.query.uuid
     try{
+        
+
         const result = await moveRequest.destroy({where: {uuid: requestID}})
         if(result){
             res.status(200).json({message: 'MoveRequest deleted successfully'})
