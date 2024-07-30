@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 
-export const postRequest = async (url, body,token, image) => {
+export const postRequest = async (url, body,token, image, isMultiPart = false) => {
     console.log("before send token", token, url);
     try {
         const headers = {
@@ -23,10 +23,15 @@ export const postRequest = async (url, body,token, image) => {
             headers['Content-Type'] = 'multipart/form-data';
             console.log("headers: ", headers);
             console.log("formdata: ", formData);
-        } else {
+        } else if(isMultiPart){
+            
+            headers['Content-Type'] = 'multipart/form-data';
+            formData = body;
+        } 
+        else {
             formData = body;
         }
-
+        console.log("formdata: ", formData);
         let response = await axios.post(url, formData, { headers });
         console.log("response", response);
         return response;

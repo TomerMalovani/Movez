@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const {uuIDValidation} = require('../validation/uuidValidation');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 var {moveRequestPostValidation, validateUpdateMoveRequest} = require('../validation/moveRequest_validation');
 
 const {
@@ -12,7 +14,7 @@ const {
 	searchRequest
 } = require("../controller/move_request")
 
-router.route('/').post(moveRequestPostValidation, createMoveRequest)
+router.route('/').post(moveRequestPostValidation, upload.array('photos') ,createMoveRequest)
 .get(uuIDValidation, getMoveRequest)
 .patch(uuIDValidation , validateUpdateMoveRequest, updateMoveRequest).
 delete(uuIDValidation ,deleteMoveRequest)

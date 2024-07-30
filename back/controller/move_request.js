@@ -3,7 +3,6 @@ const moveRequestItem = require("../models/index").MoveRequestItems
 const  {calculateVolume, allPermutationsOfItem} = require('../controller/move_requestItem');
 const {createMoveRequestItem, deleteMoveRequestItem} = require('../controller/move_requestItem');
 const isThereMatchBetweenMoveRequestToVehicle = require('../utils/findmatchingvehiclealgo');
-
 const VehicleInfo = require("../models/VehicleInfo");
 const { uploadPhoto, deletePhoto } = require("./photo_controller");
 
@@ -91,12 +90,21 @@ const getMoveRequest = async(req,res)=>{
 const createMoveRequest = async(req,res) =>{
     const { UserID,moveStatus, moveDate, moveTime, moveFromCoor, moveToCoor,fromAddress,toAddress,items} = req.body
     console.log("body check",req.body,req.userId)
-    try{
-        items.forEach(item => async () => {
-            if(item.Photo){
-                item.PhotoUrl = await uploadPhoto(item.Photo);
+    try {
+        const itemsArray = JSON.parse(items);
+       
+        await Promise.all(itemsArray.map(async (item, index) => {
+            if (req.files && req.files[index] && item.Photo) {
+                const file = req.files[index];
+                const photoFile = {
+                    originalname: file.originalname,
+                    buffer: file.buffer
+                };
+                item.PhotoUrl = await uploadPhoto(photoFile);
+                console.log("photo url: ", item.PhotoUrl);
             }
-        })
+        }));
+
     }
     catch(error){
         console.log(error)
@@ -138,7 +146,6 @@ const createMoveRequest = async(req,res) =>{
     }
 }
 
-
 const updateMoveRequest = async (req, res) => {
     const { UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo } = req.body;
     const requestID = req.query.uuid;
@@ -160,38 +167,36 @@ const updateMoveRequest = async (req, res) => {
     }
 };
 
-const deleteMoveRequest = async(req,res) =>{
-    const requestID = req.query.uuid
-    try{
-        await deleteItems(requestID);
-        const result = await moveRequest.destroy({where: {uuid: requestID}})
-        if(result){
-            res.status(200).json({message: 'MoveRequest deleted successfully'})
-        }else{
-            res.status(404).json({message: 'MoveRequest not found'})
+const deleteMoveRequest = async (req, res) => {
+    const requestID = req.query.uuid;
+    try {
+        await deleteItems(requestID, req, res);
+        const result = await moveRequest.destroy({ where: { uuid: requestID } });
+        if (result) {
+            res.status(200).json({ message: 'MoveRequest deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'MoveRequest not found' });
         }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-    catch(error){
-        console.log(error)
-        res.status(500).json({message: 'Internal Server Error', error: error.message})
-    }
-}
+};
 
-async function deleteItems(uuid){
-    let req, res;
-    try{
-        let items = moveRequestItem.findAll({where: {MoveRequestID: uuid}})
-        items.forEach(async item => {
-            if(item.PhotoUrl){
+async function deleteItems(uuid, req, res) {
+    try {
+        let items = await moveRequestItem.findAll({ where: { MoveRequestID: uuid } });
+        
+        for (let item of items) {
+            if (item.PhotoUrl) {
                 req.query.uuid = item.uuid;
                 await deleteMoveRequestItem(req, res);
-                if(res.status != 200){
+                if (res.status !== 200) {
                     throw new Error('Failed to delete MoveRequestItem, Error: ' + res.status);
                 }
             }
-        })
-    }
-    catch(error) {
+        }
+    } catch (error) {
         throw error;
     }
 }

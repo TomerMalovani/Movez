@@ -4,22 +4,21 @@ import { URL } from './consts'
 // UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo,items
 // items:
 // ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions
-export const createNewMoveRequest = async (token, body) => {
+export const createNewMoveRequest = async (token, body, numOfPhotos) => {
 
 	try {
-
-		const url = `${URL}/moverequests/`
-		const reqBody = {
-			moveStatus: "Pending",
-			moveDate: body.moveDate,
-			moveTime: body.moveDate,
-			moveFromCoor: body.moveFromCoor,
-			moveToCoor: body.moveToCoor,
-			fromAddress: body.fromAddress,
-			toAddress: body.toAddress,
-			items: body.items
+		let response;
+		console.log("body: ", body);
+		const url = `${URL}/moverequests/`;
+		console.log("numOfPhotos: ", numOfPhotos)
+		if(numOfPhotos>0){
+			console.log("im in: ", numOfPhotos)
+			response = await postRequest(url, body, token, null, true);
 		}
-		const response = await postRequest(url, reqBody, token)
+		else{
+			response = await postRequest(url, body, token);
+		}
+		console.log("API Response: ", response); // Log API response for debugging
 		if (response.status !== 201) throw new Error(response.message)
 		return response
 	} catch (error) {

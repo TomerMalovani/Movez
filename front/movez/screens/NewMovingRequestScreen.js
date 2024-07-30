@@ -15,20 +15,18 @@ const NewMovingRequestScreen = ({ navigation }) => {
 	const { showError, showSuccess } = useContext(ToastContext)
 
     const handleCreateNewRequest = async () => {
-        let formData;
+        let numOfPhotos = 0;
         try{
-            items.forEach(item => {
-                console.log(item)
-                console.log(item.Photo)
-                formData = new FormData();
-                formData.append('photo', {
+            const formData = new FormData();
+            items.forEach((item, index) => {
+                formData.append(`photo${index}`, {
                     uri: item.Photo,
                     type: 'image/jpeg',
-                    name: 'photo.jpg',
+                    name: `photo${index}.jpg`,
                 });
-                item.Photo = formData;
-                console.log("photo: ", item.Photo)
-            })
+                numOfPhotos++;
+                // Add other item fields if needed
+            });
             const body = {
                 moveDate: moveDate,
                 moveFromCoor: {type:"Point", coordinates: [locationfrom.coor.longitude,locationfrom.coor.latitude]},
@@ -37,8 +35,10 @@ const NewMovingRequestScreen = ({ navigation }) => {
                 toAddress: locationto.address,
                 items: items
             }
-       
-            await createNewMoveRequest(token,body)
+            
+            formData.append('body', JSON.stringify(body));
+
+            await createNewMoveRequest(token,formData, numOfPhotos);
 			showSuccess("Request created successfully")
 			navigation.navigate('MovesRequested')
           
