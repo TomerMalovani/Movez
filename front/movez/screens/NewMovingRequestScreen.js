@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image } from 'react-native';
 import AddMovingRequest from '../Components/AddMovingRequest';
 import AddItemsForm from '../Components/AddItemsForm';
 import { createNewMoveRequest } from '../utils/moveRequest_api_calls';
@@ -15,15 +15,29 @@ const NewMovingRequestScreen = ({ navigation }) => {
 	const { showError, showSuccess } = useContext(ToastContext)
 
     const handleCreateNewRequest = async () => {
-        const body = {
-            moveDate: moveDate,
-            moveFromCoor: {type:"Point", coordinates: [locationfrom.coor.longitude,locationfrom.coor.latitude]},
-            moveToCoor:{type:"Point", coordinates: [locationto.coor.longitude,locationto.coor.latitude]},
-            fromAddress: locationfrom.address ,
-            toAddress: locationto.address,
-            items: items
-        }
+        let formData;
         try{
+            items.forEach(item => {
+                console.log(item)
+                console.log(item.Photo)
+                formData = new FormData();
+                formData.append('photo', {
+                    uri: item.Photo,
+                    type: 'image/jpeg',
+                    name: 'photo.jpg',
+                });
+                item.Photo = formData;
+                console.log("photo: ", item.Photo)
+            })
+            const body = {
+                moveDate: moveDate,
+                moveFromCoor: {type:"Point", coordinates: [locationfrom.coor.longitude,locationfrom.coor.latitude]},
+                moveToCoor:{type:"Point", coordinates: [locationto.coor.longitude,locationto.coor.latitude]},
+                fromAddress: locationfrom.address ,
+                toAddress: locationto.address,
+                items: items
+            }
+       
             await createNewMoveRequest(token,body)
 			showSuccess("Request created successfully")
 			navigation.navigate('MovesRequested')
@@ -31,7 +45,6 @@ const NewMovingRequestScreen = ({ navigation }) => {
         }catch(err){
             console.log("Error: ",err) 
 			showError(err.toString())
-
         }
     };
 

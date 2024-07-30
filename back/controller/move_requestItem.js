@@ -89,7 +89,7 @@ const deleteMoveRequestItem = async (req, res) => {
         return res.status(400).json({ message: 'No Move Request Item given' })
     try {
         const moveRequestItem = await MoveRequestItem.findByPk(requestItemID)
-        if(moveRequestItem.PhotoUrl !== ''){
+        if(moveRequestItem.PhotoUrl){
             await deletePhoto(moveRequestItem.PhotoUrl)
         }
         const result = await MoveRequestItem.destroy({ where: { uuid: requestItemID } })
