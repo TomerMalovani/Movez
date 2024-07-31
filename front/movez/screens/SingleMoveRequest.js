@@ -9,11 +9,13 @@ import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { clientAgreePriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal } from '../utils/api_price_proposals';
+import { clientAgreePriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal, removePriceProposal } from '../utils/api_price_proposals';
+import { ToastContext } from '../toastContext';
 
 const SingleMoveRequest = ({ route, navigation }) => {
 	const { moveRequest } = route.params;
 	const { token, myUuid } = useContext(TokenContext);
+	const { showError } = useContext(ToastContext);
 	const sheetRef = useRef(null);
 	const [items, setItems] = useState([]);
 	const [moveRequestInfo, setMoveRequestInfo] = useState([]);
@@ -42,12 +44,15 @@ const SingleMoveRequest = ({ route, navigation }) => {
 		setMoveRequestInfo(moveRequestInfoObj);
 	}, []);
 
+	useEffect(() => {
+		console.log("proposals", proposals);
+	}, [proposals]);
 	const handleClientAgree = async (proposalUuid) => {
 		// Handle client agree
 		const res = await clientAgreePriceProposal(token, proposalUuid);
 		const thisPropsal = proposals.find(proposal => proposal.uuid === proposalUuid);
 		const updatedProposals = proposals.map(proposal => proposal.uuid === proposalUuid ? { ...proposal, PriceStatus: newStatus } : proposal);
-		setProposals(updatedProposals);
+		setProposals([...updatedProposals]);
 
 
 	};
@@ -84,6 +89,7 @@ const SingleMoveRequest = ({ route, navigation }) => {
 	};
 
 	const handleOfferPrice = async () => {
+		try{
 		const body = {
 			RequestID: moveRequest.uuid,
 			MoverID: myUuid,
@@ -92,7 +98,15 @@ const SingleMoveRequest = ({ route, navigation }) => {
 			PriceStatus: "Pending"
 		};
 		const res = await createPriceProposal(token, body);
+
+		console.log("prop res",res.data);
+		if(res?.data)
+			setMyProposal(res.data.priceProposal);
 		// Handle response or state update if needed
+		}catch(error){
+			console.log(error)
+			showError("Error offering price");
+		}
 	};
 
 	const handleImagePress = (uri) => {
@@ -103,10 +117,35 @@ const SingleMoveRequest = ({ route, navigation }) => {
         setFullScreenImage(null);
     };
 
+	const removePropsal = async (uuid) => {
+		const res = await removePriceProposal(token, uuid);
+		const updatedProposals = proposals.filter(proposal => proposal.uuid !== uuid);
+		console.log("updatedProposals", updatedProposals)
+		setProposals([...updatedProposals]);
+		setMyProposal(null);
+	};
+
+
 	const formatDate = (dateString) => {
 		const options = { year: 'numeric', month: 'long', day: 'numeric' };
 		return new Date(dateString).toLocaleDateString(undefined, options);
 	};
+
+
+	const handleMoverFinalAceept = async (proposalUuid) => {
+		// Handle client agree
+		try{
+		const res = await moverAgreePriceProposal(token, proposalUuid);
+		console.log("res final", res)
+		const thisPropsal = myProposal;
+		setMyProposal({ ...thisPropsal, PriceStatus: res.newStatus });
+		}
+		catch(error){
+			console.log(error);
+			showError("Error accepting price");
+		}
+	};
+
 
 	const ItemsTable = () => {
 		return (
@@ -171,9 +210,10 @@ const SingleMoveRequest = ({ route, navigation }) => {
 										<Text>Status: {proposal.PriceStatus}</Text>
 									</Card.Content>
 									<Card.Actions>
+								
 										<Button onPress={() => handleClientAgree(proposal.uuid)} >Accept</Button>
-										<Button>Decline</Button>
-										<Button>Negotiate</Button>
+
+										<Button onPress={()=>removePropsal(proposal.uuid)}>Remove</Button>
 									</Card.Actions>
 								</Card>
 								
@@ -200,8 +240,14 @@ const SingleMoveRequest = ({ route, navigation }) => {
 									<Text>Your proposal</Text>
 									<Card>
 										<Card.Actions>
-													<Button onPress={() => moverAgreePriceProposal(myProposal.uuid)}>Agree</Button>
-											<Button>Negotiate</Button>
+
+													{
+														myProposal.PriceStatus === "AcceptedByClient" ? (
+															<Button onPress={() => handleMoverFinalAceept(myProposal.uuid)}>Agree</Button>
+
+														) : null
+													}
+													<Button onPress={() => removePropsal(myProposal.uuid)} >remove</Button>
 										</Card.Actions>
 										<Card.Content>
 											<Text>{myProposal.EstimatedCost}</Text>

@@ -8,8 +8,8 @@ export const createNewMoveRequest = async (token, body, numOfPhotos) => {
 	try {
 		let response;
 		console.log("body: ", body);
-		const url = `${URL}/moverequests/`;
-		console.log("numOfPhotos: ", numOfPhotos)
+		const url = `${URL}/moverequests`;
+		console.log("url47: ", url)
 		if(numOfPhotos > 0){
 			console.log("im in: ", numOfPhotos)
 			response = await postRequest(url, body, token, null, true);

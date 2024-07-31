@@ -1,5 +1,5 @@
 const { BlobServiceClient } = require('@azure/storage-blob');
-const AZURE_STORAGE_CONNECTION_STRING = 'Your_Azure_Storage_Connection_String'; //change later
+const AZURE_STORAGE_CONNECTION_STRING = ''
 const containerName = 'photos';
 
 const deletePhoto = async (photoUrl) => {
