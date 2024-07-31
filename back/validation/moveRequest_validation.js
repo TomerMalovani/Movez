@@ -59,6 +59,8 @@ const moveRequestPostValidation = async (req, res, next) => {
         const {userId} = req
         req.body.UserID = userId
         console.log(req.body)
+        req.body.moveFromCoor = JSON.parse(req.body.moveFromCoor);
+        req.body.moveToCoor = JSON.parse(req.body.moveToCoor);
         await moveRequestSchema.validate(req.body);
         next();
     } catch (error) {

@@ -92,9 +92,8 @@ const createMoveRequest = async(req,res) =>{
     console.log("body check",req.body,req.userId)
     try {
         const itemsArray = JSON.parse(items);
-       
         await Promise.all(itemsArray.map(async (item, index) => {
-            if (req.files && req.files[index] && item.Photo) {
+            if (req.files && req.files[index]) {
                 const file = req.files[index];
                 const photoFile = {
                     originalname: file.originalname,
@@ -105,18 +104,10 @@ const createMoveRequest = async(req,res) =>{
             }
         }));
 
-    }
-    catch(error){
-        console.log(error)
-        res.status(500).json({message: 'Internal Server Error', error: error.message})
-        return;
-    }
-
-    try{
         const result = await moveRequest.create({ UserID,moveStatus, moveDate, moveTime, moveFromCoor, moveToCoor,fromAddress,toAddress})
         console.log(result)
         if(result){
-            const itemsArray = items.map(item => {
+            const itemsArrayWithUrl = itemsArray.map(item => {
                 return {
                     MoveRequestID: result.uuid,
                     ItemDescription: item.ItemDescription,
@@ -128,21 +119,19 @@ const createMoveRequest = async(req,res) =>{
                     SpecialInstructions: item.SpecialInstructions,
                     PhotoUrl: item.PhotoUrl
                 }
-            })
-        const moveRequestItems = await moveRequestItem.bulkCreate(itemsArray)
+            });
+            const moveRequestItems = await moveRequestItem.bulkCreate(itemsArrayWithUrl);
         if(moveRequestItems){
             res.status(201).json({message: 'MoveRequest created successfully', moveRequest: result, moveRequestItems})
         }
-        else{
-            res.status(500).json({message: 'Failed to create MoveRequestItems'})
-        }
-        }else{
+        }   else{
             res.status(500).json({message: 'Failed to create the MoveRequest'})
         }
     }
     catch(error){
         console.log(error)
         res.status(500).json({message: 'Internal Server Error', error: error.message})
+        return;
     }
 }
 

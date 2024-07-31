@@ -16,29 +16,58 @@ const NewMovingRequestScreen = ({ navigation }) => {
 
     const handleCreateNewRequest = async () => {
         let numOfPhotos = 0;
-        try{
+        try {
             const formData = new FormData();
-            items.forEach((item, index) => {
-                formData.append(`photo${index}`, {
-                    uri: item.Photo,
-                    type: 'image/jpeg',
-                    name: `photo${index}.jpg`,
-                });
-                numOfPhotos++;
-                // Add other item fields if needed
+            items.forEach(item => {
+                if (item.Photo) {
+                    formData.append('photos', {
+                        uri: item.Photo,
+                        type: 'image/jpeg',
+                        name: `photo${numOfPhotos}.jpg`,
+                    });
+                    numOfPhotos++;
+                }
+            })
+            const updatedItems = items.map(item => {
+                return {
+                    ItemDescription: item.ItemDescription,
+                    Height: item.Height,
+                    Width: item.Width,
+                    Depth: item.Depth,
+                    Weight: item.Weight,
+                    Quantity: item.Quantity,
+                    SpecialInstructions: item.SpecialInstructions,
+                };
             });
+            
             const body = {
                 moveDate: moveDate,
+                moveTime: moveDate,
                 moveFromCoor: {type:"Point", coordinates: [locationfrom.coor.longitude,locationfrom.coor.latitude]},
-                moveToCoor:{type:"Point", coordinates: [locationto.coor.longitude,locationto.coor.latitude]},
-                fromAddress: locationfrom.address ,
+                moveToCoor: {type:"Point", coordinates: [locationto.coor.longitude,locationto.coor.latitude]},
+                fromAddress: locationfrom.address,
                 toAddress: locationto.address,
-                items: items
+                items: updatedItems
             }
             
-            formData.append('body', JSON.stringify(body));
+            console.log("moveDate: ", moveDate);
+            console.log("moveTime: ", body.moveTime);
+            
+            formData.append('moveStatus', "Pending");
+            formData.append('moveDate', moveDate.toDateString());
+            formData.append('moveTime', moveDate.toDateString());
+            formData.append('moveFromCoor', JSON.stringify(body.moveFromCoor));
+            formData.append('moveToCoor', JSON.stringify(body.moveToCoor));
+            formData.append('fromAddress', body.fromAddress);
+            formData.append('toAddress', body.toAddress);
+            formData.append('items', JSON.stringify(body.items));
+            
+            console.log('FormData entries:');
+            formData.getParts().forEach(part => {
+                console.log(part.fieldName, part || part.uri);
+            });
 
-            await createNewMoveRequest(token,formData, numOfPhotos);
+            await createNewMoveRequest(token, formData, numOfPhotos);
 			showSuccess("Request created successfully")
 			navigation.navigate('MovesRequested')
           
@@ -48,7 +77,12 @@ const NewMovingRequestScreen = ({ navigation }) => {
         }
     };
 
-
+//formData.append('moveDate', moveDate);
+           // formData.append('moveFromCoor', { type: "Point", coordinates: [locationfrom.coor.longitude, locationfrom.coor.latitude] });
+            //formData.append('moveToCoor', { type: "Point", coordinates: [locationto.coor.longitude, locationto.coor.latitude] });
+            //formData.append('fromAddress', locationfrom.address);
+            //formData.append('toAddress', locationto.address);
+            //formData.append('items', updatedItems);
 
     const renderForm = () => {
         if(locationfrom === undefined && locationto === undefined){

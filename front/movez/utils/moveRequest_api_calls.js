@@ -5,13 +5,12 @@ import { URL } from './consts'
 // items:
 // ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions
 export const createNewMoveRequest = async (token, body, numOfPhotos) => {
-
 	try {
 		let response;
 		console.log("body: ", body);
 		const url = `${URL}/moverequests/`;
 		console.log("numOfPhotos: ", numOfPhotos)
-		if(numOfPhotos>0){
+		if(numOfPhotos > 0){
 			console.log("im in: ", numOfPhotos)
 			response = await postRequest(url, body, token, null, true);
 		}
@@ -24,8 +23,6 @@ export const createNewMoveRequest = async (token, body, numOfPhotos) => {
 	} catch (error) {
 		throw error
 	}
-
-
 }
 
 export const deleteMoveRequest = async (token, uuid) => {
