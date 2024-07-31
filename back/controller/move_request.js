@@ -91,7 +91,13 @@ const createMoveRequest = async(req,res) =>{
     const { UserID,moveStatus, moveDate, moveTime, moveFromCoor, moveToCoor,fromAddress,toAddress,items} = req.body
     console.log("body check",req.body,req.userId)
     try {
-        const itemsArray = JSON.parse(items);
+        let itemsArray;
+        if(req.headers['content-type'].includes('multipart/form-data')){
+            itemsArray = JSON.parse(items);
+        }
+        else{
+            itemsArray = items;
+        }
         await Promise.all(itemsArray.map(async (item, index) => {
             if (req.files && req.files[index]) {
                 const file = req.files[index];
