@@ -175,19 +175,21 @@ const moverAgreePriceProposal = async(req,res) => {
 			res.status(404).json({message: `No Price Proposal with ID = ${priceProposalID} found`})
 		}
 	} catch (error) {
+		console.log("agree eror",error);
 		res.status(500).json({message: "Internal Server Error", error: error.message})
 	}
 }
 
 const clientAgreePriceProposal = async (req, res) => {
 	const priceProposalID = req.params.uuid
+	let result;
 	try {
 		const currRequest = await priceProposal.findOne({ where: { uuid: priceProposalID } })
 		if (currRequest.PriceStatus === "Pending") {
-			const result = await priceProposal.update({ PriceStatus: "AcceptedByClient" }, { where: { uuid: priceProposalID } })
+			 result = await priceProposal.update({ PriceStatus: "AcceptedByClient" }, { where: { uuid: priceProposalID } })
 		} else {
 			// if (currRequest.PriceStatus === "AcceptedByClient")
-			const result = await priceProposal.update({ PriceStatus: "Accepted" }, { where: { uuid: priceProposalID } })
+			 result = await priceProposal.update({ PriceStatus: "Accepted" }, { where: { uuid: priceProposalID } })
 			await MoveRequest.update({ MoveStatus: "Accepted" }, { where: { uuid: currRequest.RequestID } })
 
 		}
@@ -198,6 +200,7 @@ const clientAgreePriceProposal = async (req, res) => {
 			res.status(404).json({ message: `No Price Proposal with ID = ${priceProposalID} found` })
 		}
 	} catch (error) {
+		console.log("client aggree",error);
 		res.status(500).json({ message: "Internal Server Error", error: error.message })
 	}
 }

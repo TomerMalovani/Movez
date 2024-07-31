@@ -7,7 +7,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import { ToastContext } from '../toastContext';
 import MyModal from './UploadPictureModal';
 
-const AddItemsForm = ({ itemsState, handleCreateNewRequest }) => {
+const AddItemsForm = ({ itemsState, handleCreateNewRequest}) => {
     const [items, setItems] = itemsState;
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [pictureModalVisible, setPictureModalVisible] = useState(false);

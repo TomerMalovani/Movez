@@ -67,8 +67,11 @@ const NewMovingRequestScreen = ({ navigation }) => {
                 console.log(part.fieldName, part || part.uri);
             });
 
-            await createNewMoveRequest(token, formData, numOfPhotos);
+			await createNewMoveRequest(token, formData, numOfPhotos);
 			showSuccess("Request created successfully")
+			setLocationTo(undefined);
+			setLocationFrom(undefined);
+			setItems([]);
 			navigation.navigate('MovesRequested')
           
         }catch(err){
@@ -90,7 +93,7 @@ const NewMovingRequestScreen = ({ navigation }) => {
              setLocationFrom={setLocationFrom} setLocationTo={setLocationTo}/>
         }
         else{
-            return <AddItemsForm handleCreateNewRequest={handleCreateNewRequest} itemsState={[items, setItems] }/>
+			return <AddItemsForm handleCreateNewRequest={handleCreateNewRequest} itemsState={[items, setItems] }/>
 
         }
     };
