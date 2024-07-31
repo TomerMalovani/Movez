@@ -155,21 +155,14 @@ const getProviderPricePropasal = async (req, res) => {
 
 const moverAgreePriceProposal = async(req,res) => {
 	const priceProposalID = req.params.uuid
-	let newStatus;
 	try {
 		const currRequest = await priceProposal.findOne({where: {uuid: priceProposalID}})
-		if(currRequest.PriceStatus === "Pending"){
-		const result = await priceProposal.update({PriceStatus: "AcceptedByMover"}, {where: {uuid: priceProposalID}})
-		newStatus = "AcceptedByMover"
-	}else {
-			// if (currRequest.PriceStatus === "AcceptedByClient")
+	
 			const result = await priceProposal.update({PriceStatus: "Accepted"}, {where: {uuid: priceProposalID}})
-			await MoveRequest.update({MoveStatus: "Accepted"}, {where: {uuid: currRequest.RequestID}})
-			newStatus = "Accepted"
-
-		}
+			await MoveRequest.update({MoveStatus: "Done"}, {where: {uuid: currRequest.RequestID}})
+	
 		if(result){
-			res.status(200).json({ message: "Price Proposal Accepted", newStatus: newStatus })
+			res.status(200).json({ message: "Price Proposal Accepted", newStatus: "Done" })
 		}
 		else{
 			res.status(404).json({message: `No Price Proposal with ID = ${priceProposalID} found`})
@@ -184,15 +177,8 @@ const clientAgreePriceProposal = async (req, res) => {
 	const priceProposalID = req.params.uuid
 	let result;
 	try {
-		const currRequest = await priceProposal.findOne({ where: { uuid: priceProposalID } })
-		if (currRequest.PriceStatus === "Pending") {
-			 result = await priceProposal.update({ PriceStatus: "AcceptedByClient" }, { where: { uuid: priceProposalID } })
-		} else {
-			// if (currRequest.PriceStatus === "AcceptedByClient")
-			 result = await priceProposal.update({ PriceStatus: "Accepted" }, { where: { uuid: priceProposalID } })
-			await MoveRequest.update({ MoveStatus: "Accepted" }, { where: { uuid: currRequest.RequestID } })
-
-		}
+	    result = await priceProposal.update({ PriceStatus: "AcceptedByClient" }, { where: { uuid: priceProposalID } })
+		
 		if (result) {
 			res.status(200).json({ message: "Price Proposal Accepted" })
 		}

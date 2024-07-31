@@ -52,7 +52,7 @@ const SingleMoveRequest = ({ route, navigation }) => {
 		const res = await clientAgreePriceProposal(token, proposalUuid);
 		const thisPropsal = proposals.find(proposal => proposal.uuid === proposalUuid);
 		const updatedProposals = proposals.map(proposal => proposal.uuid === proposalUuid ? { ...proposal, PriceStatus: newStatus } : proposal);
-		setProposals(updatedProposals);
+		setProposals([...updatedProposals]);
 
 
 	};
@@ -131,6 +131,22 @@ const SingleMoveRequest = ({ route, navigation }) => {
 		return new Date(dateString).toLocaleDateString(undefined, options);
 	};
 
+
+	const handleMoverFinalAceept = async (proposalUuid) => {
+		// Handle client agree
+		try{
+		const res = await moverAgreePriceProposal(token, proposalUuid);
+		console.log("res final", res)
+		const thisPropsal = myProposal;
+		setMyProposal({ ...thisPropsal, PriceStatus: res.newStatus });
+		}
+		catch(error){
+			console.log(error);
+			showError("Error accepting price");
+		}
+	};
+
+
 	const ItemsTable = () => {
 		return (
 			<DataTable>
@@ -194,9 +210,10 @@ const SingleMoveRequest = ({ route, navigation }) => {
 										<Text>Status: {proposal.PriceStatus}</Text>
 									</Card.Content>
 									<Card.Actions>
+								
 										<Button onPress={() => handleClientAgree(proposal.uuid)} >Accept</Button>
-										<Button>Decline</Button>
-										<Button>Negotiate</Button>
+
+										<Button onPress={()=>removePropsal(proposal.uuid)}>Remove</Button>
 									</Card.Actions>
 								</Card>
 								
@@ -223,7 +240,13 @@ const SingleMoveRequest = ({ route, navigation }) => {
 									<Text>Your proposal</Text>
 									<Card>
 										<Card.Actions>
-													<Button onPress={() => moverAgreePriceProposal(myProposal.uuid)}>Agree</Button>
+
+													{
+														myProposal.PriceStatus === "AcceptedByClient" ? (
+															<Button onPress={() => handleMoverFinalAceept(myProposal.uuid)}>Agree</Button>
+
+														) : null
+													}
 													<Button onPress={() => removePropsal(myProposal.uuid)} >remove</Button>
 										</Card.Actions>
 										<Card.Content>
