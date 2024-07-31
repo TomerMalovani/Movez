@@ -33,12 +33,15 @@ const getMoveRequestItems = async (req, res) => {
 }
 
 const createMoveRequestItem = async (req, res) => {
-    const { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions} = req.body
-    let PhotoUrl = ''
+    const { MoveRequestID, ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions, Photo} = req.body
+    let PhotoUrl = null;
     try {
-        if(req.file){
-            PhotoUrl = await uploadPhoto(req.file)
-        }
+       // if(req.file){
+       //     PhotoUrl = await uploadPhoto(req.file)
+       // }
+       if(Photo){
+            PhotoUrl = await uploadPhoto(Photo)
+       }
         const result = await MoveRequestItem.create({ MoveRequestID, ItemDescription, 
             Height, Width, Depth, Weight, Quantity, SpecialInstructions, PhotoUrl})
         if (result) {
@@ -86,7 +89,7 @@ const deleteMoveRequestItem = async (req, res) => {
         return res.status(400).json({ message: 'No Move Request Item given' })
     try {
         const moveRequestItem = await MoveRequestItem.findByPk(requestItemID)
-        if(moveRequestItem.PhotoUrl !== ''){
+        if(moveRequestItem.PhotoUrl){
             await deletePhoto(moveRequestItem.PhotoUrl)
         }
         const result = await MoveRequestItem.destroy({ where: { uuid: requestItemID } })

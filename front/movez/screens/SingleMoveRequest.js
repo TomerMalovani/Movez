@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndicator } from 'react-native-paper';
+import { ScrollView, StyleSheet, View, Image, Modal as RNModal, TouchableOpacity } from 'react-native';
+import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndicator, Portal, IconButton } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
 import { showSingleMoveRequestItems } from '../utils/moveRequest_api_calls';
 import { Marker } from 'react-native-maps';
 import CustomMapView from '../Components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
+import ImageViewer from 'react-native-image-zoom-viewer';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { clientAgreePriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal } from '../utils/api_price_proposals';
 
@@ -21,6 +22,7 @@ const SingleMoveRequest = ({ route, navigation }) => {
 	const [isItMine, setIsItMine] = useState(myUuid === moveRequest.UserID);
 	const [myProposal, setMyProposal] = useState(null);
 	const [proposals, setProposals] = useState([]);
+	const [fullScreenImage, setFullScreenImage] = useState(null);
 	const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
 
 	const tableInputs = [
@@ -93,27 +95,43 @@ const SingleMoveRequest = ({ route, navigation }) => {
 		// Handle response or state update if needed
 	};
 
+	const handleImagePress = (uri) => {
+        setFullScreenImage([{ url: uri }]);
+    }
+
+    const handleFullScreenImageClose = () => {
+        setFullScreenImage(null);
+    };
+
 	const formatDate = (dateString) => {
 		const options = { year: 'numeric', month: 'long', day: 'numeric' };
 		return new Date(dateString).toLocaleDateString(undefined, options);
 	};
 
-	const ItemsTable = ()=>{
-		return(
-		<DataTable>
-			<DataTable.Header>
-				{tableInputs.map((header, index) => (
-					<DataTable.Title key={index}>{header.title}</DataTable.Title>
-				))}
-			</DataTable.Header>
-			{items.map((item, index) => (
-				<DataTable.Row key={index}>
-					{tableInputs.map((header, i) => (
-						<DataTable.Cell key={i}>{item[header.value]}</DataTable.Cell>
+	const ItemsTable = () => {
+		return (
+			<DataTable>
+				<DataTable.Header>
+					{tableInputs.map((header, index) => (
+						<DataTable.Title key={index}>{header.title}</DataTable.Title>
 					))}
-				</DataTable.Row>
-			))}
-		</DataTable>)
+				</DataTable.Header>
+				{items.map((item, index) => (
+					<View key={index}>
+						<DataTable.Row>
+							{tableInputs.map((header, i) => (
+								<DataTable.Cell key={i}>{item[header.value]}</DataTable.Cell>
+							))}
+						</DataTable.Row>
+						{item.PhotoUrl ? (              
+							<TouchableOpacity onPress={() => handleImagePress(item.PhotoUrl)}>
+                                    <Image source={{ uri: item.PhotoUrl }} style={{ width: 60, height: 60 }} />
+                            </TouchableOpacity>
+						) : null}
+					</View>
+				))}
+			</DataTable>
+		);
 	}
 
 	return (
@@ -196,6 +214,20 @@ const SingleMoveRequest = ({ route, navigation }) => {
 					)}
 				</BottomSheetScrollView>
 			</BottomSheet>
+			<Portal>
+                <RNModal visible={!!fullScreenImage} onRequestClose={handleFullScreenImageClose} transparent={true}>
+                    <>
+                        <IconButton
+                            icon="close"
+                            size={30}
+                            color="white"
+                            onPress={handleFullScreenImageClose}
+                            style={styles.closeButton}
+                        />
+                        <ImageViewer imageUrls={fullScreenImage} />
+                        </>
+                </RNModal>
+            </Portal>
 		</Surface>
 	);
 };
@@ -208,6 +240,12 @@ const styles = StyleSheet.create({
 	contentContainer: {
 		backgroundColor: "white",
 	},
+	closeButton: {
+        position: 'absolute',
+        top: 40,
+        right: 20,
+        zIndex: 1,
+    },
 });
 
 export default SingleMoveRequest;
