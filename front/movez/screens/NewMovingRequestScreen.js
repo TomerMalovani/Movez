@@ -41,33 +41,34 @@ const NewMovingRequestScreen = ({ navigation }) => {
             });
             
             const body = {
+                moveStatus: "Pending",
                 moveDate: moveDate,
                 moveTime: moveDate,
                 moveFromCoor: {type:"Point", coordinates: [locationfrom.coor.longitude,locationfrom.coor.latitude]},
-                moveToCoor: {type:"Point", coordinates: [locationto.coor.longitude,locationto.coor.latitude]},
-                fromAddress: locationfrom.address,
+                moveToCoor:{type:"Point", coordinates: [locationto.coor.longitude,locationto.coor.latitude]},
+                fromAddress: locationfrom.address ,
                 toAddress: locationto.address,
                 items: updatedItems
             }
             
-            console.log("moveDate: ", moveDate);
-            console.log("moveTime: ", body.moveTime);
-            
-            formData.append('moveStatus', "Pending");
-            formData.append('moveDate', moveDate.toDateString());
-            formData.append('moveTime', moveDate.toDateString());
-            formData.append('moveFromCoor', JSON.stringify(body.moveFromCoor));
-            formData.append('moveToCoor', JSON.stringify(body.moveToCoor));
-            formData.append('fromAddress', body.fromAddress);
-            formData.append('toAddress', body.toAddress);
-            formData.append('items', JSON.stringify(body.items));
-            
-            console.log('FormData entries:');
-            formData.getParts().forEach(part => {
-                console.log(part.fieldName, part || part.uri);
-            });
-
-            await createNewMoveRequest(token, formData, numOfPhotos);
+            if(numOfPhotos > 0){
+                formData.append('moveStatus', "Pending");
+                formData.append('moveDate', moveDate.toDateString());
+                formData.append('moveTime', moveDate.toDateString());
+                formData.append('moveFromCoor', JSON.stringify(body.moveFromCoor));
+                formData.append('moveToCoor', JSON.stringify(body.moveToCoor));
+                formData.append('fromAddress', body.fromAddress);
+                formData.append('toAddress', body.toAddress);
+                formData.append('items', JSON.stringify(body.items));
+                console.log('FormData entries:');
+                formData.getParts().forEach(part => {
+                    console.log(part.fieldName, part || part.uri);
+                });
+                await createNewMoveRequest(token, formData, numOfPhotos);
+        }
+        else{
+            await createNewMoveRequest(token, body, numOfPhotos);
+        }
 			showSuccess("Request created successfully")
 			navigation.navigate('MovesRequested')
           

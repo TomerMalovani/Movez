@@ -8,7 +8,7 @@ export const postRequest = async (url, body,token, image, isMultiPart = false) =
         const headers = {
             'authorization': token,
         };
-
+        let response;
         let formData;
         if (image) {
             formData = new FormData();
@@ -35,7 +35,7 @@ export const postRequest = async (url, body,token, image, isMultiPart = false) =
 
         console.log("formdata: ", formData);
         console.log("headers: ", headers);
-        let response = await axios.post(url, formData, { headers });
+        response = await axios.post(url, formData, { headers });
         console.log("response", response);
         return response;
     } catch (error) {
