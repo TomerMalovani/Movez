@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import AddMovingRequest from '../Components/AddMovingRequest';
-import AddItemsForm from '../Components/AddItemsForm';
+import AddMovingRequest from '../components/AddMovingRequest';
+import AddItemsForm from '../components/AddItemsForm';
 import { createNewMoveRequest } from '../utils/moveRequest_api_calls';
 import { TokenContext } from '../tokenContext';
 import { ToastContext } from '../toastContext';

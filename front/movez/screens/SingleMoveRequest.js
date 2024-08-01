@@ -4,7 +4,7 @@ import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndica
 import { TokenContext } from '../tokenContext';
 import { showSingleMoveRequestItems } from '../utils/moveRequest_api_calls';
 import { Marker } from 'react-native-maps';
-import CustomMapView from '../Components/CustomMapView';
+import CustomMapView from '../components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";

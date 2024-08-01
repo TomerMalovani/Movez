@@ -3,11 +3,11 @@ import { View, StyleSheet,Image } from 'react-native';
 import { TokenContext } from '../tokenContext';
 import { ToastContext } from '../toastContext';
 import { getAllVehicles } from '../utils/vehicle_api_calls';
-import ProfileVehicleCard from '../Components/profileVehicleCard';
+import ProfileVehicleCard from '../components/profileVehicleCard';
 import { Avatar, MD2Colors, Surface, Text,Button, ActivityIndicator, Provider } from 'react-native-paper';
 import { getProfile, uploadPhoto, deleteProfilePhoto } from '../utils/user_api_calls';
 import * as ImagePicker from 'expo-image-picker';
-import MyModal from '../Components/UploadPictureModal';
+import MyModal from '../components/UploadPictureModal';
 
 const ProfilePage = (props) => {
 	const { navigation } = props;

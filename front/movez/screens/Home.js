@@ -25,15 +25,15 @@ function HomePage({ navigation }) {
 		<View style={styles.container}>
 			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('SearchMoves')}>Search Moves Around You</Button>
 			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('MovesProvided')}>My Providing</Button>
-			<Button style={styles.button } mode='outlined' onPress={() => navigation.navigate('History')}>History</Button>
+			<Button style={styles.button } mode='outlined' onPress={() => navigation.navigate('ProvidesHistory')}>History</Button>
 		</View>
 	);
 
 	const RequesterRoute = ({ navigation }) => (
 		<View style={styles.container}>
 			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('NewMovingRequestScreen')}>Create New Request</Button>
-			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('MovesRequested')}>See My Requests</Button>
-			<Button style={styles.button } mode='outlined' onPress={() => navigation.navigate('History')}>History</Button>
+			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('Moves Requested')}>See My Requests</Button>
+			<Button style={styles.button } mode='outlined' onPress={() => navigation.navigate('Requests History')}>History</Button>
 		</View>
 	);
 

@@ -59,8 +59,6 @@ export const searchMoveRequest = async (token, lat,lng,radius) => {
 
 }
 
-
-
 export const showRequestedMoves = async (token) => {
 	try {
 		const url = `${URL}/moverequests/user`

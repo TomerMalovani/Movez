@@ -12,6 +12,7 @@ import HomePage from './screens/Home';
 import ProfilePage from './screens/Profile';
 import MyActivity from './screens/MyActivity';
 import MovesRequested from './screens/MovesRequested';
+import RequestsHistory from './screens/RequestsHistory';
 import MovesProvided from './screens/MovesProvided';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import UserVehicles from './screens/UserVehicles';
@@ -74,10 +75,11 @@ const LoggedInRoutes = () => (
 		<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
 		<Drawer.Screen name="MyActivity" component={MyActivity} />
 		<Drawer.Screen name="UserVehicles" component={UserVehicles} />
-		<Drawer.Screen name="MovesRequested" component={MovesRequested} />
+		<Drawer.Screen name="Moves Requested" component={MovesRequested} />
 		<Drawer.Screen name="MovesProvided" component={MovesProvided} />
 		<Drawer.Screen name="SingleMoveRequest" component={SingleMoveRequest} />
 		<Drawer.Screen name="SearchMoves" component={MovesSearchScreen} />
+		<Drawer.Screen name="Requests History" component={RequestsHistory} />
 	</Drawer.Navigator>
 );
 
