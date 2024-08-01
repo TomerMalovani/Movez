@@ -1,18 +1,21 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndicator } from 'react-native-paper';
+import { ScrollView, StyleSheet, View, Image, Modal as RNModal, TouchableOpacity } from 'react-native';
+import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndicator, Portal, IconButton } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
 import { showSingleMoveRequestItems } from '../utils/moveRequest_api_calls';
 import { Marker } from 'react-native-maps';
 import CustomMapView from '../components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
+import ImageViewer from 'react-native-image-zoom-viewer';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { clientAgreePriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal } from '../utils/api_price_proposals';
+import { clientAgreePriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal, removePriceProposal } from '../utils/api_price_proposals';
+import { ToastContext } from '../toastContext';
 
 const SingleMoveRequest = ({ route, navigation }) => {
 	const { moveRequest } = route.params;
 	const { token, myUuid } = useContext(TokenContext);
+	const { showError } = useContext(ToastContext);
 	const sheetRef = useRef(null);
 	const [items, setItems] = useState([]);
 	const [moveRequestInfo, setMoveRequestInfo] = useState([]);
@@ -21,6 +24,7 @@ const SingleMoveRequest = ({ route, navigation }) => {
 	const [isItMine, setIsItMine] = useState(myUuid === moveRequest.UserID);
 	const [myProposal, setMyProposal] = useState(null);
 	const [proposals, setProposals] = useState([]);
+	const [fullScreenImage, setFullScreenImage] = useState(null);
 	const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
 
 	const tableInputs = [
@@ -40,12 +44,15 @@ const SingleMoveRequest = ({ route, navigation }) => {
 		setMoveRequestInfo(moveRequestInfoObj);
 	}, []);
 
+	useEffect(() => {
+		console.log("proposals", proposals);
+	}, [proposals]);
 	const handleClientAgree = async (proposalUuid) => {
 		// Handle client agree
 		const res = await clientAgreePriceProposal(token, proposalUuid);
 		const thisPropsal = proposals.find(proposal => proposal.uuid === proposalUuid);
 		const updatedProposals = proposals.map(proposal => proposal.uuid === proposalUuid ? { ...proposal, PriceStatus: newStatus } : proposal);
-		setProposals(updatedProposals);
+		setProposals([...updatedProposals]);
 
 
 	};
@@ -82,6 +89,7 @@ const SingleMoveRequest = ({ route, navigation }) => {
 	};
 
 	const handleOfferPrice = async () => {
+		try{
 		const body = {
 			RequestID: moveRequest.uuid,
 			MoverID: myUuid,
@@ -90,30 +98,79 @@ const SingleMoveRequest = ({ route, navigation }) => {
 			PriceStatus: "Pending"
 		};
 		const res = await createPriceProposal(token, body);
+
+		console.log("prop res",res.data);
+		if(res?.data)
+			setMyProposal(res.data.priceProposal);
 		// Handle response or state update if needed
+		}catch(error){
+			console.log(error)
+			showError("Error offering price");
+		}
 	};
+
+	const handleImagePress = (uri) => {
+        setFullScreenImage([{ url: uri }]);
+    }
+
+    const handleFullScreenImageClose = () => {
+        setFullScreenImage(null);
+    };
+
+	const removePropsal = async (uuid) => {
+		const res = await removePriceProposal(token, uuid);
+		const updatedProposals = proposals.filter(proposal => proposal.uuid !== uuid);
+		console.log("updatedProposals", updatedProposals)
+		setProposals([...updatedProposals]);
+		setMyProposal(null);
+	};
+
 
 	const formatDate = (dateString) => {
 		const options = { year: 'numeric', month: 'long', day: 'numeric' };
 		return new Date(dateString).toLocaleDateString(undefined, options);
 	};
 
-	const ItemsTable = ()=>{
-		return(
-		<DataTable>
-			<DataTable.Header>
-				{tableInputs.map((header, index) => (
-					<DataTable.Title key={index}>{header.title}</DataTable.Title>
-				))}
-			</DataTable.Header>
-			{items.map((item, index) => (
-				<DataTable.Row key={index}>
-					{tableInputs.map((header, i) => (
-						<DataTable.Cell key={i}>{item[header.value]}</DataTable.Cell>
+
+	const handleMoverFinalAceept = async (proposalUuid) => {
+		// Handle client agree
+		try{
+		const res = await moverAgreePriceProposal(token, proposalUuid);
+		console.log("res final", res)
+		const thisPropsal = myProposal;
+		setMyProposal({ ...thisPropsal, PriceStatus: res.newStatus });
+		}
+		catch(error){
+			console.log(error);
+			showError("Error accepting price");
+		}
+	};
+
+
+	const ItemsTable = () => {
+		return (
+			<DataTable>
+				<DataTable.Header>
+					{tableInputs.map((header, index) => (
+						<DataTable.Title key={index}>{header.title}</DataTable.Title>
 					))}
-				</DataTable.Row>
-			))}
-		</DataTable>)
+				</DataTable.Header>
+				{items.map((item, index) => (
+					<View key={index}>
+						<DataTable.Row>
+							{tableInputs.map((header, i) => (
+								<DataTable.Cell key={i}>{item[header.value]}</DataTable.Cell>
+							))}
+						</DataTable.Row>
+						{item.PhotoUrl ? (              
+							<TouchableOpacity onPress={() => handleImagePress(item.PhotoUrl)}>
+                                    <Image source={{ uri: item.PhotoUrl }} style={{ width: 60, height: 60 }} />
+                            </TouchableOpacity>
+						) : null}
+					</View>
+				))}
+			</DataTable>
+		);
 	}
 
 	return (
@@ -153,9 +210,10 @@ const SingleMoveRequest = ({ route, navigation }) => {
 										<Text>Status: {proposal.PriceStatus}</Text>
 									</Card.Content>
 									<Card.Actions>
+								
 										<Button onPress={() => handleClientAgree(proposal.uuid)} >Accept</Button>
-										<Button>Decline</Button>
-										<Button>Negotiate</Button>
+
+										<Button onPress={()=>removePropsal(proposal.uuid)}>Remove</Button>
 									</Card.Actions>
 								</Card>
 								
@@ -182,8 +240,14 @@ const SingleMoveRequest = ({ route, navigation }) => {
 									<Text>Your proposal</Text>
 									<Card>
 										<Card.Actions>
-													<Button onPress={() => moverAgreePriceProposal(myProposal.uuid)}>Agree</Button>
-											<Button>Negotiate</Button>
+
+													{
+														myProposal.PriceStatus === "AcceptedByClient" ? (
+															<Button onPress={() => handleMoverFinalAceept(myProposal.uuid)}>Agree</Button>
+
+														) : null
+													}
+													<Button onPress={() => removePropsal(myProposal.uuid)} >remove</Button>
 										</Card.Actions>
 										<Card.Content>
 											<Text>{myProposal.EstimatedCost}</Text>
@@ -196,6 +260,20 @@ const SingleMoveRequest = ({ route, navigation }) => {
 					)}
 				</BottomSheetScrollView>
 			</BottomSheet>
+			<Portal>
+                <RNModal visible={!!fullScreenImage} onRequestClose={handleFullScreenImageClose} transparent={true}>
+                    <>
+                        <IconButton
+                            icon="close"
+                            size={30}
+                            color="white"
+                            onPress={handleFullScreenImageClose}
+                            style={styles.closeButton}
+                        />
+                        <ImageViewer imageUrls={fullScreenImage} />
+                        </>
+                </RNModal>
+            </Portal>
 		</Surface>
 	);
 };
@@ -208,6 +286,12 @@ const styles = StyleSheet.create({
 	contentContainer: {
 		backgroundColor: "white",
 	},
+	closeButton: {
+        position: 'absolute',
+        top: 40,
+        right: 20,
+        zIndex: 1,
+    },
 });
 
 export default SingleMoveRequest;

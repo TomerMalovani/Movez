@@ -2,17 +2,17 @@
 
 import axios from 'axios'
 
-export const postRequest = async (url, body,token, image) => {
+export const postRequest = async (url, body,token, image=null, isMultiPart = false) => {
     console.log("before send token", token, url);
     try {
         const headers = {
             'authorization': token,
         };
-
+        let response;
         let formData;
-        if (image) {
+        if (image ) {
             formData = new FormData();
-            formData.append('photo', {
+            formData.append('photos', {
                 uri: image.uri,
                 name: image.name,
                 type: 'image/jpeg'
@@ -23,15 +23,23 @@ export const postRequest = async (url, body,token, image) => {
             headers['Content-Type'] = 'multipart/form-data';
             console.log("headers: ", headers);
             console.log("formdata: ", formData);
-        } else {
+        } else if(isMultiPart){
+            console.log("if 1: ");
+            headers['Content-Type'] = 'multipart/form-data';
+            formData = body;
+        } 
+        else {
+            console.log("if 2: ", );
             formData = body;
         }
 
-        let response = await axios.post(url, formData, { headers });
+        console.log("formdata: ", formData);
+        console.log("headers: ", headers);
+        response = await axios.post(url, formData, { headers });
         console.log("response", response);
         return response;
     } catch (error) {
-        console.error("Error in postRequest:", error);
+		console.error("Error in postRequest:", error);
         return error.response;
     }
 }

@@ -74,6 +74,9 @@ const LoggedInRoutes = () => (
 		<Drawer.Screen name="Profile" component={ProfilePage} />
 		<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
 		<Drawer.Screen name="MyActivity" component={MyActivity} />
+		<Drawer.Screen name="My Vehicles" component={UserVehicles} />
+
+		
 		<Drawer.Screen name="UserVehicles" component={UserVehicles} />
 		<Drawer.Screen name="Moves Requested" component={MovesRequested} />
 		<Drawer.Screen name="MovesProvided" component={MovesProvided} />

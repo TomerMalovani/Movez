@@ -1,9 +1,10 @@
 const moveRequest = require("../models/index").MoveRequest
 const moveRequestItem = require("../models/index").MoveRequestItems
 const  {calculateVolume, allPermutationsOfItem} = require('../controller/move_requestItem');
+const {createMoveRequestItem, deleteMoveRequestItem} = require('../controller/move_requestItem');
 const isThereMatchBetweenMoveRequestToVehicle = require('../utils/findmatchingvehiclealgo');
-
 const VehicleInfo = require("../models/VehicleInfo");
+const { uploadPhoto, deletePhoto } = require("./photo_controller");
 
 const searchRequest = async (req,res) => {
 	// given {lat ,lng} and radius find all move requests that are within the radius 
@@ -89,13 +90,30 @@ const getMoveRequest = async(req,res)=>{
 const createMoveRequest = async(req,res) =>{
     const { UserID,moveStatus, moveDate, moveTime, moveFromCoor, moveToCoor,fromAddress,toAddress,items} = req.body
     console.log("body check",req.body,req.userId)
-
-    try{
+    try {
+        let itemsArray;
+        if(req.headers['content-type'].includes('multipart/form-data')){
+            itemsArray = JSON.parse(items);
+        }
+        else{
+            itemsArray = items;
+        }
+        await Promise.all(itemsArray.map(async (item, index) => {
+            if (req.files && req.files[index]) {
+                const file = req.files[index];
+                const photoFile = {
+                    originalname: file.originalname,
+                    buffer: file.buffer
+                };
+                item.PhotoUrl = await uploadPhoto(photoFile);
+                console.log("photo url: ", item.PhotoUrl);
+            }
+        }));
 
         const result = await moveRequest.create({ UserID,moveStatus, moveDate, moveTime, moveFromCoor, moveToCoor,fromAddress,toAddress})
         console.log(result)
         if(result){
-            const itemsArray = items.map(item => {
+            const itemsArrayWithUrl = itemsArray.map(item => {
                 return {
                     MoveRequestID: result.uuid,
                     ItemDescription: item.ItemDescription,
@@ -104,26 +122,24 @@ const createMoveRequest = async(req,res) =>{
                     Depth: item.Depth,
                     Weight: item.Weight,
                     Quantity: item.Quantity,
-                    SpecialInstructions: item.SpecialInstructions
+                    SpecialInstructions: item.SpecialInstructions,
+                    PhotoUrl: item.PhotoUrl
                 }
-            })
-        const moveRequestItems = await moveRequestItem.bulkCreate(itemsArray)
+            });
+            const moveRequestItems = await moveRequestItem.bulkCreate(itemsArrayWithUrl);
         if(moveRequestItems){
             res.status(201).json({message: 'MoveRequest created successfully', moveRequest: result, moveRequestItems})
         }
-        else{
-            res.status(500).json({message: 'Failed to create MoveRequestItems'})
-        }
-        }else{
+        }   else{
             res.status(500).json({message: 'Failed to create the MoveRequest'})
         }
     }
     catch(error){
         console.log(error)
         res.status(500).json({message: 'Internal Server Error', error: error.message})
+        return;
     }
 }
-
 
 const updateMoveRequest = async (req, res) => {
     const { UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo } = req.body;
@@ -146,22 +162,41 @@ const updateMoveRequest = async (req, res) => {
     }
 };
 
-const deleteMoveRequest = async(req,res) =>{
-    const requestID = req.query.uuid
-    try{
-        const result = await moveRequest.destroy({where: {uuid: requestID}})
-        if(result){
-            res.status(200).json({message: 'MoveRequest deleted successfully'})
-        }else{
-            res.status(404).json({message: 'MoveRequest not found'})
+const deleteMoveRequest = async (req, res) => {
+    const requestID = req.query.uuid;
+    try {
+        await deleteItems(requestID, req, res);
+        const result = await moveRequest.destroy({ where: { uuid: requestID } });
+        if (result) {
+            res.status(200).json({ message: 'MoveRequest deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'MoveRequest not found' });
         }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-    catch(error){
-        res.status(500).json({message: 'Internal Server Error', error: error.message})
+};
+
+async function deleteItems(uuid, req, res) {
+    try {
+        let items = await moveRequestItem.findAll({ where: { MoveRequestID: uuid } });
+        
+        for (let item of items) {
+            if (item.PhotoUrl) {
+                req.query.uuid = item.uuid;
+                await deleteMoveRequestItem(req, res);
+                if (res.status !== 200) {
+                    throw new Error('Failed to delete MoveRequestItem, Error: ' + res.status);
+                }
+            }
+        }
+    } catch (error) {
+        throw error;
     }
 }
 
-getAdjustedMoveRequests = async (req,res) =>{
+const getAdjustedMoveRequests = async (req,res) =>{
     const mover_id = req.query.moverId;
     try{
         const moverVehicle = await VehicleInfo.find({where: {moverId: mover_id}});

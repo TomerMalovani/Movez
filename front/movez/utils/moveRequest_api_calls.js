@@ -1,32 +1,28 @@
-import { postRequest, getRequest, deleteRequest } from './api_calls'
+import { postRequest, getRequest, deleteRequest,postPhotoRequest } from './api_calls'
 import { URL } from './consts'
 
 // UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo,items
 // items:
 // ItemDescription, Height, Width, Depth, Weight, Quantity, SpecialInstructions
-export const createNewMoveRequest = async (token, body) => {
-
+export const createNewMoveRequest = async (token, body, numOfPhotos) => {
 	try {
-
-		const url = `${URL}/moverequests/`
-		const reqBody = {
-			moveStatus: "Pending",
-			moveDate: body.moveDate,
-			moveTime: body.moveDate,
-			moveFromCoor: body.moveFromCoor,
-			moveToCoor: body.moveToCoor,
-			fromAddress: body.fromAddress,
-			toAddress: body.toAddress,
-			items: body.items
+		let response;
+		console.log("body: ", body);
+		const url = `${URL}/moverequests`;
+		console.log("url47: ", url)
+		if(numOfPhotos > 0){
+			console.log("im in: ", numOfPhotos)
+			response = await postRequest(url, body, token, null, true);
 		}
-		const response = await postRequest(url, reqBody, token)
+		else{
+			response = await postRequest(url, body, token);
+		}
+		console.log("API Response: ", response); // Log API response for debugging
 		if (response.status !== 201) throw new Error(response.message)
 		return response
 	} catch (error) {
 		throw error
 	}
-
-
 }
 
 export const deleteMoveRequest = async (token, uuid) => {
@@ -84,4 +80,8 @@ export const showSingleMoveRequestItems = async (token, moveRequestId) => {
 		console.error('Error fetching move request items:', error);
 		throw error;
 	}
+}
+
+export const uploadSingleMoveRequestItemPhoto = async ()=>{
+
 }

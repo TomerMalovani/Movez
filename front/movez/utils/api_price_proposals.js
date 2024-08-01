@@ -18,6 +18,17 @@ export const createPriceProposal = async (token, body) => {
 	}
 }
 
+export const removePriceProposal = async (token, uuid) => {
+	try {
+		const url = `${base_url}/?uuid=${uuid}`
+		const response = await deleteRequest(url, token)
+		if (response.status !== 200) throw new Error(response.message)
+		return response
+	} catch (error) {
+		throw error
+	}
+}
+
 // /proposal/request/:requestID
 export const getPriceProposalsByRequest = async (token, requestID) => {
 	try {
