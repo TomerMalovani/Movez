@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, FlatList, Alert, Text, ScrollView } from 'react-native';
-import { TextInput, Button, Card, Title, Paragraph, Portal, Modal, TouchableRipple, Avatar } from 'react-native-paper';
+import { TextInput, Button, Card, Title, Paragraph, Portal, Modal, TouchableRipple, Avatar, RadioButton } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
 import { getAllVehicles } from '../utils/vehicle_api_calls';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -16,6 +16,7 @@ const MovesSearchScreen = ({ navigation }) => {
 	const [results, setResults] = useState([]);
 	const { token } = useContext(TokenContext);
 	const [isModalVisible, setIsModalVisible] = useState(false);
+	const [isUsingAlgorithm, setIsUsingAlgorithm] = useState(true);
 	const [fullScreenImage, setFullScreenImage] = useState(null);
 
 	const columns = [
@@ -68,10 +69,10 @@ const MovesSearchScreen = ({ navigation }) => {
 	};
 
 	const handleSearch = async () => {
-		const res = await searchMoveRequest(token, location.latitude, location.longitude, radius)
+		const res = await searchMoveRequest(token, location.latitude, location.longitude, radius, isUsingAlgorithm, selectedVehicle.uuid);
 		console.log("res",res)
 		setResults(res)
-	
+		
 	};
 //TODO: add vehicle to search
 	return (
@@ -175,6 +176,22 @@ const MovesSearchScreen = ({ navigation }) => {
 					</View>
 				</Modal>
 			</Portal>
+			<RadioButton.Group onValueChange={value => setIsUsingAlgorithm(value)} value={isUsingAlgorithm}>
+				<RadioButton.Item
+					label="Use Algorithm"
+					value="true"
+					style={{ flexDirection: 'row-reverse', alignSelf: 'flex-start' }}
+					//status={ isUsingAlgorithm === 'true' ? 'checked' : 'unchecked' }
+					//onPress={() => setIsUsingAlgorithm('true')}
+				/>
+				<RadioButton.Item
+					label="Search for any result"
+					value="false"
+					style={{ flexDirection: 'row-reverse', alignSelf: 'flex-start' }}
+					//status={ isUsingAlgorithm === 'false' ? 'checked' : 'unchecked' }
+					//onPress={() => setIsUsingAlgorithm('false')}
+				/>
+			</RadioButton.Group>
 			<Button mode="contained" 
 			onPress={handleSearch} 
 			style={{ marginBottom: 16 }}
