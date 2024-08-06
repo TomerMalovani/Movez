@@ -46,7 +46,15 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true
       }
   },
-  EstimatedCost: {
+  VehicleUUID:{
+    type: DataTypes.UUID,
+    allowNull: false,
+    validate: {
+      isUUID: 4,
+      notEmpty: true
+    }
+  },
+  PriceOffer: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       validate: {

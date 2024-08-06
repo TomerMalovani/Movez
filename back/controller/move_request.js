@@ -3,7 +3,7 @@ const moveRequestItem = require("../models/index").MoveRequestItems
 const  {calculateVolume, allPermutationsOfItem} = require('../controller/move_requestItem');
 const {createMoveRequestItem, deleteMoveRequestItem} = require('../controller/move_requestItem');
 const isThereMatchBetweenMoveRequestToVehicle = require('../utils/findmatchingvehiclealgo');
-const VehicleInfo = require("../models/VehicleInfo");
+const VehicleInfo = require('../models/index').VehicleInfo;
 const { uploadPhoto, deletePhoto } = require("./photo_controller");
 
 const searchRequest = async (req,res) => {
@@ -41,16 +41,18 @@ const searchRequest = async (req,res) => {
 		});
 		console.log(results)
 		if (results){
-            if(!isUsingAlgorithm){
+            console.log("isUsingAlgorithm", isUsingAlgorithm);
+            if(isUsingAlgorithm !== true){
 			    res.status(200).json(results)
             }
             else{
+                console.log("Why AM I HERE?")
                 adjustedmoveRequests = getAdjustedMoveRequests(results, vehicleUUID);
                 if(adjustedmoveRequests){
                     res.status(200).json({message: 'matching move requests were found', adjustedmoveRequests});    
                 }
                 else{
-                    return res.status(200).json({message: 'there are no matching move requests right now'});
+                    res.status(200).json({message: 'there are no matching move requests right now'});
                 }
             }
 		}else{
@@ -209,12 +211,13 @@ async function deleteItems(uuid, req, res) {
 
 const getAdjustedMoveRequests = async (initialSearch, vehicleUUID) =>{
     try{
-        const moverVehicle = await VehicleInfo.findbyPk(vehicleUUID);
+        const moverVehicle = await VehicleInfo.findOne({where: {uuid: vehicleUUID}});
         //const moveRequests = await moveRequest.findAll({where: {moveStatus: "pending"}});
 
         if(!moverVehicle)
             return res.status(404).json({message: 'the vehicle does not exists'});
         const adjustedmoveRequests = [];
+        let moveRequest;
         for(moveRequest in initialSearch){
             const requestItems = await moveRequestItem.findAll({ where: { MoveRequestID: moveRequest.uuid } });
             if(requestItems){
@@ -229,7 +232,7 @@ const getAdjustedMoveRequests = async (initialSearch, vehicleUUID) =>{
 }
     catch(error)
     {
-        res.status(500).json({message: 'Internal Server Error', error: error.message});
+       throw error;
     }
 }
 

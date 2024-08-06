@@ -69,10 +69,10 @@ const MovesSearchScreen = ({ navigation }) => {
 	};
 
 	const handleSearch = async () => {
-		const res = await searchMoveRequest(token, location.latitude, location.longitude, radius, isUsingAlgorithm, selectedVehicle.uuid);
+		console.log("vehicleUUID: " , selectedVehicle.uuid, " isUsingAlgorithm: ", isUsingAlgorithm)
+		const res = await searchMoveRequest(token, location.latitude, location.longitude, radius, selectedVehicle.uuid, isUsingAlgorithm);
 		console.log("res",res)
 		setResults(res)
-		
 	};
 //TODO: add vehicle to search
 	return (
@@ -206,7 +206,7 @@ const MovesSearchScreen = ({ navigation }) => {
 					<Card  style={{ marginBottom: 16 }}>
 						<Card.Content>
 							<Card.Actions>
-								<Button onPress={() => navigation.navigate('SingleMoveRequest', { moveRequest: moveRequest })}>View</Button>
+								<Button onPress={() => navigation.navigate('SingleMoveRequest', { moveRequest: moveRequest, vehicle: selectedVehicle})}>View</Button>
 							</Card.Actions>
 							{/* <Title>{`req No.${item.reqNo}`}</Title> */}
 							<Paragraph>{`distance: ${moveRequest.distance}`}</Paragraph>

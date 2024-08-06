@@ -44,7 +44,7 @@ const MovesProvided = ({ navigation }) => {
 					   <Card onPress={()=>handleMoveToMove(proposal.request)}>
 						
 						<Card.Content>
-							   <Text  style={styles.cardContent}>Price: {proposal.EstimatedCost}</Text>
+							   <Text  style={styles.cardContent}>Price: {proposal.PriceOffer}</Text>
 							   <Text  style={styles.cardContent}>distance: {proposal.request.distance}</Text>
 							   <Text  style={styles.cardContent}>move date: {proposal.request.moveDate}</Text>
 							   <Text  style={styles.cardContent}>from: {proposal.request.fromAddress}</Text>

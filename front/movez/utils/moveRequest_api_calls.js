@@ -37,7 +37,7 @@ export const deleteMoveRequest = async (token, uuid) => {
 	}
 };
 
-export const searchMoveRequest = async (token, lat,lng,radius, isUsingAlgorithm, vehicleUUID) => {
+export const searchMoveRequest = async (token, lat, lng, radius, vehicleUUID, isUsingAlgorithm) => {
 	try {
 		const url = `${URL}/moverequests/search`
 		const body = {
