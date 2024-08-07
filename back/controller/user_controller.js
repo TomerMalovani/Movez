@@ -24,7 +24,7 @@ const getUser = async (req, res) => {
 }
 
 const register = async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, firstName, lastName, phoneNumber } = req.body;
     try {
 		checkUserName = await User.findOne({ where: { username } });
 		if (checkUserName) {
@@ -34,10 +34,16 @@ const register = async (req, res) => {
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
+        if(req.file){
+            PhotoUrl = await uploadPhoto(req.file);
+        }
         const user = await User.create({
             username: username,
             email: email,
             password: hashedPassword,
+            firstName: firstName,
+            lastName: lastName,
+            phoneNumber: phoneNumber,
             salt: salt,
             token: "",
             token_exp: new Date(Date.now() + 604800000) // Use new Date() to create a date object

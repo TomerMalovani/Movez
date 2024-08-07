@@ -5,13 +5,9 @@ const usersSchema = yup.object({
     username: yup.string().required(),
     password: yup.string().required(),
     email: yup.string().email().required(),
-    firstName: yup.string(),
+    firstName: yup.string().required(),
     lastName: yup.string(),
-    phoneNumber: yup.string(),
-    address: yup.string(),
-    city: yup.string(),
-    state: yup.string(),
-    zip: yup.string(),
+    phoneNumber: yup.string().required(),
     PhotoUrl: yup.string().url(),
 })
 

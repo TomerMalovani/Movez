@@ -50,6 +50,31 @@ module.exports = (sequelize, DataTypes) => {
           isEmail: true
       }
   },
+  firstName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+          notEmpty: true
+      }
+  },
+  lastName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+  },
+  phoneNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+          notEmpty: true
+      }
+  },
+  PhotoUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    validate: {
+        isUrl: true
+    }
+  },
   salt: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -70,13 +95,6 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
           isDate: true,
           notEmpty: true
-      }
-    },
-    PhotoUrl: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-          isUrl: true
       }
     }
   }, {

@@ -171,8 +171,11 @@ const ProfilePage = (props) => {
 				</Button>
 				<Text variant="headlineSmall">{user}</Text>
 				<Text variant="titleMedium">{profile.email}</Text>
+				{Object.keys(profile).map((key) => (
+				<Text key={key} variant="bodyMedium">{`${key}: ${profile[key]}`}</Text>
+				))}
 				<Button style={styles.editBtn} mode='contained'>
-				Edit user
+					Edit user information
 				</Button>
 				<Surface style={styles.butttonsCon}>
 					<Button onPress={() => navigation.navigate('My Vehicles')} icon="car" mode='text'>

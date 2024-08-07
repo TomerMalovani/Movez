@@ -6,14 +6,17 @@ import {URL} from './consts'
 // const {URL} = process.env
 
 
-export const register = async (username, email, password) => {
+export const register = async (username, email, password, firstName, lastName, phoneNumber, image) => {
     const body = {
-        username,
-        email,
-        password
+        username: username,
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber
     }
     try {
-		const respone = await postRequest(`${URL}/users/register`, body)
+		const respone = await postRequest(`${URL}/users/register`, body, null, image)
 		if (respone.status !== 201) throw new Error(respone.data.message)
 			return respone.data
     } catch (error) {
