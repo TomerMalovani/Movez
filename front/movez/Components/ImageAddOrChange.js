@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Button, Portal } from 'react-native-paper';
-import MyModal from './MyModal'; // Adjust the import according to your project structure
+import MyModal from './UploadPictureModal'; // Adjust the import according to your project structure
 
 const ImageAddOrChange = ({
   image,

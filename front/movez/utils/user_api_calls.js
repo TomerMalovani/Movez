@@ -1,4 +1,4 @@
-import { postRequest ,getRequest, postPhotoRequest, deleteRequest} from './api_calls'
+import { postRequest ,getRequest, postPhotoRequest, deleteRequest, putRequest} from './api_calls'
 import {URL} from './consts'
 // accept env variables
 // import dotenv from 'dotenv'
@@ -70,8 +70,29 @@ export const deleteProfilePhoto = async (token) => {
     try{
         const res = await deleteRequest(`${URL}/users/photo`, token);
         console.log("deleteProfilePhoto status: ", res.status)
+        if (res.user && res.status === 200) {
+			console.log("res", res)
+            console.log("res.user", res.user)
+			return res.user
+		}else throw new Error(res.message)
+    }
+    catch(error){
+        throw error
+    }
+}
+
+export const updateProfile = async (token, username, email, firstName, lastName, phoneNumber) => {
+    const body = {
+        username: username,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber
+    }
+    try{
+        const res = await putRequest(`${URL}/users`, body, token);
         if(res.status !== 200) throw new Error(res.message)
-        return res.data
+        return res.user
     }
     catch(error){
         throw error

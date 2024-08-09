@@ -148,10 +148,33 @@ const deleteProfilePhoto = async (req, res) => {
     }
 }
 
+const editProfile = async (req, res) => {
+    const uuid = req.userId;
+    const {email, firstName, lastName, phoneNumber} = req.body;
+    try {
+        const user = await User.findOne({ where: { uuid } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const [affectedRows, updatedRows] = await User.update(
+            {email, firstName, lastName, phoneNumber},{ where: { uuid }, returning: true });
+            if(affectedRows > 0){
+                res.status(200).json({message: 'Profile updated successfully', user: updatedRows[0]});
+            }
+            else{
+                res.status(500).json({message: 'Failed to update Profile'});
+            }
+    }
+    catch (error) {
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+}
+
 module.exports = {
     register,
     login,
 	getUser,
     uploadProfilePhoto,
-    deleteProfilePhoto
+    deleteProfilePhoto,
+    editProfile
 }

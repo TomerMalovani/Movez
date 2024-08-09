@@ -52,10 +52,7 @@ module.exports = (sequelize, DataTypes) => {
   },
   firstName: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-          notEmpty: true
-      }
+      allowNull: true
   },
   lastName: {
       type: DataTypes.STRING,
@@ -63,10 +60,7 @@ module.exports = (sequelize, DataTypes) => {
   },
   phoneNumber: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-          notEmpty: true
-      }
+      allowNull: true
   },
   PhotoUrl: {
     type: DataTypes.STRING,

@@ -1,13 +1,14 @@
 import React,{useState,useEffect,useContext} from 'react';
-import { View, StyleSheet,Image } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
 import { TokenContext } from '../tokenContext';
 import { ToastContext } from '../toastContext';
 import { getAllVehicles } from '../utils/vehicle_api_calls';
 import ProfileVehicleCard from '../components/profileVehicleCard';
-import { Avatar, MD2Colors, Surface, Text,Button, ActivityIndicator, Provider } from 'react-native-paper';
-import { getProfile, uploadPhoto, deleteProfilePhoto } from '../utils/user_api_calls';
+import { Avatar, MD2Colors, Surface, Text,Button, ActivityIndicator, Provider, Portal, Modal } from 'react-native-paper';
+import { getProfile, uploadPhoto, deleteProfilePhoto, updateProfile} from '../utils/user_api_calls';
 import * as ImagePicker from 'expo-image-picker';
 import MyModal from '../components/UploadPictureModal';
+import EditProfileModal from '../components/EditProfileModal';
 
 const ProfilePage = (props) => {
 	const { navigation } = props;
@@ -17,6 +18,8 @@ const ProfilePage = (props) => {
 	const [image, setImage] = useState(null);
 	const [modalVisible, setModalVisible] = useState(false);
 	const { showError, showSuccess } = useContext(ToastContext)
+	const [editModalVisible, setEditModalVisible] = useState(false);
+	const [editFields, setEditFields] = useState({});;
 
 	const getUser = async () => {
 		try {
@@ -44,6 +47,41 @@ const ProfilePage = (props) => {
 	const hideModal = () => {
 		setModalVisible(false);
 	}
+
+	const handleEditProfile = () => {
+		setEditFields({
+		  firstName: profile.firstName || '',
+		  lastName: profile.lastName || '',
+		  phoneNumber: profile.phoneNumber || '',
+		  email: profile.email || '',
+		  // Add more fields as needed
+		});
+		setEditModalVisible(true);
+	  };
+	
+	  const handleSaveProfile = async () => {
+		try {
+		  console.log('Updating profile with:', editFields);
+		  const updatedProfile = await updateProfile(token, user, editFields.email, editFields.firstName, editFields.lastName, editFields.phoneNumber);
+		  setProfile(updatedProfile);
+		  showSuccess('Profile updated successfully');
+		  setEditModalVisible(false);
+		} catch (error) {
+		  console.error('Error updating profile: ', error);
+		  showError('Error updating profile');
+		}
+	  };
+	
+	  const hideEditModal = () => {
+		setEditModalVisible(false);
+	  };
+	
+	  const handleInputChange = (field, value) => {
+		setEditFields(prevFields => ({
+		  ...prevFields,
+		  [field]: value,
+		}));
+	  };
 
 	const pickImageFromGallery = async () => {
 		// Ask for permission to access media library 
@@ -136,7 +174,9 @@ const ProfilePage = (props) => {
 			}
 		  };
 	
-		 
+		  const formatKey = (key) => {
+			return key.replace(/([a-z])([A-Z])/g, '$1 $2');
+		};
 
 	if (loading) {
 		return <ActivityIndicator animating={true} color={MD2Colors.error50} size={50} style={{ marginTop: 50 }} />;
@@ -172,10 +212,12 @@ const ProfilePage = (props) => {
 				<Text variant="headlineSmall">{user}</Text>
 				<Text variant="titleMedium">{profile.email}</Text>
 				{Object.keys(profile).map((key) => (
-				<Text key={key} variant="bodyMedium">{`${key}: ${profile[key]}`}</Text>
+					key != 'PhotoUrl' && key != 'createdAt' && key != 'updatedAt' && key != 'uuid' &&
+				 	key != 'email' && profile[key] != null && (
+				<Text key={key} variant="bodyMedium">{`${formatKey(key)}: ${profile[key]}`}</Text>)
 				))}
-				<Button style={styles.editBtn} mode='contained'>
-					Edit user information
+				<Button style={styles.editBtn} mode="contained" onPress={handleEditProfile}>
+					Edit User Information
 				</Button>
 				<Surface style={styles.butttonsCon}>
 					<Button onPress={() => navigation.navigate('My Vehicles')} icon="car" mode='text'>
@@ -190,35 +232,83 @@ const ProfilePage = (props) => {
 				pickImageFromGallery={pickImageFromGallery}
 				removeImage={removeImage}
 			  />
+			<Portal>
+				<Modal visible={editModalVisible} onDismiss={hideEditModal} contentContainerStyle={styles.modalContent}>
+					<Text variant="headlineSmall">Edit Profile Information</Text>
+					<View style={styles.inputGroup}>
+					<Text variant="bodyMedium">First Name:</Text>
+					<TextInput
+						style={styles.input}
+						value={editFields.firstName}
+						onChangeText={(value) => handleInputChange('firstName', value)}
+					/>
+					</View>
+					<View style={styles.inputGroup}>
+					<Text variant="bodyMedium">Last Name:</Text>
+					<TextInput
+						style={styles.input}
+						value={editFields.lastName}
+						onChangeText={(value) => handleInputChange('lastName', value)}
+					/>
+					</View>
+					<View style={styles.inputGroup}>
+					<Text variant="bodyMedium">Phone Number:</Text>
+					<TextInput
+						style={styles.input}
+						value={editFields.phoneNumber}
+						onChangeText={(value) => handleInputChange('phoneNumber', value)}
+					/>
+					<Text variant="bodyMedium">Email:</Text>
+					<TextInput
+						style={styles.input}
+						value={editFields.email}
+						onChangeText={(value) => handleInputChange('email', value)}
+					/>
+					</View>
+					{/* Add more fields here */}
+					<Button mode="contained" onPress={handleSaveProfile} style={styles.saveButton}>
+					Save Changes
+					</Button>
+				</Modal>
+			</Portal>
 		</Provider>
 	);
 }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        // justifyContent: 'center',
-		// borderWidth: 1,
-		
-		// padding: 20,
-		marginTop: 10,
-        alignItems: 'center',
-    },
-	butttonsCon:{
-		marginTop: 50,
-		width: "80%",
-		// display: 'flex',
-		// flexDirection: 'row',
-		// justifyContent: 'center',
-		// alignItems: 'center',
-		// flexWrap: 'wrap',
+	container: {
+	  flex: 1,
+	  marginTop: 10,
+	  alignItems: 'center',
 	},
-	editBtn:{
-		marginTop: 20,
-		padding: 10,
-		// width: "50%",
+	butttonsCon: {
+	  marginTop: 50,
+	  width: "80%",
 	},
-});
+	editBtn: {
+	  marginTop: 20,
+	  padding: 10,
+	},
+	modalContent: {
+	  padding: 20,
+	  backgroundColor: 'white',
+	  marginHorizontal: 20,
+	  borderRadius: 10,
+	},
+	inputGroup: {
+	  marginBottom: 20,
+	},
+	input: {
+	  borderWidth: 1,
+	  borderColor: '#ccc',
+	  padding: 10,
+	  borderRadius: 5,
+	  marginTop: 5,
+	},
+	saveButton: {
+	  marginTop: 20,
+	},
+  });
 
 export default ProfilePage;
