@@ -15,6 +15,7 @@ const AddOrEditVehicle = ({ handleAddVehicle, handleEditVehicle, userVehicle }) 
 
     const [vehicle, setVehicle] = useState({
         VehicleType: '',
+        VehicleModel: '',
         Depth: '',
         Width: '',
         Height: '',
@@ -23,6 +24,7 @@ const AddOrEditVehicle = ({ handleAddVehicle, handleEditVehicle, userVehicle }) 
 
     const inputs = [
         { name: 'VehicleType', type: 'text', placeholder: 'Vehicle Type' },
+        { name: 'VehicleModel', type: 'text', placeholder: 'Vehicle Model' },
         { name: 'Depth', type: 'number', placeholder: 'Depth' },
         { name: 'Width', type: 'number', placeholder: 'Width' },
         { name: 'Height', type: 'number', placeholder: 'Height' }

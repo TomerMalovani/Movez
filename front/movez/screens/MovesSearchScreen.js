@@ -24,8 +24,11 @@ const MovesSearchScreen = ({ navigation }) => {
 			// "Depth": "10.00", "Height": "15.00", "MoverID": "736bad7e-05c6-4a09-8a56-06e847ea6255", "VehicleType": "cool", "Width": "10.00"}
 			name : 'Vehicle Type',
 			selector: 'VehicleType',
-		}
-		,
+		},
+		{
+			name : 'Vehicle Model',
+			selector: 'VehicleModel',
+		},
 		{
 			name : 'Depth',
 			selector: 'Depth',
@@ -113,7 +116,7 @@ const MovesSearchScreen = ({ navigation }) => {
 			/> */}
 			<>
 			{selectedVehicle ? (
-				<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, padding: 10 }}>
+				<View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, padding: 8 }}>
 					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 						{selectedVehicle.PhotoUrl ? (
 							<Avatar.Image 
@@ -128,9 +131,12 @@ const MovesSearchScreen = ({ navigation }) => {
 								onPress={() => setIsModalVisible(true)} 
 							/>
 						)}
-						<Text style={{ fontSize: 16, marginLeft: 8 }}>{selectedVehicle.VehicleType}</Text>
+						<View style={{ marginLeft: 8 }}>
+							<Text style={{ fontSize: 16 }}>{`Vehicle Type: ${selectedVehicle.VehicleType}`}</Text>
+							<Text style={{ fontSize: 16, marginTop: 4 }}>{`Vehicle Model: ${selectedVehicle.VehicleModel}`}</Text>
+						</View>
 					</View>
-					<Button mode="contained" onPress={() => setIsModalVisible(true)}>
+					<Button mode="contained" onPress={() => setIsModalVisible(true)} style={{marginLeft: 30}}>
 						Change Vehicle
 					</Button>
 				</View>

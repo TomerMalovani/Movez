@@ -1,5 +1,5 @@
-import React,{useState,useEffect,useContext} from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import React,{useState,useEffect,useContext, useRef} from 'react';
+import { View, StyleSheet, TextInput, Alert} from 'react-native';
 import { TokenContext } from '../tokenContext';
 import { ToastContext } from '../toastContext';
 import { getAllVehicles } from '../utils/vehicle_api_calls';
@@ -8,7 +8,6 @@ import { Avatar, MD2Colors, Surface, Text,Button, ActivityIndicator, Provider, P
 import { getProfile, uploadPhoto, deleteProfilePhoto, updateProfile} from '../utils/user_api_calls';
 import * as ImagePicker from 'expo-image-picker';
 import MyModal from '../components/UploadPictureModal';
-import EditProfileModal from '../components/EditProfileModal';
 
 const ProfilePage = (props) => {
 	const { navigation } = props;
@@ -19,7 +18,11 @@ const ProfilePage = (props) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const { showError, showSuccess } = useContext(ToastContext)
 	const [editModalVisible, setEditModalVisible] = useState(false);
-	const [editFields, setEditFields] = useState({});;
+
+	const firstNameRef = useRef('');
+	const lastNameRef = useRef('');
+	const phoneNumberRef = useRef('');
+	const emailRef = useRef('');
 
 	const getUser = async () => {
 		try {
@@ -29,7 +32,10 @@ const ProfilePage = (props) => {
 			console.log(profile);
 			setProfile(profile);
 			setLoading(false);
-
+			firstNameRef.current = profile.firstName || '';
+			lastNameRef.current = profile.lastName || '';
+			phoneNumberRef.current = profile.phoneNumber || '';
+			emailRef.current = profile.email || '';
 		} catch (error) {
 			setLoading(false);
 			console.log(error);
@@ -49,21 +55,32 @@ const ProfilePage = (props) => {
 	}
 
 	const handleEditProfile = () => {
-		setEditFields({
-		  firstName: profile.firstName || '',
-		  lastName: profile.lastName || '',
-		  phoneNumber: profile.phoneNumber || '',
-		  email: profile.email || '',
-		  // Add more fields as needed
-		});
 		setEditModalVisible(true);
 	  };
 	
 	  const handleSaveProfile = async () => {
 		try {
-		  console.log('Updating profile with:', editFields);
-		  const updatedProfile = await updateProfile(token, user, editFields.email, editFields.firstName, editFields.lastName, editFields.phoneNumber);
-		  setProfile(updatedProfile);
+		  const updatedProfile = {
+			firstName: firstNameRef.current || profile.firstName,
+			lastName: lastNameRef.current || profile.lastName,
+			phoneNumber: phoneNumberRef.current || profile.phoneNumber,
+			email: emailRef.current || profile.email,
+		  };
+		  
+		  const hasChanges = 
+		  updatedProfile.firstName !== profile.firstName ||
+		  updatedProfile.lastName !== profile.lastName ||
+		  updatedProfile.phoneNumber !== profile.phoneNumber ||
+		  updatedProfile.email !== profile.email;
+	  
+		if (!hasChanges) {
+		  console.log("im here");
+		  Alert.alert('No Changes', 'Please provide some changes to update');
+		  return; // Exit the function if no changes were made
+		}
+
+		  const response = await updateProfile(token, user, updatedProfile.email, updatedProfile.firstName, updatedProfile.lastName, updatedProfile.phoneNumber);
+		  setProfile(response);
 		  showSuccess('Profile updated successfully');
 		  setEditModalVisible(false);
 		} catch (error) {
@@ -74,13 +91,6 @@ const ProfilePage = (props) => {
 	
 	  const hideEditModal = () => {
 		setEditModalVisible(false);
-	  };
-	
-	  const handleInputChange = (field, value) => {
-		setEditFields(prevFields => ({
-		  ...prevFields,
-		  [field]: value,
-		}));
 	  };
 
 	const pickImageFromGallery = async () => {
@@ -175,7 +185,7 @@ const ProfilePage = (props) => {
 		  };
 	
 		  const formatKey = (key) => {
-			return key.replace(/([a-z])([A-Z])/g, '$1 $2');
+			return key.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
 		};
 
 	if (loading) {
@@ -196,15 +206,10 @@ const ProfilePage = (props) => {
 		return (
 		<Provider>
 			<Surface elevation={0} style={styles.container}>
-				{!image ? (
-				!photoUrlExist ? (
-						<Avatar.Text color={MD2Colors.error50} size={100} label={user.charAt(0)} />
-				) : (
-					<Avatar.Image size={100} source={{ uri: profile.PhotoUrl }} />
-					//<Image  style={{ width: 100, height: 100, borderRadius: 10 }} source={{ uri: profile.PhotoUrl }} />
-				)
-				) : (
-				<Avatar.Image size={100} source={{ uri: image }} />
+				{profile.PhotoUrl || image ? (
+					<Avatar.Image size={100} source={{ uri: profile.PhotoUrl || image }} />
+					) : (
+					<Avatar.Icon size={100} icon="account" />
 				)}
 				<Button style={styles.editBtn} mode='contained' onPress={handleUploadPhoto}>
 				{buttonPictureLabel}
@@ -213,7 +218,7 @@ const ProfilePage = (props) => {
 				<Text variant="titleMedium">{profile.email}</Text>
 				{Object.keys(profile).map((key) => (
 					key != 'PhotoUrl' && key != 'createdAt' && key != 'updatedAt' && key != 'uuid' &&
-				 	key != 'email' && profile[key] != null && (
+				 	key != 'email' && key != 'username' && profile[key] != null && (
 				<Text key={key} variant="bodyMedium">{`${formatKey(key)}: ${profile[key]}`}</Text>)
 				))}
 				<Button style={styles.editBtn} mode="contained" onPress={handleEditProfile}>
@@ -239,36 +244,41 @@ const ProfilePage = (props) => {
 					<Text variant="bodyMedium">First Name:</Text>
 					<TextInput
 						style={styles.input}
-						value={editFields.firstName}
-						onChangeText={(value) => handleInputChange('firstName', value)}
+						defaultValue={profile.firstName}
+						onChangeText={(value) => (firstNameRef.current = value)}
 					/>
 					</View>
 					<View style={styles.inputGroup}>
 					<Text variant="bodyMedium">Last Name:</Text>
 					<TextInput
 						style={styles.input}
-						value={editFields.lastName}
-						onChangeText={(value) => handleInputChange('lastName', value)}
+						defaultValue={profile.lastName}
+						onChangeText={(value) => (lastNameRef.current = value)}
 					/>
 					</View>
 					<View style={styles.inputGroup}>
 					<Text variant="bodyMedium">Phone Number:</Text>
 					<TextInput
 						style={styles.input}
-						value={editFields.phoneNumber}
-						onChangeText={(value) => handleInputChange('phoneNumber', value)}
+						defaultValue={profile.phoneNumber}
+						onChangeText={(value) => (phoneNumberRef.current = value)}
 					/>
 					<Text variant="bodyMedium">Email:</Text>
 					<TextInput
 						style={styles.input}
-						value={editFields.email}
-						onChangeText={(value) => handleInputChange('email', value)}
+						defaultValue={profile.email}
+						onChangeText={(value) => (emailRef.current = value)}
 					/>
 					</View>
 					{/* Add more fields here */}
-					<Button mode="contained" onPress={handleSaveProfile} style={styles.saveButton}>
-					Save Changes
-					</Button>
+					<View style={styles.buttonGroup}>
+						<Button mode="contained" onPress={handleSaveProfile} style={styles.saveButton}>
+							Save Changes
+						</Button>
+						<Button mode="contained" onPress={hideEditModal} style={styles.cancelButton}>
+							Cancel
+						</Button>
+					</View>
 				</Modal>
 			</Portal>
 		</Provider>
@@ -306,9 +316,19 @@ const styles = StyleSheet.create({
 	  borderRadius: 5,
 	  marginTop: 5,
 	},
-	saveButton: {
-	  marginTop: 20,
-	},
+	buttonGroup: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20,
+    },
+    saveButton: {
+        flex: 1,
+        marginRight: 10,
+    },
+    cancelButton: {
+        flex: 1,
+        backgroundColor: 'red',
+    },
   });
 
 export default ProfilePage;

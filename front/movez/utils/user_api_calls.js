@@ -15,11 +15,14 @@ export const register = async (username, email, password, firstName, lastName, p
         lastName: lastName,
         phoneNumber: phoneNumber
     }
+    console.log("image: ", image)
     try {
-		const respone = await postRequest(`${URL}/users/register`, body, null, image)
-		if (respone.status !== 201) throw new Error(respone.data.message)
-			return respone.data
+		const response = await postRequest(`${URL}/users/register`, body, null, image)
+        console.log("response", response);
+		if (response.status !== 201) throw new Error (response.data.message)
+			return response.data
     } catch (error) {
+        console.log("error", error);
 		throw error
     }
 }
@@ -92,7 +95,7 @@ export const updateProfile = async (token, username, email, firstName, lastName,
     try{
         const res = await putRequest(`${URL}/users`, body, token);
         if(res.status !== 200) throw new Error(res.message)
-        return res.user
+        return res.data.user
     }
     catch(error){
         throw error

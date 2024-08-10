@@ -7,6 +7,7 @@ import {TokenContext} from '../tokenContext';
 import { ToastContext } from '../toastContext';
 import ImageAddOrChange from '../components/ImageAddOrChange';
 import FullScreenImageModal from '../components/FullScreenImageModal';
+import * as ImagePicker from 'expo-image-picker';
 
 const RegisterScreen = ({navigation}) => {
     const [password, setPassword] = useState('');
@@ -66,8 +67,8 @@ const RegisterScreen = ({navigation}) => {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
-            setChangedPhoto(true);
         }
+
         setPictureModalVisible(false);
     };
 
@@ -86,10 +87,10 @@ const RegisterScreen = ({navigation}) => {
 
         if (!result.canceled) {
             setImage(result.assets[0].uri);
-            setChangedPhoto(true);
         }
+       
         setPictureModalVisible(false);
-    };
+    }
 
     const removeImage = async () => {
         setPictureModalVisible(false);
@@ -141,6 +142,7 @@ const RegisterScreen = ({navigation}) => {
                 image={image}
                 handleImagePress={handleImagePress}
                 pictureModalVisible={pictureModalVisible}
+                setPictureModalVisible={setPictureModalVisible}
                 hideModal={hideModal}
                 pickImageFromCamera={pickImageFromCamera}
                 pickImageFromGallery={pickImageFromGallery}
@@ -152,7 +154,7 @@ const RegisterScreen = ({navigation}) => {
                     onClose={handleFullScreenImageClose} 
                 />
             </View>
-            <Button mode='contained' onPress={handleRegister}>Register</Button>
+            <Button mode='contained' onPress={handleRegister} style={{marginTop: 10}}>Register</Button>
         </View>
     );
 }

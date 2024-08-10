@@ -2,7 +2,7 @@
 
 import axios from 'axios'
 
-export const postRequest = async (url, body,token, image=null, isMultiPart = false) => {
+export const postRequest = async (url, body,token, image = null, isMultiPart = false) => {
     console.log("before send token", token, url);
     try {
         const headers = {
@@ -11,11 +11,12 @@ export const postRequest = async (url, body,token, image=null, isMultiPart = fal
         let response;
         let formData;
         if (image ) {
+            console.log("image: ", image);
             formData = new FormData();
-            formData.append('photos', {
-                uri: image.uri,
-                name: image.name,
-                type: 'image/jpeg'
+            formData.append('photo', {
+                uri: image,
+                type: 'image/jpeg',
+                name: 'photo.jpg'
             });
             Object.keys(body).forEach(key => {
                 formData.append(key, body[key]);
