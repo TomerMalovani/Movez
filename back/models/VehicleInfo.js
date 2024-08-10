@@ -35,6 +35,9 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true
       }
   },
+  VehicleModel: {
+    type: DataTypes.STRING,
+},
   Depth: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,

@@ -12,8 +12,9 @@ import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { clientAgreePriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal, removePriceProposal } from '../utils/api_price_proposals';
 import { ToastContext } from '../toastContext';
 
-const SingleMoveRequest = ({ route, navigation }) => {
-	const { moveRequest } = route.params;
+const SingleMoveRequest = ({ route, navigation}) => {
+	const { moveRequest, vehicle} = route.params;
+	const {selectedVehicle} = vehicle;
 	const { token, myUuid } = useContext(TokenContext);
 	const { showError } = useContext(ToastContext);
 	const sheetRef = useRef(null);
@@ -46,15 +47,15 @@ const SingleMoveRequest = ({ route, navigation }) => {
 
 	useEffect(() => {
 		console.log("proposals", proposals);
+		
 	}, [proposals]);
+
 	const handleClientAgree = async (proposalUuid) => {
 		// Handle client agree
 		const res = await clientAgreePriceProposal(token, proposalUuid);
 		const thisPropsal = proposals.find(proposal => proposal.uuid === proposalUuid);
 		const updatedProposals = proposals.map(proposal => proposal.uuid === proposalUuid ? { ...proposal, PriceStatus: newStatus } : proposal);
 		setProposals([...updatedProposals]);
-
-
 	};
 
 
@@ -94,7 +95,8 @@ const SingleMoveRequest = ({ route, navigation }) => {
 			RequestID: moveRequest.uuid,
 			MoverID: myUuid,
 			MovingID: moveRequest.UserID,
-			EstimatedCost: price,
+			VehicleUUID: vehicle.uuid,
+			PriceOffer: price,
 			PriceStatus: "Pending"
 		};
 		const res = await createPriceProposal(token, body);
@@ -225,7 +227,8 @@ const SingleMoveRequest = ({ route, navigation }) => {
 							{!myProposal ? (
 								<>
 										<ItemsTable/>
-									<Text>Offer a price?</Text>
+									<Text style={{padding: 5}}>Offer a price?</Text>
+									<Text style={{padding: 5}}>Vehicle Using: {vehicle.VehicleType}</Text>
 									<TextInput
 										keyboardType="numeric"
 										label="Price"

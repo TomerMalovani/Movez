@@ -18,7 +18,7 @@ const getVehicleInfo = async(req,res)=>{
 //note: vehicle id should'nt be required from the user
 // the vehicle id should be an internal DB value and be provided by us
 const createVehicleInfo = async(req, res) => {
-  const {  VehicleType, Depth, Width , Height } = req.body;
+  const {  VehicleType, VehicleModel ,Depth, Width , Height } = req.body;
 	const MoverID = req.userId;
   let PhotoUrl = null;
   
@@ -26,7 +26,7 @@ const createVehicleInfo = async(req, res) => {
       if (req.file) {
         PhotoUrl = await uploadPhoto(req.file);
       }
-      const result = await vehicleInfo.create({MoverID, VehicleType, Depth, Width, Height, PhotoUrl});
+      const result = await vehicleInfo.create({MoverID, VehicleType, VehicleModel, Depth, Width, Height, PhotoUrl});
       if (result) {
         res.status(201).json({ msg: 'VehicleInfo created successfully', vehicleInfo: result});
       } else {
@@ -39,10 +39,10 @@ const createVehicleInfo = async(req, res) => {
     }
 }
 const updateVehicleInfo = async (req, res) => {
-  const { MoverID, VehicleType, Depth, Width, Height} = req.body;
+  const { MoverID, VehicleType, VehicleModel,Depth, Width, Height} = req.body;
   const vehicleID = req.query.uuid; // Assuming vehicleID is passed in the URL
   let PhotoUrl = null;
-  vehicle= await vehicleInfo.findByPk(vehicleID);
+  vehicle = await vehicleInfo.findByPk(vehicleID);
   if(!vehicle){
     return res.status(404).json({ message: 'Vehicle not found' });
   }
@@ -64,7 +64,7 @@ const updateVehicleInfo = async (req, res) => {
           }
       }
       const [affectedRows, updatedRows] = await vehicleInfo.update(
-          { MoverID, VehicleType, Depth, Width, Height, PhotoUrl},
+          { MoverID, VehicleType, VehicleModel, Depth, Width, Height, PhotoUrl},
           { where: { uuid: vehicleID }, returning: true}
       );
 

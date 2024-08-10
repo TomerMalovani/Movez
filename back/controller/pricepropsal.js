@@ -21,8 +21,8 @@ const getPriceProposal = async(req,res) => {
 }
 
 const createPriceProposal = async(req,res) => {
-    const {RequestID, MoverID, MovingID, EstimatedCost, PriceStatus} = req.body
-    console.log(RequestID, MoverID, MovingID, EstimatedCost, PriceStatus)
+    const {RequestID, MoverID, MovingID, VehicleUUID, PriceOffer, PriceStatus} = req.body
+    console.log(RequestID, MoverID, MovingID, PriceOffer, PriceStatus)
     console.log('im here')
     try {
         //const result = await pool.query(
@@ -30,7 +30,7 @@ const createPriceProposal = async(req,res) => {
         //    (PriceProposalID, RequestID, MoverID, MovingID, EstimatedCost, PriceStatus)
         //     VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`, 
         //     [pricePropsalID, RequestID, MoverID, MovingID, EstimatedCost, PriceStatus])
-        const result = await priceProposal.create({RequestID, MoverID, MovingID, EstimatedCost, PriceStatus})
+        const result = await priceProposal.create({RequestID, MoverID, MovingID, VehicleUUID, PriceOffer, PriceStatus})
         if(result){
             res.status(201).json({message: "Price Proposal Created Successfully", priceProposal: result})
         }
@@ -43,7 +43,7 @@ const createPriceProposal = async(req,res) => {
 }
 
 const updatePriceProposal = async (req, res) => {
-    const { RequestID, MoverID, MovingID, EstimatedCost, PriceStatus } = req.body;
+    const { RequestID, MoverID, MovingID, VehicleUUID, PriceOffer, PriceStatus } = req.body;
     const priceProposalID = req.query.uuid;
 
    // if (!PriceStatus && !RequestID && !MoverID && !MovingID &EstimatedCost) {
@@ -52,7 +52,7 @@ const updatePriceProposal = async (req, res) => {
 
     try {
         const [numOfRowsAffected, affectedRows] = await priceProposal.update(
-            { RequestID, MoverID, MovingID, EstimatedCost, PriceStatus },
+            { RequestID, MoverID, MovingID, VehicleUUID, PriceOffer, PriceStatus },
             { where: { uuid: priceProposalID }, returning: true}
         );
 

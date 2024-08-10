@@ -14,6 +14,10 @@ const ProfileVehicleCard = ({ handleDelete, handleEditModalOpen,vehicles, handle
 		}
 		,
 		{
+			name : 'Vehicle Model',
+			selector: 'VehicleModel',
+		},
+		{
 			name : 'Depth',
 			selector: 'Depth',
 		},

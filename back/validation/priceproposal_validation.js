@@ -5,7 +5,8 @@ const priceProposalSchema = yup.object({
     RequestID: yup.string().required(),
     MoverID: yup.string().required(),
     MovingID: yup.string().required(),
-    EstimatedCost: yup.number().required(),
+    VehicleUUID: yup.string().required(),
+    PriceOffer: yup.number().required(),
     PriceStatus: yup.string().required(),
 })
 
@@ -14,19 +15,21 @@ const priceProposalUpdateSchema = yup.lazy((values) =>
         RequestID: yup.string(),
         MoverID: yup.string(),
         MovingID: yup.string(),
-        EstimatedCost: yup.number(),
+        VehicleUUID: yup.string(),
+        PriceOffer: yup.number(),
     }).test({
         name: 'at-least-one-field',
         exclusive: true,
         message:
-            'At least one of the following fields is required: RequestID, MoverID, MovingID, EstimatedCost',
+            'At least one of the following fields is required: RequestID, MoverID, MovingID, VehicleUUID, PriceOffer',
         test: (obj) =>
             Object.keys(obj).some(
                 (key) =>
                     key === 'RequestID' ||
                     key === 'MoverID' ||
                     key === 'MovingID' ||
-                    key === 'EstimatedCost',
+                    key === 'VehicleUUID' ||
+                    key === 'PriceOffer',
             ),
     })
 );
