@@ -102,9 +102,36 @@ module.exports = (sequelize, DataTypes) => {
 			`SELECT ST_DistanceSphere(ST_GeomFromText('POINT(${moveRequest.moveFromCoor.coordinates[0]} ${moveRequest.moveFromCoor.coordinates[1]})'), ST_GeomFromText('POINT(${moveRequest.moveToCoor.coordinates[0]} ${moveRequest.moveToCoor.coordinates[1]})'))`
 		);
 		moveRequest.distance = distance[0][0].st_distancesphere;
-
-
 	});
+
+  
+  // afterFind hook to check if the move time has passed
+
+  MoveRequest.afterFind(async (moveRequests, options) => {
+
+    if (moveRequests) {
+
+      const now = new Date();
+
+      // Handle both single instance and array of instances
+
+      const moveRequestsArray = Array.isArray(moveRequests) ? moveRequests : [moveRequests];
+      
+      for (let moveRequest of moveRequestsArray) {
+
+        if (moveRequest.moveTime < now && moveRequest.moveStatus !== 'Canceled') {
+
+          moveRequest.moveStatus = 'Canceled';
+
+          await moveRequest.save();
+
+        }
+
+      }
+
+    }
+
+  });
 
   return MoveRequest;
 };
