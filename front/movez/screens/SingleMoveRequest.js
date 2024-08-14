@@ -14,7 +14,6 @@ import { ToastContext } from '../toastContext';
 
 const SingleMoveRequest = ({ route, navigation}) => {
 	const { moveRequest, vehicle} = route.params;
-	const {selectedVehicle} = vehicle;
 	const { token, myUuid } = useContext(TokenContext);
 	const { showError } = useContext(ToastContext);
 	const sheetRef = useRef(null);
