@@ -4,6 +4,7 @@ const vehicleInfoSchema = yup.object({
     uuid: yup.string(),
     MoverID: yup.string().uuid().required(),
     VehicleType: yup.string().required(),
+    VehicleModel: yup.string(),
     Depth: yup.number().required(),
     Width: yup.number().required(),
     Height: yup.number().required(),
@@ -14,6 +15,7 @@ const vehicleInfoUpdateSchema = yup.lazy((values) =>
     yup.object().shape({
         MoverID: yup.string().uuid(),
         VehicleType: yup.string(),
+        VehicleModel: yup.string(),
         Depth: yup.number(),
         Width: yup.number(),
         Height: yup.number(),
@@ -27,6 +29,7 @@ const vehicleInfoUpdateSchema = yup.lazy((values) =>
                 (key) =>
                     key === 'MoverID' ||
                     key === 'VehicleType' ||
+                    key === 'VehicleModel' ||
                     key === 'Depth' ||
                     key === 'Width' ||
                     key === 'Height'

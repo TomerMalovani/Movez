@@ -37,13 +37,15 @@ export const deleteMoveRequest = async (token, uuid) => {
 	}
 };
 
-export const searchMoveRequest = async (token, lat,lng,radius) => {
+export const searchMoveRequest = async (token, lat, lng, radius, vehicleUUID, isUsingAlgorithm) => {
 	try {
 		const url = `${URL}/moverequests/search`
 		const body = {
 			lat: lat,
 			lng: lng,
-			radius: radius
+			radius: radius,
+			vehicleUUID: vehicleUUID,
+			isUsingAlgorithm: isUsingAlgorithm
 		}
 		const response = await postRequest(url, body,token)
 		console.log("API Response:", response); // Log API response for debugging
@@ -54,8 +56,6 @@ export const searchMoveRequest = async (token, lat,lng,radius) => {
 	}
 
 }
-
-
 
 export const showRequestedMoves = async (token) => {
 	try {

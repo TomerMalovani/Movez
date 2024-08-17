@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { ActivityIndicator, Button, MD2Colors, Modal, Portal } from 'react-native-paper';
-import ProfileVehicleCard from '../Components/profileVehicleCard';
+import ProfileVehicleCard from '../components/profileVehicleCard';
 import { deleteVehicle, getAllVehicles } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
 import AddOrEditVehicle from './AddOrEditVehicle';

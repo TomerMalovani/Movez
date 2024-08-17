@@ -12,7 +12,9 @@ import HomePage from './screens/Home';
 import ProfilePage from './screens/Profile';
 import MyActivity from './screens/MyActivity';
 import MovesRequested from './screens/MovesRequested';
+import RequestsHistory from './screens/RequestsHistory';
 import MovesProvided from './screens/MovesProvided';
+import ProvidingsHistory from './screens/ProvidingsHistory';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import UserVehicles from './screens/UserVehicles';
 import SingleMoveRequest from './screens/SingleMoveRequest';
@@ -77,9 +79,15 @@ const LoggedInRoutes = () => (
 
 		
 		<Drawer.Screen name="UserVehicles" component={UserVehicles} />
-		<Drawer.Screen name="MovesRequested" component={MovesRequested} />
-		<Drawer.Screen name="MovesProvided" component={MovesProvided} />
-		<Drawer.Screen name="SingleMoveRequest" component={SingleMoveRequest} />
+		<Drawer.Screen name="Moves Requested" component={MovesRequested} />
+		<Drawer.Screen name="Requests History" component={RequestsHistory} />
+		<Drawer.Screen name="Moves Provided" component={MovesProvided} />
+		<Drawer.Screen name="Providings History" component={ProvidingsHistory} />
+		<Drawer.Screen 
+			name="SingleMoveRequest" 
+			component={SingleMoveRequest} 
+			options={{ unmountOnBlur: true }} 
+		/>
 		<Drawer.Screen name="SearchMoves" component={MovesSearchScreen} />
 	</Drawer.Navigator>
 );
@@ -113,7 +121,11 @@ const ProviderStack = () => (
     <Stack.Screen name="Profile" component={ProfilePage} />
     <Stack.Screen name="My Vehicles" component={UserVehicles} />
     <Stack.Screen name="Moves Provided" component={MovesProvided} />
-    <Stack.Screen name="SingleMoveRequest" component={SingleMoveRequest} />
+    <Stack.Screen 
+		name="SingleMoveRequest" 
+		component={SingleMoveRequest} 
+		options={{ unmountOnBlur: true }}  
+	/>
   </Stack.Navigator>
 );
 
@@ -124,7 +136,11 @@ const RequesterStack = () => (
     <Stack.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
     <Stack.Screen name="MyActivity" component={MyActivity} />
     <Stack.Screen name="Moves Requested" component={MovesRequested} />
-    <Stack.Screen name="SingleMoveRequest" component={SingleMoveRequest} />
+    <Stack.Screen 
+		name="SingleMoveRequest" 
+		component={SingleMoveRequest} 
+		options={{ unmountOnBlur: true }}   
+	/>
   </Stack.Navigator>
 );
 

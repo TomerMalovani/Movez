@@ -3,7 +3,7 @@ import { Text, TextInput, Button, Icon, MD3Colors, Avatar, Portal } from 'react-
 import { View, StyleSheet, Alert } from 'react-native';
 import { createVehicle, editVehicle, deleteVehiclePhoto } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
-import MyModal from '../Components/UploadPictureModal';
+import MyModal from '../components/UploadPictureModal';
 import * as ImagePicker from 'expo-image-picker';
 
 const AddOrEditVehicle = ({ handleAddVehicle, handleEditVehicle, userVehicle }) => {
@@ -15,6 +15,7 @@ const AddOrEditVehicle = ({ handleAddVehicle, handleEditVehicle, userVehicle }) 
 
     const [vehicle, setVehicle] = useState({
         VehicleType: '',
+        VehicleModel: '',
         Depth: '',
         Width: '',
         Height: '',
@@ -23,6 +24,7 @@ const AddOrEditVehicle = ({ handleAddVehicle, handleEditVehicle, userVehicle }) 
 
     const inputs = [
         { name: 'VehicleType', type: 'text', placeholder: 'Vehicle Type' },
+        { name: 'VehicleModel', type: 'text', placeholder: 'Vehicle Model' },
         { name: 'Depth', type: 'number', placeholder: 'Depth' },
         { name: 'Width', type: 'number', placeholder: 'Width' },
         { name: 'Height', type: 'number', placeholder: 'Height' }
