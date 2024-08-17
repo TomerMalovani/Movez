@@ -71,18 +71,18 @@ const DrawerComponent = (props) => {
 
 const LoggedInRoutes = () => (
 	<Drawer.Navigator drawerContent={(props) => <DrawerComponent {...props} />}>
-		<Drawer.Screen name="Home" component={HomePage} />
-		<Drawer.Screen name="Profile" component={ProfilePage} />
-		<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
-		<Drawer.Screen name="MyActivity" component={MyActivity} />
-		<Drawer.Screen name="My Vehicles" component={UserVehicles} />
+		<Drawer.Screen options={{ unmountOnBlur: true }}  name="Home" component={HomePage} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="Profile" component={ProfilePage} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="MyActivity" component={MyActivity} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="My Vehicles" component={UserVehicles} />
 
 		
-		<Drawer.Screen name="UserVehicles" component={UserVehicles} />
-		<Drawer.Screen name="Moves Requested" component={MovesRequested} />
-		<Drawer.Screen name="Requests History" component={RequestsHistory} />
-		<Drawer.Screen name="Moves Provided" component={MovesProvided} />
-		<Drawer.Screen name="Providings History" component={ProvidingsHistory} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="UserVehicles" component={UserVehicles} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="Moves Requested" component={MovesRequested} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="Requests History" component={RequestsHistory} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="Moves Provided" component={MovesProvided} />
+		<Drawer.Screen options={{ unmountOnBlur: true }} name="Providings History" component={ProvidingsHistory} />
 		<Drawer.Screen 
 			name="SingleMoveRequest" 
 			component={SingleMoveRequest} 

@@ -73,7 +73,7 @@ const NewMovingRequestScreen = ({ navigation }) => {
 			setLocationTo(undefined);
 			setLocationFrom(undefined);
 			setItems([]);
-			navigation.navigate('MovesRequested')
+			navigation.navigate('Moves Requested')
           
         }catch(err){
             console.log("Error: ",err) 

@@ -274,12 +274,14 @@ const AddItemsForm = ({ itemsState, handleCreateNewRequest}) => {
 const styles = StyleSheet.create({
     text: {
         textAlign: 'center',
-        fontSize: 20,
+        fontSize: 10,
     },
     modal: {
         backgroundColor: 'white',
         margin: 20,
         padding: 20,
+		overflow:'scroll',
+		height: '100%',
     },
     button: {
         margin: 10,
