@@ -23,7 +23,7 @@ import { TokenProvider, TokenContext } from './tokenContext';
 import { TabProvider, useTab } from './TabContext';
 import { ToastProvider } from './toastContext';
 import MovesSearchScreen from './screens/MovesSearchScreen';
-
+import Chat from './screens/Chat';
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -55,7 +55,7 @@ const DrawerComponent = (props) => {
 					<DrawerItem label="New Moving Request" onPress={() => props.navigation.navigate('NewMovingRequestScreen')} />
 					<DrawerItem label="My Activity" onPress={() => props.navigation.navigate('MyActivity')} />
 					<DrawerItem label="My Vehicles" onPress={() => props.navigation.navigate('UserVehicles')} />
-					
+					<DrawerItem label="Chat" onPress={()=> props.navigation.navigate('Chat')}/>
 					<DrawerItem label="Search Moves" onPress={() => props.navigation.navigate('SearchMoves')} />
 
 				</>
@@ -76,7 +76,7 @@ const LoggedInRoutes = () => (
 		<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
 		<Drawer.Screen name="MyActivity" component={MyActivity} />
 		<Drawer.Screen name="My Vehicles" component={UserVehicles} />
-
+        <Drawer.Screen name="Chat" component={Chat}/>
 		
 		<Drawer.Screen name="UserVehicles" component={UserVehicles} />
 		<Drawer.Screen name="Moves Requested" component={MovesRequested} />

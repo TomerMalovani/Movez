@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('back:server');
 var http = require('http');
+const socketIo = require('socket.io');
+const users = {};
 
 /**
  * Get port from environment and store in Express.
@@ -20,7 +22,26 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+      origin: '*'
+  }
+});
 
+io.on('connection', (socket) => {
+  // Storing the socket
+  console.log("socket connected");
+  users[socket.handshake.query.username] = socket.id;
+
+  socket.on('private message', ({ content, to }) => {
+    console.log("content",content);
+      const targetSocketId = users[to];
+      io.to(targetSocketId).emit('private message', {
+          content,
+          from: socket.username,
+      });
+  });
+});
 /**
  * Listen on provided port, on all network interfaces.
  */
