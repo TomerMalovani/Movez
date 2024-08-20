@@ -83,7 +83,11 @@ const LoggedInRoutes = () => (
 		<Drawer.Screen name="Requests History" component={RequestsHistory} />
 		<Drawer.Screen name="Moves Provided" component={MovesProvided} />
 		<Drawer.Screen name="Providings History" component={ProvidingsHistory} />
-		<Drawer.Screen name="SingleMoveRequest" component={SingleMoveRequest} />
+		<Drawer.Screen 
+			name="SingleMoveRequest" 
+			component={SingleMoveRequest} 
+			options={{ unmountOnBlur: true }} 
+		/>
 		<Drawer.Screen name="SearchMoves" component={MovesSearchScreen} />
 	</Drawer.Navigator>
 );
@@ -117,7 +121,11 @@ const ProviderStack = () => (
     <Stack.Screen name="Profile" component={ProfilePage} />
     <Stack.Screen name="My Vehicles" component={UserVehicles} />
     <Stack.Screen name="Moves Provided" component={MovesProvided} />
-    <Stack.Screen name="SingleMoveRequest" component={SingleMoveRequest} />
+    <Stack.Screen 
+		name="SingleMoveRequest" 
+		component={SingleMoveRequest} 
+		options={{ unmountOnBlur: true }}  
+	/>
   </Stack.Navigator>
 );
 
@@ -128,7 +136,11 @@ const RequesterStack = () => (
     <Stack.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
     <Stack.Screen name="MyActivity" component={MyActivity} />
     <Stack.Screen name="Moves Requested" component={MovesRequested} />
-    <Stack.Screen name="SingleMoveRequest" component={SingleMoveRequest} />
+    <Stack.Screen 
+		name="SingleMoveRequest" 
+		component={SingleMoveRequest} 
+		options={{ unmountOnBlur: true }}   
+	/>
   </Stack.Navigator>
 );
 
