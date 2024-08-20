@@ -4,6 +4,7 @@ const { uploadPhoto, deletePhoto, updatePhoto } = require('../controller/photo_c
 const getVehicleInfo = async(req,res)=>{
 	const vehicleID = req.query.uuid
     try {
+    console.log("vehicle_page try to get vehicle information");
     const vehicleInformation = await vehicleInfo.findByPk(vehicleID)
     if(!vehicleInformation){
         return res.status(404).json({msg: `No Vehicle With ${vehicleID} id`});
@@ -15,6 +16,7 @@ const getVehicleInfo = async(req,res)=>{
     error.message})
     }
 }
+
 //note: vehicle id should'nt be required from the user
 // the vehicle id should be an internal DB value and be provided by us
 const createVehicleInfo = async(req, res) => {

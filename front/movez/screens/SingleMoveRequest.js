@@ -227,7 +227,6 @@ const SingleMoveRequest = ({ route, navigation}) => {
 								<>
 										<ItemsTable/>
 									<Text style={{padding: 5}}>Offer a price?</Text>
-									<Text style={{padding: 5}}>Vehicle Using: {vehicle.VehicleType}</Text>
 									<TextInput
 										keyboardType="numeric"
 										label="Price"

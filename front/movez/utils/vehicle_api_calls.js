@@ -14,9 +14,26 @@ export const getAllVehicles = async (token) => {
 		console.log(err)
 		throw new Error(err)
 	}
-	
-
 }
+
+
+export const getVehicleByVehicleUUID = async (token, vehicleUUID) => {
+    try {
+		const url = `${URL}/vehicle_info/?uuid=${vehicleUUID}`;
+		console.log("the url: ", url);
+		const data = await getRequest(url, token);
+
+        if (data.message !== "success") {
+            throw new Error(data.message);
+        }
+
+        return data.VehicleInfo;
+    } catch (err) {
+        console.error("Error fetching vehicle info by UUID:", err);
+        throw new Error(err);
+    }
+};
+
 
 export const createVehicle = async (token, vehicle, image) => {
 

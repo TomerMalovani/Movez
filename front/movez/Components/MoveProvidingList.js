@@ -2,19 +2,22 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { Text, Card, Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { getPriceProposalForProvider } from '../utils/api_price_proposals';
+import { getVehicleByVehicleUUID } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
 
-const MoveProvidingList = ({ navigation, filterStatus }) => {
+const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
+    console.log("Props received in MoveProvidingList.js:", { navigation, filterStatus, selectedVehicle }); // Add this line
     const [proposals, setProposals] = useState([]);
     const [loading, setLoading] = useState(true);
     const { token, myUuid } = useContext(TokenContext);
 
     const fetchProposals = async () => {
         try {
-            const data = await getPriceProposalForProvider(token, myUuid);
-            console.log("Provided moves data:", data); // Log API response for debugging
+            console.log("MOve Providing List- try fetching price proposals for provider");
+            const data = await getPriceProposalForProvider(token, myUuid);//requests that the current provider gave offer on
+            console.log("MoveProvidingList- Provided moves data:", data); // Log API response for debugging
             if (data && Array.isArray(data)) {
-                const filteredData = data.filter(proposal => filterStatus.includes(proposal.request.moveStatus));
+                const filteredData = data.filter(proposal => proposal.request && filterStatus.includes(proposal.request.moveStatus));
                 setProposals(filteredData);
             } else {
                 console.log("No proposals found");
@@ -26,9 +29,24 @@ const MoveProvidingList = ({ navigation, filterStatus }) => {
         }
     };
 
-    const handleProposalClick = (item) => {
-        navigation.navigate('SingleMoveRequest', { moveRequest: item.request });
+    const handleProposalClick = async (item) => {
+        try {
+            console.log("Proposal clicked:", item); 
+            const selectedVehicleUUID = item.VehicleUUID;
+    
+            const vehicleInfo = await getVehicleByVehicleUUID(token, selectedVehicleUUID);
+            console.log("Fetched vehicle info:", vehicleInfo);
+    
+            navigation.navigate('SingleMoveRequest', { 
+                moveRequest: item.request, 
+                selectedVehicle: vehicleInfo // Pass the full vehicle info
+            });
+        } catch (error) {
+            console.error("Error fetching vehicle info:", error);
+            // Handle error (e.g., show an alert or fallback to default behavior)
+        }
     };
+    
 
     useEffect(() => {
         fetchProposals();

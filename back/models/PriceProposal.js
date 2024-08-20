@@ -1,77 +1,72 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class PriceProposal extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
       this.belongsTo(models.Users, { foreignKey: 'MoverID' });
       this.belongsTo(models.Users, { foreignKey: 'MovingID' });
-      this.belongsTo(models.MoveRequest, { foreignKey: 'uuid' })
+      this.belongsTo(models.MoveRequest, { foreignKey: 'RequestID', as: 'request' });
+      this.belongsTo(models.VehicleInfo, { foreignKey: 'VehicleUUID', as: 'vehicle' }); // Associate Vehicle
     }
   }
+
   PriceProposal.init({
     uuid: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
-  },
-  RequestID:{
+    },
+    RequestID: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
-          isUUID: 4,
-          notEmpty: true
+        isUUID: 4,
+        notEmpty: true
       }
-  },
-  MoverID: {
+    },
+    MoverID: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
-          isUUID: 4,
-          notEmpty: true
+        isUUID: 4,
+        notEmpty: true
       }
-  },
-  MovingID: {
+    },
+    MovingID: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
-          isUUID: 4,
-          notEmpty: true
+        isUUID: 4,
+        notEmpty: true
       }
-  },
-  VehicleUUID:{
-    type: DataTypes.UUID,
-    allowNull: false,
-    validate: {
-      isUUID: 4,
-      notEmpty: true
-    }
-  },
-  PriceOffer: {
+    },
+    VehicleUUID: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      validate: {
+        isUUID: 4,
+        notEmpty: true
+      }
+    },
+    PriceOffer: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
       validate: {
-          isDecimal: true,
-          notEmpty: true
+        isDecimal: true,
+        notEmpty: true
       }
     },
-  PriceStatus: {
+    PriceStatus: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-          notEmpty: true
+        notEmpty: true
+      }
     }
-  }
   }, {
     sequelize,
     modelName: 'PriceProposal',
   });
+
   return PriceProposal;
 };

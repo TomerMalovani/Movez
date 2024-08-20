@@ -128,6 +128,7 @@ const findProposalByMoverAndRequest = async(req,res) => {
 	}
 }
 
+
 const getProviderPricePropasal = async (req, res) => {
 	const moverID = req.params.moverID;
 	try {
@@ -147,10 +148,9 @@ const getProviderPricePropasal = async (req, res) => {
 			res.status(404).json({ message: `No proposals found for Mover with ID = ${moverID}` });
 		}
 	} catch (error) {
-		res.status(500).json({ message: "Internal Server Error", error: error.message });
+		res.status(500).json({ message: "server priceProposal: try to find price proposals for provider Internal Server Error", error: error.message });
 	}
 };
-
 
 
 const moverAgreePriceProposal = async(req,res) => {

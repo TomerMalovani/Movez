@@ -18,7 +18,7 @@ import ProvidingsHistory from './screens/ProvidingsHistory';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import UserVehicles from './screens/UserVehicles';
 import SingleMoveRequest from './screens/SingleMoveRequest';
-
+import ReviewSubmission from './screens/ReviewSubmission';
 import { TokenProvider, TokenContext } from './tokenContext';
 import { TabProvider, useTab } from './TabContext';
 import { ToastProvider } from './toastContext';
@@ -55,8 +55,8 @@ const DrawerComponent = (props) => {
 					<DrawerItem label="New Moving Request" onPress={() => props.navigation.navigate('NewMovingRequestScreen')} />
 					<DrawerItem label="My Activity" onPress={() => props.navigation.navigate('MyActivity')} />
 					<DrawerItem label="My Vehicles" onPress={() => props.navigation.navigate('UserVehicles')} />
-					
 					<DrawerItem label="Search Moves" onPress={() => props.navigation.navigate('SearchMoves')} />
+					<DrawerItem label="ReviewSubmission" onPress={() => props.navigation.navigate('ReviewSubmission')} />
 
 				</>
 			) : (
@@ -89,6 +89,8 @@ const LoggedInRoutes = () => (
 			options={{ unmountOnBlur: true }} 
 		/>
 		<Drawer.Screen name="SearchMoves" component={MovesSearchScreen} />
+		<Drawer.Screen name="ReviewSubmission" component={ReviewSubmission} />
+
 	</Drawer.Navigator>
 );
 
