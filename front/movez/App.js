@@ -56,8 +56,6 @@ const DrawerComponent = (props) => {
 					<DrawerItem label="My Activity" onPress={() => props.navigation.navigate('MyActivity')} />
 					<DrawerItem label="My Vehicles" onPress={() => props.navigation.navigate('UserVehicles')} />
 					<DrawerItem label="Search Moves" onPress={() => props.navigation.navigate('SearchMoves')} />
-					<DrawerItem label="ReviewSubmission" onPress={() => props.navigation.navigate('ReviewSubmission')} />
-
 				</>
 			) : (
 				<>

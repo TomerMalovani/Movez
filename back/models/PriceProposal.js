@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.Users, { foreignKey: 'MoverID' });
       this.belongsTo(models.Users, { foreignKey: 'MovingID' });
-      this.belongsTo(models.MoveRequest, { foreignKey: 'RequestID', as: 'request' });
+      this.belongsTo(models.MoveRequest, { foreignKey: 'uuid' });
       this.belongsTo(models.VehicleInfo, { foreignKey: 'VehicleUUID', as: 'vehicle' }); // Associate Vehicle
     }
   }
