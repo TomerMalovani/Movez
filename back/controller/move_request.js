@@ -31,6 +31,8 @@ const searchRequest = async (req,res) => {
         "MoveRequest" 
       WHERE 
         "UserID" != :userUUid AND
+		"moveStatus" != 'Done' AND
+		"moveStatus" != 'Canceled' AND
      ST_DWithin(
           "moveFromCoor", 
           ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography,

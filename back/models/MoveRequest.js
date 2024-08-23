@@ -119,7 +119,7 @@ module.exports = (sequelize, DataTypes) => {
       
       for (let moveRequest of moveRequestsArray) {
 
-        if (moveRequest.moveTime < now && moveRequest.moveStatus !== 'Canceled') {
+        if (moveRequest.moveTime < now && moveRequest.moveStatus !== 'Canceled' && moveRequest.moveStatus !== 'Done') {
 
           moveRequest.moveStatus = 'Canceled';
 
