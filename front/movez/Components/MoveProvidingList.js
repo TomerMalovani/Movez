@@ -4,11 +4,13 @@ import { Text, Card, Title, Paragraph, TouchableRipple } from 'react-native-pape
 import { getPriceProposalForProvider } from '../utils/api_price_proposals';
 import { getVehicleByVehicleUUID } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
+import { ToastContext } from '../toastContext';
 
 const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
     console.log("Props received in MoveProvidingList.js:", { navigation, filterStatus, selectedVehicle }); // Add this line
     const [proposals, setProposals] = useState([]);
     const [loading, setLoading] = useState(true);
+	const {showError, showSuccess} = useContext(ToastContext);
     const { token, myUuid } = useContext(TokenContext);
 
     const fetchProposals = async () => {
@@ -23,7 +25,8 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
                 console.log("No proposals found");
             }
         } catch (error) {
-            console.error("Error fetching proposals:", error); // Log error for debugging
+			showError(error.message); // Show error message to user
+             // Log error for debugging
         } finally {
             setLoading(false); // Ensure loading is set to false after request completes
         }

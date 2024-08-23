@@ -23,7 +23,7 @@ const getPriceProposal = async(req,res) => {
 const createPriceProposal = async(req,res) => {
     const {RequestID, MoverID, MovingID, VehicleUUID, PriceOffer, PriceStatus} = req.body
     console.log(RequestID, MoverID, MovingID, PriceOffer, PriceStatus)
-    console.log('im here')
+    console.log('im here', req.body)
     try {
         //const result = await pool.query(
         //    `INSERT INTO PriceProposal 
@@ -98,7 +98,7 @@ const findMovingRequestProposals = async(req,res) => {
 			const {email,username} = provider
 			proposal.dataValues.provider = { email, username }
 		})
-
+		console.log("result", result)
 		if(result){
 			res.status(200).json({message: "success", proposals: result})
 		}
