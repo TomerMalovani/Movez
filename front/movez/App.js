@@ -18,11 +18,12 @@ import ProvidingsHistory from './screens/ProvidingsHistory';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import UserVehicles from './screens/UserVehicles';
 import SingleMoveRequest from './screens/SingleMoveRequest';
-import ReviewSubmission from './screens/ReviewSubmission';
+import ReviewScreen from './screens/ReviewScreen';
 import { TokenProvider, TokenContext } from './tokenContext';
 import { TabProvider, useTab } from './TabContext';
 import { ToastProvider } from './toastContext';
 import MovesSearchScreen from './screens/MovesSearchScreen';
+import ProviderReviewsScreen from './screens/ProviderReviewsScreen';
 
 
 const Drawer = createDrawerNavigator();
@@ -78,16 +79,21 @@ const LoggedInRoutes = () => (
 		
 		<Drawer.Screen name="UserVehicles" component={UserVehicles} />
 		<Drawer.Screen name="Moves Requested" component={MovesRequested} />
-		<Drawer.Screen name="Requests History" component={RequestsHistory} />
+		<Drawer.Screen 
+			name="Requests History" 
+			component={RequestsHistory} 
+			options={{ unmountOnBlur: true }} 
+		/>
 		<Drawer.Screen name="Moves Provided" component={MovesProvided} />
 		<Drawer.Screen name="Providings History" component={ProvidingsHistory} />
+		<Drawer.Screen name="My Reviews" component={ProviderReviewsScreen} />
 		<Drawer.Screen 
 			name="SingleMoveRequest" 
 			component={SingleMoveRequest} 
 			options={{ unmountOnBlur: true }} 
 		/>
 		<Drawer.Screen name="SearchMoves" component={MovesSearchScreen} />
-		<Drawer.Screen name="ReviewSubmission" component={ReviewSubmission} />
+		<Drawer.Screen name="ReviewScreen" component={ReviewScreen} />
 
 	</Drawer.Navigator>
 );

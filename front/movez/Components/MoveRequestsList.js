@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { Text, Card, Title, Paragraph, TouchableRipple, IconButton, Button, Portal, Dialog } from 'react-native-paper';
 import { showRequestedMoves, deleteMoveRequest } from '../utils/moveRequest_api_calls';
+import { getReviewByRequest } from '../utils/review_api_calls';
 import { TokenContext } from '../tokenContext';
 
 const MoveRequestsList = ({ navigation, filterStatus }) => {
@@ -9,15 +10,33 @@ const MoveRequestsList = ({ navigation, filterStatus }) => {
     const [loading, setLoading] = useState(true);
     const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
     const [deleteRequestUuid, setDeleteRequestUuid] = useState(null);
+    const [reviewStatus, setReviewStatus] = useState({}); // State to store review existence for each request
     const { token } = useContext(TokenContext);
 
     const fetchMoveRequests = async () => {
         try {
             const data = await showRequestedMoves(token);
-            console.log("Move requests data:", data); // Log API response for debugging
+            console.log("Move requests data: ", data); // Log API response for debugging
             if (data && Array.isArray(data)) {
                 const filteredData = data.filter(request => filterStatus.includes(request.moveStatus));
                 setMoveRequests(filteredData);
+    
+                // Store review data for each move request
+                const status = {};
+                for (const request of filteredData) {
+                    try {
+                        const reviewResponse = await getReviewByRequest(request.uuid, token);
+                        console.log("review response: ", reviewResponse);
+    
+                        // Store the full review object if it exists
+                        status[request.uuid] = reviewResponse.review || null;
+                    } catch (error) {
+                        console.error("Error checking for review:", error);
+                        status[request.uuid] = null; // No review or error occurred
+                    }
+                }
+                console.log("status: ", status);
+                setReviewStatus(status);
             } else {
                 console.log("No move requests found");
             }
@@ -27,7 +46,8 @@ const MoveRequestsList = ({ navigation, filterStatus }) => {
             setLoading(false); // Ensure loading is set to false after request completes
         }
     };
-
+    
+    
     const handleMoveRequestClick = (item) => {
         navigation.navigate('SingleMoveRequest', { moveRequest: item });
     };
@@ -49,10 +69,6 @@ const MoveRequestsList = ({ navigation, filterStatus }) => {
         }
     };
 
-    useEffect(() => {
-        fetchMoveRequests();
-    }, []);
-
     const renderItem = ({ item }) => (
         <TouchableRipple onPress={() => handleMoveRequestClick(item)}>
             <Card style={styles.card}>
@@ -72,10 +88,29 @@ const MoveRequestsList = ({ navigation, filterStatus }) => {
                             style={styles.iconButton}
                         />
                     )}
+                    {item.moveStatus === 'Done' && (
+                        <Button
+                            mode="contained"
+                            onPress={() => navigation.navigate('ReviewScreen', { 
+                                moveRequest: item, 
+                                reviewExists: !!reviewStatus[item.uuid], 
+                                reviewData: reviewStatus[item.uuid],
+                                reviewUuid: reviewStatus[item.uuid]?.uuid
+                            })}
+                            style={styles.reviewButton}
+                        >
+                            {reviewStatus[item.uuid] ? 'Edit Review' : 'Submit Review'}
+                        </Button>
+                    )}
                 </Card.Content>
             </Card>
         </TouchableRipple>
     );
+    
+    
+    useEffect(() => {
+        fetchMoveRequests();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -133,6 +168,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     iconButton: {
+        marginLeft: 10,
+    },
+    reviewButton: {
         marginLeft: 10,
     },
     loadingIndicator: {
