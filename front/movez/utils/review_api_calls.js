@@ -21,19 +21,25 @@ export const getProviderReviews = async (token, providerId) => {
         console.log("Fetching provider reviews with URL:", url);
         const response = await getRequest(url, token);
 
-        // Check if the response contains an error message
-        if (response.message && response.message !== "success") {
-            console.error("Error in response:", response.message);
-            return { message: response.message };
+        if (typeof response === 'object' && response.message) {
+            if (response.message === "success") {
+                return response;  // Return as is
+            } else if (response.message === "no_reviews") {
+                return { message: "no_reviews", reviews: [], averageRating: 0 };
+            } else {
+                console.error("Error in response:", response.message);
+                return { message: response.message, reviews: [], averageRating: 0 };
+            }
+        } else {
+            console.error("Unexpected response format:", response);
+            return { message: "Unexpected response format", reviews: [], averageRating: 0 };
         }
-
-        // If the response is successful, return it
-        return response;
     } catch (error) {
         console.error("Error fetching provider reviews:", error);
-        return { message: "Internal Error", error: error.message };
+        return { message: "Internal Error", reviews: [], averageRating: 0 };
     }
 };
+
 
 export const updateReview = async (token, reviewUuid, body) => {
     try {

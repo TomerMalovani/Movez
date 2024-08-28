@@ -31,28 +31,27 @@ const getProviderReviews = async (req, res) => {
 
     try {
         console.log("Fetching reviews for provider ID:", providerId);
-        const reviews = await Review.findAll({where: {ProviderID: providerId}})
+        const reviews = await Review.findAll({ where: { ProviderID: providerId } });
 
-        // Check if any reviews were found
         if (reviews && reviews.length > 0) {
             console.log("reviews in the back: ", reviews);
             const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
             const averageRating = (totalRating / reviews.length).toFixed(2);
 
-            // Return the reviews and average rating
             res.status(200).json({
                 message: "success",
                 reviews,
                 averageRating,
             });
         } else {
-            res.status(404).json({ message: `No reviews found for Provider with ID = ${providerId}` });
+            res.status(200).json({ message: "no_reviews", reviews: [], averageRating: 0 });
         }
     } catch (error) {
         console.error("Error fetching provider reviews:", error);
         res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
 };
+
 
 
 const updateReview = async (req, res) => {

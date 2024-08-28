@@ -209,8 +209,13 @@ const SingleMoveRequest = ({ route, navigation}) => {
 							<ScrollView>
 							{proposals.map((proposal, index) => (
 								<Card style={{ backgroundColor: proposal.PriceStatus === "Accepted" || proposal.PriceStatus ==="AcceptedByClient" ? "green" : "none"}} key={index}>
-									<Card.Title title={proposal.provider.username} />
-								
+									<Card.Title
+									title={
+										<TouchableOpacity onPress={() => navigation.navigate('My Reviews', { providerId: proposal.MoverID })}>
+										<Text style={styles.providerName}>{proposal.provider.username}</Text>
+										</TouchableOpacity>
+									}
+									/>								
 									<Card.Content>
 										<Text>Current price offer: {proposal.PriceOffer}</Text>
 										<Text>Status: {proposal.PriceStatus}</Text>
@@ -285,6 +290,10 @@ const SingleMoveRequest = ({ route, navigation}) => {
 };
 
 const styles = StyleSheet.create({
+	providerName: {
+		color: 'blue',
+		textDecorationLine: 'underline',
+	},
 	text: {
 		textAlign: "center",
 		borderWidth: 1,

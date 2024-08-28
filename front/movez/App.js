@@ -95,8 +95,8 @@ const LoggedInRoutes = () => (
 			options={{ unmountOnBlur: true, title: 'Move Request' }} 
 		/>
 		<Drawer.Screen options={{ unmountOnBlur: true , title:"Search"}}  name="SearchMoves" component={MovesSearchScreen} />
-		<Drawer.Screen name="My Reviews" component={ProviderReviewsScreen} />
-		<Drawer.Screen name="ReviewScreen" component={ReviewScreen} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Reviews"}} name="My Reviews" component={ProviderReviewsScreen} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"ReviewScreen"}}name="ReviewScreen" component={ReviewScreen} />
 
 
 	</Drawer.Navigator>

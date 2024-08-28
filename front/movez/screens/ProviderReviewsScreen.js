@@ -16,7 +16,7 @@ const ProviderReviewsScreen = ({ route }) => {
                 console.error("Provider ID is undefined. Cannot fetch reviews.");
                 return;
             }
-
+    
             if (!token) {
                 return;
             }
@@ -26,13 +26,17 @@ const ProviderReviewsScreen = ({ route }) => {
                 console.log("response: ", response);
     
                 if (response.message === "success") {
-                    console.log("reviews in front: ", response);
                     setReviews(response.reviews);
-                    setAverageRating(response.averageRating);  // Ensure averageRating is a number
+                    setAverageRating(Number(response.averageRating));
+                } else if (response.message === "no_reviews") {
+                    setReviews([]);  // No reviews
+                    setAverageRating(0);
                 } else {
+                    setError("Failed to fetch reviews.");
                     console.error("Failed to fetch reviews: ", response.message);
                 }
             } catch (error) {
+                setError("Error fetching provider reviews.");
                 console.error("Error fetching provider reviews:", error.message || error);
             }
         };
@@ -40,13 +44,13 @@ const ProviderReviewsScreen = ({ route }) => {
         fetchReviews();
     }, [providerId, token]);
     
+    
     if (!token) {
         return <Text>Please log in to view reviews.</Text>; // Handle the case where token is missing
     }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Provider Reviews</Text>
             <View style={styles.averageRatingContainer}>
                 <Text style={styles.averageRatingText}>Average Rating: </Text>
                 <StarRating rating={averageRating} />

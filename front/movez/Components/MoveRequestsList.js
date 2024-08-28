@@ -22,21 +22,26 @@ const MoveRequestsList = ({ navigation, filterStatus }) => {
                 setMoveRequests(filteredData);
     
                 // Store review data for each move request
-                const status = {};
+                const reviewsByRequest = {};
                 for (const request of filteredData) {
-                    try {
-                        const reviewResponse = await getReviewByRequest(request.uuid, token);
-                        console.log("review response: ", reviewResponse);
-    
-                        // Store the full review object if it exists
-                        status[request.uuid] = reviewResponse.review || null;
-                    } catch (error) {
-                        console.error("Error checking for review:", error);
-                        status[request.uuid] = null; // No review or error occurred
-                    }
+                    if (request.moveStatus === 'Done') {
+                        try {
+                            const reviewResponse = await getReviewByRequest(request.uuid, token);
+                            console.log("review response: ", reviewResponse);
+        
+                            // Store the full review object if it exists
+                            reviewsByRequest[request.uuid] = reviewResponse.review || null;
+                        } catch (error) {
+                            console.error("Error checking for review:", error);
+                            reviewsByRequest[request.uuid] = null; // No review or error occurred
+                        }
+                    } else {
+                        // Keep the existing status if the moveStatus is not "Done"
+                        reviewsByRequest[request.uuid] = reviewStatus[request.uuid] || null;
+                    }    
                 }
-                console.log("status: ", status);
-                setReviewStatus(status);
+                console.log("reviewsByRequest: ", reviewsByRequest);
+                setReviewStatus(reviewsByRequest);
             } else {
                 console.log("No move requests found");
             }
