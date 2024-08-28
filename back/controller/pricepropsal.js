@@ -137,7 +137,6 @@ const getProviderPricePropasal = async (req, res) => {
 		for (const proposal of result) {
 			const request = await MoveRequest.findOne({ where: { uuid: proposal.RequestID } });
 			if (request) {
-				
 				proposal.dataValues.request = request;
 			}
 		}

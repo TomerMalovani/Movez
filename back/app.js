@@ -12,6 +12,7 @@ let vehicleInfoRouter = require('./routes/vehicle_info');
 let moveRequestsRouter = require('./routes/moverequests');
 let moveRequestItemsRouter = require('./routes/moverequestItems');
 let priceProposalRouter = require('./routes/price_proposal');
+let reviewRouter = require('./routes/review');
 let app = express();
 
 app.use(bodyParser.json());
@@ -58,6 +59,7 @@ app.use('/vehicle_info', vehicleInfoRouter);
 app.use('/moverequestitems', moveRequestItemsRouter);
 app.use('/moverequests', moveRequestsRouter);
 app.use('/priceproposal', priceProposalRouter);
+app.use('/review', reviewRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

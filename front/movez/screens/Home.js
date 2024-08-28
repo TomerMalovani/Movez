@@ -6,10 +6,10 @@ import { ToastContext } from '../toastContext';
 import { useTab } from '../TabContext';
 
 function HomePage({ navigation }) {
-  const { user } = useContext(TokenContext);
-  const { showError, showSuccess } = useContext(ToastContext);
-  const { currentTab, setCurrentTab } = useTab()
-  const userType = user?.type; // Assuming 'type' indicates 'provider' or 'requester'
+	const { user, myUuid } = useContext(TokenContext); // Access myUuid here
+	const { showError, showSuccess } = useContext(ToastContext);
+  	const { currentTab, setCurrentTab } = useTab()
+  	const userType = user?.type; // Assuming 'type' indicates 'provider' or 'requester'
 	const routes = [
 		{
 			key: 'provider', title: 'Provider', focusedIcon: 'account-cog' },
@@ -26,6 +26,7 @@ function HomePage({ navigation }) {
 			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('SearchMoves')}>Search Moves Around You</Button>
 			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('Moves Provided')}>My Providing</Button>
 			<Button style={styles.button } mode='outlined' onPress={() => navigation.navigate('Providings History')}>History</Button>
+			<Button style={styles.button } mode='outlined' onPress={() => navigation.navigate('My Reviews', { providerId: myUuid })}>Feedback</Button>
 		</View>
 	);
 

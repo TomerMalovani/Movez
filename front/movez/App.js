@@ -18,11 +18,12 @@ import ProvidingsHistory from './screens/ProvidingsHistory';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import UserVehicles from './screens/UserVehicles';
 import SingleMoveRequest from './screens/SingleMoveRequest';
-import ReviewSubmission from './screens/ReviewSubmission';
+import ReviewScreen from './screens/ReviewScreen';
 import { TokenProvider, TokenContext } from './tokenContext';
 import { TabProvider, useTab } from './TabContext';
 import { ToastProvider } from './toastContext';
 import MovesSearchScreen from './screens/MovesSearchScreen';
+import ProviderReviewsScreen from './screens/ProviderReviewsScreen';
 
 
 const Drawer = createDrawerNavigator();
@@ -94,7 +95,9 @@ const LoggedInRoutes = () => (
 			options={{ unmountOnBlur: true, title: 'Move Request' }} 
 		/>
 		<Drawer.Screen options={{ unmountOnBlur: true , title:"Search"}}  name="SearchMoves" component={MovesSearchScreen} />
-		<Drawer.Screen options={{ unmountOnBlur: true , title:"Submit a review"}}  name="ReviewSubmission" component={ReviewSubmission} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Reviews"}} name="My Reviews" component={ProviderReviewsScreen} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"ReviewScreen"}}name="ReviewScreen" component={ReviewScreen} />
+
 
 	</Drawer.Navigator>
 );

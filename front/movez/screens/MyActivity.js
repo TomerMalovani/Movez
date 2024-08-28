@@ -16,7 +16,7 @@ const MyActivity = ({ navigation }) => {
                     </Button>
                     <Button
                         mode="contained"
-                        onPress={() => navigation.navigate('ReviewSubmission')}
+                        onPress={() => navigation.navigate('ReviewScreen')}
                         style={styles.button}
                     >
                         submit review

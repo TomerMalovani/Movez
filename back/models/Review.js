@@ -4,9 +4,9 @@ const { Model } = require('sequelize'); // Importing Model
 module.exports = (sequelize, DataTypes) => {
   class Review extends Model {
     static associate(models) {
-      // Associating Review with Users
       this.belongsTo(models.Users, { as: 'Requester', foreignKey: 'RequesterID' });
       this.belongsTo(models.Users, { as: 'Provider', foreignKey: 'ProviderID' });
+      this.belongsTo(models.MoveRequest, { foreignKey: 'RequestID' });
     }
   }
   
@@ -34,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     ProviderID: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    RequestID: {
       type: DataTypes.UUID,
       allowNull: false
     }
