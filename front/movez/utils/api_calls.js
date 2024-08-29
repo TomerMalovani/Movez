@@ -36,6 +36,7 @@ export const postRequest = async (url, body,token, image = null, isMultiPart = f
 
         console.log("formdata: ", formData);
         console.log("headers: ", headers);
+        console.log("url: ", url);
         response = await axios.post(url, formData, { headers });
         console.log("response", response);
         return response;

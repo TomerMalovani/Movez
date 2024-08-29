@@ -11,7 +11,15 @@ export default function DateInput({dateState}) {
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || moveDate;
     setShow(false);
-    setMoveDate(currentDate);
+
+	// if currentDate is a today , change to tomorrow
+	if (currentDate.toDateString() === new Date().toDateString()) {
+		currentDate.setDate(currentDate.getDate() + 1);
+	}
+	else{
+		setMoveDate(currentDate);
+
+	}
   };
 
   return (

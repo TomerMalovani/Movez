@@ -36,6 +36,7 @@ const SingleMoveRequest = ({ route, navigation}) => {
 	];
 
 	useEffect(() => {
+		console.log("fresh",isItMine)
 		fetchItems();
 		const moveRequestInfoObj = [
 			{ icon: 'clock-time-nine', title: 'Move Date', info: formatDate(moveRequest.moveDate) },
@@ -44,19 +45,36 @@ const SingleMoveRequest = ({ route, navigation}) => {
 		setMoveRequestInfo(moveRequestInfoObj);
 	}, []);
 
-	useEffect(() => {
-		console.log("proposals", proposals);
-		
-	}, [proposals]);
+
 
 	const handleClientAgree = async (proposalUuid) => {
 		// Handle client agree
+		try{
 		const res = await clientAgreePriceProposal(token, proposalUuid);
 		const thisPropsal = proposals.find(proposal => proposal.uuid === proposalUuid);
 		const updatedProposals = proposals.map(proposal => proposal.uuid === proposalUuid ? { ...proposal, PriceStatus: newStatus } : proposal);
 		setProposals([...updatedProposals]);
+		}catch
+		(error){
+			console.log(error);
+			showError("Error accepting price");
+		}
 	};
 
+	const priceStatusNames = (status) => {
+		switch (status) {
+			case "Pending":
+				return "Pending";
+			case "Accepted":
+				return "Accepted";
+			case "Declined":
+				return "Declined";
+			case "AcceptedByClient":
+				return "Accepted by client";
+			default:
+				return status;
+		}
+	}
 
 	const handleMoverAgree = async (proposalUuid) => {
 		const res = await moverAgreePriceProposal(token, proposalUuid);
@@ -74,6 +92,7 @@ const SingleMoveRequest = ({ route, navigation}) => {
 			const data = await showSingleMoveRequestItems(token, moveRequest.uuid);
 			setItems(data);
 			if (isItMine) {
+				console.log("my proposals get")
 				const proposalsData = await getPriceProposalsByRequest(token, moveRequest.uuid);
 				console.log("my proposals", proposalsData[0].provider)
 				setProposals(proposalsData);
@@ -203,17 +222,22 @@ const SingleMoveRequest = ({ route, navigation}) => {
 							<ItemsTable/>
 							<ScrollView>
 							{proposals.map((proposal, index) => (
-								<Card key={index}>
-									<Card.Title title={proposal.provider.username} />
-								
+								<Card style={{ backgroundColor: proposal.PriceStatus === "Accepted" || proposal.PriceStatus ==="AcceptedByClient" ? "green" : "none"}} key={index}>
+									<Card.Title
+									title={
+										<TouchableOpacity onPress={() => navigation.navigate('My Reviews', { providerId: proposal.MoverID })}>
+										<Text style={styles.providerName}>{proposal.provider.username}</Text>
+										</TouchableOpacity>
+									}
+									/>								
 									<Card.Content>
-										<Text>Current price offer: {proposal.EstimatedCost}</Text>
-										<Text>Status: {proposal.PriceStatus}</Text>
+										<Text>Current price offer: {proposal.PriceOffer}₪</Text>
+										<Text>Status: {priceStatusNames(proposal.PriceStatus)}</Text>
 									</Card.Content>
 									<Card.Actions>
-								
-										<Button onPress={() => handleClientAgree(proposal.uuid)} >Accept</Button>
-
+										{(proposal.PriceStatus  !== "Accepted" &&  proposal.PriceStatus !== "AcceptedByClient")  && 
+										<Button  onPress={() => handleClientAgree(proposal.uuid)} >Accept</Button>
+								}
 										<Button onPress={()=>removePropsal(proposal.uuid)}>Remove</Button>
 									</Card.Actions>
 								</Card>
@@ -227,7 +251,6 @@ const SingleMoveRequest = ({ route, navigation}) => {
 								<>
 										<ItemsTable/>
 									<Text style={{padding: 5}}>Offer a price?</Text>
-									<Text style={{padding: 5}}>Vehicle Using: {vehicle.VehicleType}</Text>
 									<TextInput
 										keyboardType="numeric"
 										label="Price"
@@ -242,7 +265,6 @@ const SingleMoveRequest = ({ route, navigation}) => {
 									<Text>Your proposal</Text>
 									<Card>
 										<Card.Actions>
-
 													{
 														myProposal.PriceStatus === "AcceptedByClient" ? (
 															<Button onPress={() => handleMoverFinalAceept(myProposal.uuid)}>Agree</Button>
@@ -252,8 +274,8 @@ const SingleMoveRequest = ({ route, navigation}) => {
 													<Button onPress={() => removePropsal(myProposal.uuid)} >remove</Button>
 										</Card.Actions>
 										<Card.Content>
-											<Text>{myProposal.EstimatedCost}</Text>
-											<Text>{myProposal.PriceStatus}</Text>
+											<Text>Price: {myProposal.PriceOffer}₪</Text>
+											<Text>Status: {priceStatusNames(myProposal.PriceStatus)}</Text>
 										</Card.Content>
 									</Card>
 								</>
@@ -281,6 +303,10 @@ const SingleMoveRequest = ({ route, navigation}) => {
 };
 
 const styles = StyleSheet.create({
+	providerName: {
+		color: 'blue',
+		textDecorationLine: 'underline',
+	},
 	text: {
 		textAlign: "center",
 		borderWidth: 1,

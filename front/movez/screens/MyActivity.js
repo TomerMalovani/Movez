@@ -16,10 +16,10 @@ const MyActivity = ({ navigation }) => {
                     </Button>
                     <Button
                         mode="contained"
-                        onPress={() => navigation.navigate('MovesProvided')}
+                        onPress={() => navigation.navigate('ReviewScreen')}
                         style={styles.button}
                     >
-                        Moves Provided
+                        submit review
                     </Button>
                 </View>
           

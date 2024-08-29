@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
-import { BottomNavigation, MD3LightTheme as DefaultTheme, PaperProvider } from 'react-native-paper';
+import { BottomNavigation, MD3LightTheme as DefaultTheme, Icon, PaperProvider } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
 
@@ -18,12 +18,13 @@ import ProvidingsHistory from './screens/ProvidingsHistory';
 import NewMovingRequestScreen from './screens/NewMovingRequestScreen';
 import UserVehicles from './screens/UserVehicles';
 import SingleMoveRequest from './screens/SingleMoveRequest';
-
+import ReviewScreen from './screens/ReviewScreen';
 import { TokenProvider, TokenContext } from './tokenContext';
 import { TabProvider, useTab } from './TabContext';
 import { ToastProvider } from './toastContext';
 import MovesSearchScreen from './screens/MovesSearchScreen';
-import Chat from './screens/Chat';
+import ProviderReviewsScreen from './screens/ProviderReviewsScreen';
+
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
@@ -45,19 +46,27 @@ const DrawerComponent = (props) => {
 			{user ? (
 				<>
 					<DrawerItem
+						label="Home"
+						icon={() => <Icon source="home" size={24} />}
+						onPress={() => props.navigation.navigate('Home')}
+					/>
+					<DrawerItem
+						label="Profile"
+						icon={() => <Icon source="account" size={24} />}
+						onPress={() => props.navigation.navigate('Profile')}
+					/>
+					<DrawerItem
+						label="My Vehicles"
+						icon={() => <Icon source="car" size={24} />}
+						onPress={() => props.navigation.navigate('UserVehicles')}
+					/>
+					<DrawerItem
 						label="Logout"
+						icon={() => <Icon source="logout" size={24} />}
 						onPress={async () => {
 							await removeToken();
 						}}
 					/>
-					<DrawerItem label="Home" onPress={() => props.navigation.navigate('Home')} />
-					<DrawerItem label="Profile" onPress={() => props.navigation.navigate('Profile')} />
-					<DrawerItem label="New Moving Request" onPress={() => props.navigation.navigate('NewMovingRequestScreen')} />
-					<DrawerItem label="My Activity" onPress={() => props.navigation.navigate('MyActivity')} />
-					<DrawerItem label="My Vehicles" onPress={() => props.navigation.navigate('UserVehicles')} />
-
-					<DrawerItem label="Search Moves" onPress={() => props.navigation.navigate('SearchMoves')} />
-
 				</>
 			) : (
 				<>
@@ -71,24 +80,25 @@ const DrawerComponent = (props) => {
 
 const LoggedInRoutes = () => (
 	<Drawer.Navigator drawerContent={(props) => <DrawerComponent {...props} />}>
-		<Drawer.Screen name="Home" component={HomePage} />
-		<Drawer.Screen name="Profile" component={ProfilePage} />
-		<Drawer.Screen name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
-		<Drawer.Screen name="MyActivity" component={MyActivity} />
-		<Drawer.Screen name="My Vehicles" component={UserVehicles} />
-        <Drawer.Screen name="Chat" component={Chat}/>
-		
-		<Drawer.Screen name="UserVehicles" component={UserVehicles} />
-		<Drawer.Screen name="Moves Requested" component={MovesRequested} />
-		<Drawer.Screen name="Requests History" component={RequestsHistory} />
-		<Drawer.Screen name="Moves Provided" component={MovesProvided} />
-		<Drawer.Screen name="Providings History" component={ProvidingsHistory} />
+		<Drawer.Screen options={{ unmountOnBlur: true, title: 'home' }}  name="Home" component={HomePage} />
+		<Drawer.Screen options={{ unmountOnBlur: true, title: 'Profile' }} name="Profile" component={ProfilePage} />
+		<Drawer.Screen options={{ unmountOnBlur: true,title: 'New Request' }} name="NewMovingRequestScreen" component={NewMovingRequestScreen} />
+		<Drawer.Screen options={{ unmountOnBlur: true, title: 'My Vehicles' }} name="My Vehicles" component={UserVehicles} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"My Vehicles"}} name="UserVehicles" component={UserVehicles} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Moves Requested"}} name="Moves Requested" component={MovesRequested} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Requests History"}} name="Requests History" component={RequestsHistory} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Moves Provided"}} name="Moves Provided" component={MovesProvided} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Providings History"}} name="Providings History" component={ProvidingsHistory} />
 		<Drawer.Screen 
 			name="SingleMoveRequest" 
 			component={SingleMoveRequest} 
-			options={{ unmountOnBlur: true }} 
+			options={{ unmountOnBlur: true, title: 'Move Request' }} 
 		/>
-		<Drawer.Screen name="SearchMoves" component={MovesSearchScreen} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Search"}}  name="SearchMoves" component={MovesSearchScreen} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Reviews"}} name="My Reviews" component={ProviderReviewsScreen} />
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"ReviewScreen"}}name="ReviewScreen" component={ReviewScreen} />
+
+
 	</Drawer.Navigator>
 );
 

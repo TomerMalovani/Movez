@@ -23,7 +23,7 @@ const getPriceProposal = async(req,res) => {
 const createPriceProposal = async(req,res) => {
     const {RequestID, MoverID, MovingID, VehicleUUID, PriceOffer, PriceStatus} = req.body
     console.log(RequestID, MoverID, MovingID, PriceOffer, PriceStatus)
-    console.log('im here')
+    console.log('im here', req.body)
     try {
         //const result = await pool.query(
         //    `INSERT INTO PriceProposal 
@@ -98,7 +98,7 @@ const findMovingRequestProposals = async(req,res) => {
 			const {email,username} = provider
 			proposal.dataValues.provider = { email, username }
 		})
-
+		console.log("result", result)
 		if(result){
 			res.status(200).json({message: "success", proposals: result})
 		}
@@ -128,6 +128,7 @@ const findProposalByMoverAndRequest = async(req,res) => {
 	}
 }
 
+
 const getProviderPricePropasal = async (req, res) => {
 	const moverID = req.params.moverID;
 	try {
@@ -136,7 +137,6 @@ const getProviderPricePropasal = async (req, res) => {
 		for (const proposal of result) {
 			const request = await MoveRequest.findOne({ where: { uuid: proposal.RequestID } });
 			if (request) {
-				
 				proposal.dataValues.request = request;
 			}
 		}
@@ -147,10 +147,9 @@ const getProviderPricePropasal = async (req, res) => {
 			res.status(404).json({ message: `No proposals found for Mover with ID = ${moverID}` });
 		}
 	} catch (error) {
-		res.status(500).json({ message: "Internal Server Error", error: error.message });
+		res.status(500).json({ message: "server priceProposal: try to find price proposals for provider Internal Server Error", error: error.message });
 	}
 };
-
 
 
 const moverAgreePriceProposal = async(req,res) => {
