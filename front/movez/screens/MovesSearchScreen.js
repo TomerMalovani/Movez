@@ -70,7 +70,6 @@ const MovesSearchScreen = ({ navigation }) => {
 		setSelectedVehicle(vehicle);
 		setIsModalVisible(false);
 	};
-
 	const handleSearch = async () => {
 		console.log("vehicleUUID: " , selectedVehicle.uuid, " isUsingAlgorithm: ", isUsingAlgorithm)
 		const res = await searchMoveRequest(token, location.latitude, location.longitude, radius, selectedVehicle.uuid, isUsingAlgorithm);
@@ -213,6 +212,7 @@ const MovesSearchScreen = ({ navigation }) => {
 						<Card.Content>
 							<Card.Actions>
 								<Button onPress={() => navigation.navigate('SingleMoveRequest', { moveRequest: moveRequest, vehicle: selectedVehicle})}>View</Button>
+								<Button onPress={() => navigation.navigate('Chat', {  to:moveRequest.UserID})}>Chat</Button>
 							</Card.Actions>
 							{/* <Title>{`req No.${item.reqNo}`}</Title> */}
 							<Paragraph>{`distance: ${moveRequest.distance}`}</Paragraph>

@@ -55,7 +55,7 @@ const DrawerComponent = (props) => {
 					<DrawerItem label="New Moving Request" onPress={() => props.navigation.navigate('NewMovingRequestScreen')} />
 					<DrawerItem label="My Activity" onPress={() => props.navigation.navigate('MyActivity')} />
 					<DrawerItem label="My Vehicles" onPress={() => props.navigation.navigate('UserVehicles')} />
-					<DrawerItem label="Chat" onPress={()=> props.navigation.navigate('Chat')}/>
+
 					<DrawerItem label="Search Moves" onPress={() => props.navigation.navigate('SearchMoves')} />
 
 				</>

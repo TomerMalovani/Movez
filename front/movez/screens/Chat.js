@@ -7,13 +7,13 @@ import {URL} from '../utils/consts';
 import io from 'socket.io-client';
 
 const Chat = (props) => {
-    const { navigation } = props;
+    const {to } = props.route.params;
     const { user, token } = useContext(TokenContext);
     const [profile, setProfile] = useState();
     const [loading, setLoading] = useState(false);
 
     const [socket, setSocket] = useState(null);
-    const [to, setTo] = useState('');
+    
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
@@ -53,6 +53,7 @@ const Chat = (props) => {
     }, [profile]);
     const sendMessage = () => {
         console.log(message);
+        console.log("to:", to);
         if (socket && message) {
             socket.emit('private message', { content: message, to });
             setMessage('');

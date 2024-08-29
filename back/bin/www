@@ -30,16 +30,42 @@ const io = socketIo(server, {
 
 io.on('connection', (socket) => {
   // Storing the socket
+
   console.log("socket connected");
   users[socket.handshake.query.username] = socket.id;
+try{
 
+		const [results, metadata] = await Message.sequelize.query(`
+      SELECT 
+        "FromID",
+        "Content" 
+      FROM 
+        "Message"
+      WHERE 
+        "Message.ToId"=:userUUid 
+    `, {
+			replacements: { userUUid: socket.handshake.query.username}
+		});
   socket.on('private message', ({ content, to }) => {
     console.log("content",content);
+    console.log("to", to);
+    if(!(to in users))
+    {
+      const [results, metadata] = await Message.sequelize.query(`
+       INSERT INTO Messages (FromID, ToID, Content)
+       VALUES (:FromID, :ToID, :Content)
+       
+      `, {
+        replacements: { ToID: to, Content: content, FromID: socket.username}
+      });
+    }
+    else{
       const targetSocketId = users[to];
       io.to(targetSocketId).emit('private message', {
           content,
           from: socket.username,
       });
+    }
   });
 });
 /**
