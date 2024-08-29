@@ -61,6 +61,20 @@ const SingleMoveRequest = ({ route, navigation}) => {
 		}
 	};
 
+	const priceStatusNames = (status) => {
+		switch (status) {
+			case "Pending":
+				return "Pending";
+			case "Accepted":
+				return "Accepted";
+			case "Declined":
+				return "Declined";
+			case "AcceptedByClient":
+				return "Accepted by client";
+			default:
+				return status;
+		}
+	}
 
 	const handleMoverAgree = async (proposalUuid) => {
 		const res = await moverAgreePriceProposal(token, proposalUuid);
@@ -217,8 +231,8 @@ const SingleMoveRequest = ({ route, navigation}) => {
 									}
 									/>								
 									<Card.Content>
-										<Text>Current price offer: {proposal.PriceOffer}</Text>
-										<Text>Status: {proposal.PriceStatus}</Text>
+										<Text>Current price offer: {proposal.PriceOffer}₪</Text>
+										<Text>Status: {priceStatusNames(proposal.PriceStatus)}</Text>
 									</Card.Content>
 									<Card.Actions>
 										{(proposal.PriceStatus  !== "Accepted" &&  proposal.PriceStatus !== "AcceptedByClient")  && 
@@ -251,7 +265,6 @@ const SingleMoveRequest = ({ route, navigation}) => {
 									<Text>Your proposal</Text>
 									<Card>
 										<Card.Actions>
-
 													{
 														myProposal.PriceStatus === "AcceptedByClient" ? (
 															<Button onPress={() => handleMoverFinalAceept(myProposal.uuid)}>Agree</Button>
@@ -261,8 +274,8 @@ const SingleMoveRequest = ({ route, navigation}) => {
 													<Button onPress={() => removePropsal(myProposal.uuid)} >remove</Button>
 										</Card.Actions>
 										<Card.Content>
-											<Text>{myProposal.PriceOffer}</Text>
-											<Text>{myProposal.PriceStatus}</Text>
+											<Text>Price: {myProposal.PriceOffer}₪</Text>
+											<Text>Status: {priceStatusNames(myProposal.PriceStatus)}</Text>
 										</Card.Content>
 									</Card>
 								</>
