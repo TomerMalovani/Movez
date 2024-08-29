@@ -61,7 +61,7 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
                 <Card.Content style={styles.cardContent}>
                     <View style={styles.cardText}>
                         <Title>{item.request.moveStatus}</Title>
-                        <Paragraph>{`Price: ${item.EstimatedCost}`}</Paragraph>
+                        <Paragraph>{`Price: ${item.PriceOffer}`}</Paragraph>
                         <Paragraph>{`Distance: ${item.request.distance}`}</Paragraph>
                         <Paragraph>{`Move Date: ${item.request.moveDate}`}</Paragraph>
                         <Paragraph>{`From: ${item.request.fromAddress}`}</Paragraph>
