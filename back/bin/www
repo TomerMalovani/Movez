@@ -28,7 +28,7 @@ const io = socketIo(server, {
   }
 });
 
-io.on('connection', (socket) => {
+io.on('connection', async(socket) => {
   // Storing the socket
 
   console.log("socket connected");
@@ -46,7 +46,13 @@ try{
     `, {
 			replacements: { userUUid: socket.handshake.query.username}
 		});
-  socket.on('private message', ({ content, to }) => {
+
+  }
+  catch(exception)
+  {
+    console.error(exception);
+  }
+  socket.on('private message', async({ content, to }) => {
     console.log("content",content);
     console.log("to", to);
     if(!(to in users))
