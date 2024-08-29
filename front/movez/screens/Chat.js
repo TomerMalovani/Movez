@@ -44,7 +44,8 @@ const Chat = (props) => {
     }, []);
     useEffect(() => {
         if (profile) {
-            const newSocket = io(URL, {transports: ['websocket'], query: { username: profile.username } });
+            console.log("profile:", profile);
+            const newSocket = io(URL, {transports: ['websocket'], query: { username: profile.uuid } });
             setSocket(newSocket);
             newSocket.on('private message', (message) => {
                 setMessages((prevMessages) => [...prevMessages, message]);

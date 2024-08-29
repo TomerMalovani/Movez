@@ -8,6 +8,7 @@ var app = require('../app');
 var debug = require('debug')('back:server');
 var http = require('http');
 const socketIo = require('socket.io');
+const Message = require('../models/index').Messages;
 const users = {};
 
 /**
@@ -37,12 +38,12 @@ try{
 
 		const [results, metadata] = await Message.sequelize.query(`
       SELECT 
-        "FromID",
-        "Content" 
+        FromID,
+        Content 
       FROM 
-        "Message"
+        Messages
       WHERE 
-        "Message.ToId"=:userUUid 
+        Messages.ToID=:userUUid 
     `, {
 			replacements: { userUUid: socket.handshake.query.username}
 		});
@@ -57,12 +58,13 @@ try{
     console.log("to", to);
     if(!(to in users))
     {
+      console.log(socket);
       const [results, metadata] = await Message.sequelize.query(`
        INSERT INTO Messages (FromID, ToID, Content)
        VALUES (:FromID, :ToID, :Content)
        
       `, {
-        replacements: { ToID: to, Content: content, FromID: socket.username}
+        replacements: {FromID: socket.handshake.query.username, ToID: to, Content: content}
       });
     }
     else{

@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Message extends Model {
+  class Messages extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(models.Users, { foreignKey: 'ToID' });
     }
   }
-  Message.init({
+  Messages.init({
     uuid: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
  
   }, {
     sequelize,
-    modelName: 'Message',
+    modelName: 'Messages',
   });
-  return Message;
+  return Messages;
 };
