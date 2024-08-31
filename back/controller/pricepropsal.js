@@ -176,10 +176,30 @@ const clientAgreePriceProposal = async (req, res) => {
 	const priceProposalID = req.params.uuid
 	let result;
 	try {
+		console.log("in clientAgreePriceProposal controller");
 	    result = await priceProposal.update({ PriceStatus: "AcceptedByClient" }, { where: { uuid: priceProposalID } })
-		
+		console.log("result in clientAgreePriceProposal controller: ", result);
 		if (result) {
 			res.status(200).json({ message: "Price Proposal Accepted" })
+		}
+		else {
+			res.status(404).json({ message: `No Price Proposal with ID = ${priceProposalID} found` })
+		}
+	} catch (error) {
+		console.log("client aggree",error);
+		res.status(500).json({ message: "Internal Server Error", error: error.message })
+	}
+}
+
+const clientCancelPriceProposal = async (req, res) => {
+	const priceProposalID = req.params.uuid
+	let result;
+	try {
+		console.log("in clientCancelPriceProposal controller");
+	    result = await priceProposal.update({ PriceStatus: "Pending" }, { where: { uuid: priceProposalID } })
+		console.log("result in clientCancelPriceProposal controller: ", result);
+		if (result) {
+			res.status(200).json({ message: "Price Proposal Cancelled" })
 		}
 		else {
 			res.status(404).json({ message: `No Price Proposal with ID = ${priceProposalID} found` })
@@ -199,5 +219,6 @@ module.exports = {
 	findProposalByMoverAndRequest,
 	getProviderPricePropasal,
 	clientAgreePriceProposal,
+	clientCancelPriceProposal,
 	moverAgreePriceProposal
 }

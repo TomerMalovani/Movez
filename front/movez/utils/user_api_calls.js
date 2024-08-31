@@ -46,11 +46,11 @@ export const getProfile = async (token) => {
     try {
         // console.log("token",token)
 		const res = await getRequest(`${URL}/users`, token)
-		if (res.user){
+		if (res.data.user){
 			console.log("res", res)
-            console.log("res.user", res.user)
-			return res.user
-		}else throw new Error(res.message)
+            console.log("res.user", res.data.user)
+			return res.data.user
+		}else throw new Error(res.data.message)
       
     } catch (error) {
         console.log(error)

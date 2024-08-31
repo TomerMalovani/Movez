@@ -158,9 +158,10 @@ const createMoveRequest = async(req,res) =>{
 
 const updateMoveRequest = async (req, res) => {
     const { UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo } = req.body;
-    const requestID = req.query.uuid;
+    const requestID = req.params.requestUuid;
 
     try {
+        console.log("in controller to update moveReq status");
         const [numOfRowsAffected, updatedRows] = await moveRequest.update(
             { UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo },
             { where: { uuid: requestID }, returning: true}

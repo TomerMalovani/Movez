@@ -46,18 +46,25 @@ export const postRequest = async (url, body,token, image = null, isMultiPart = f
     }
 }
 
-export const getRequest = async (url,token) => {
+export const getRequest = async (url, token) => {
     try {
-		console.log("token",token)
-        headers = {
+        console.log("token", token);
+        const headers = {
             'Authorization': token
-        }
-        const response = await axios.get(url , {headers})
-        return response.data
+        };
+        const response = await axios.get(url, { headers });
+        return {
+            data: response.data,
+            status: response.status
+        };
     } catch (error) {
-        return error.response.data
+        return {
+            data: error.response.data,
+            status: error.response.status
+        };
     }
-}
+};
+
 
 export const deleteRequest = async (url, token) => {
     try {
@@ -78,8 +85,6 @@ export const deleteRequest = async (url, token) => {
         throw error; // Re-throw the error to propagate it further
     }
 };
-
-
 
 
 export const putRequest = async (url, body, token, image) => {

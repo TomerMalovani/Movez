@@ -2,14 +2,14 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View, Image, Modal as RNModal, TouchableOpacity } from 'react-native';
 import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndicator, Portal, IconButton } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
-import { showSingleMoveRequestItems } from '../utils/moveRequest_api_calls';
+import { showSingleMoveRequestItems, updateRequestStatus } from '../utils/moveRequest_api_calls';
 import { Marker } from 'react-native-maps';
 import CustomMapView from '../components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { clientAgreePriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal, removePriceProposal } from '../utils/api_price_proposals';
+import { clientAgreePriceProposal, clientCancelPriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal, removePriceProposal } from '../utils/api_price_proposals';
 import { ToastContext } from '../toastContext';
 
 const SingleMoveRequest = ({ route, navigation}) => {
@@ -22,8 +22,9 @@ const SingleMoveRequest = ({ route, navigation}) => {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [price, setPrice] = useState('');
 	const [isItMine, setIsItMine] = useState(myUuid === moveRequest.UserID);
-	const [myProposal, setMyProposal] = useState(null);
-	const [proposals, setProposals] = useState([]);
+	const [myProposal, setMyProposal] = useState(null);//mover
+	const [proposals, setProposals] = useState([]);//client
+	const [acceptedProposalUuid, setAcceptedProposalUuid] = useState(null);
 	const [fullScreenImage, setFullScreenImage] = useState(null);
 	const snapPoints = useMemo(() => ["25%", "50%", "90%"], []);
 
@@ -46,20 +47,44 @@ const SingleMoveRequest = ({ route, navigation}) => {
 	}, []);
 
 
-
 	const handleClientAgree = async (proposalUuid) => {
-		// Handle client agree
-		try{
-		const res = await clientAgreePriceProposal(token, proposalUuid);
-		const thisPropsal = proposals.find(proposal => proposal.uuid === proposalUuid);
-		const updatedProposals = proposals.map(proposal => proposal.uuid === proposalUuid ? { ...proposal, PriceStatus: newStatus } : proposal);
-		setProposals([...updatedProposals]);
-		}catch
-		(error){
+        try {
+            const statusChanged = await clientAgreePriceProposal(token, proposalUuid);
+			console.log("status changed: ", statusChanged);
+			const updatedProposals = proposals.map(proposal =>
+				proposal.uuid === proposalUuid
+					? { ...proposal, PriceStatus: 'AcceptedByClient' }
+					: { ...proposal, PriceStatus: 'Pending' }
+			);
+	
+			setProposals(updatedProposals);
+			setAcceptedProposalUuid(proposalUuid);
+        } catch (error) {
+            console.log(error);
+            showError("Error accepting price");
+        }
+    };
+
+
+	const handleClientCancel = async () => {
+		try {
+			const statusChanged = await clientCancelPriceProposal(token, acceptedProposalUuid);
+			console.log("statusChanged", statusChanged);			
+			// Update the proposals state
+			const updatedProposals = proposals.map(proposal =>
+				proposal.uuid === acceptedProposalUuid
+					? { ...proposal, PriceStatus: 'Pending' }
+					: proposal
+			);
+	
+			setProposals(updatedProposals);
+			setAcceptedProposalUuid(null);
+		} catch (error) {
 			console.log(error);
-			showError("Error accepting price");
+			showError("Error canceling proposal");
 		}
 	};
+	
 
 	const priceStatusNames = (status) => {
 		switch (status) {
@@ -96,9 +121,16 @@ const SingleMoveRequest = ({ route, navigation}) => {
 				const proposalsData = await getPriceProposalsByRequest(token, moveRequest.uuid);
 				console.log("my proposals", proposalsData[0].provider)
 				setProposals(proposalsData);
+				  const acceptedProposal = proposalsData.find(proposal => proposal.PriceStatus === 'AcceptedByClient');
+				  if (acceptedProposal) {
+					  setAcceptedProposalUuid(acceptedProposal.uuid);
+				  }
+				console.log("check proposals: ", proposalsData);
+				console.log("check uuid: ", acceptedProposalUuid);
 			} else {
 				const proposal = await getPriceProposalsByRequestAndMover(token, moveRequest.uuid, myUuid);
 				setMyProposal(proposal);
+				console.log("check proposals: ", proposal);
 			}
 			setIsLoaded(false);
 		} catch (error) {
@@ -153,12 +185,13 @@ const SingleMoveRequest = ({ route, navigation}) => {
 
 
 	const handleMoverFinalAceept = async (proposalUuid) => {
-		// Handle client agree
 		try{
 		const res = await moverAgreePriceProposal(token, proposalUuid);
 		console.log("res final", res)
 		const thisPropsal = myProposal;
 		setMyProposal({ ...thisPropsal, PriceStatus: res.newStatus });
+		console.log("proposal status after mover agree, ", thisPropsal);
+        await updateRequestStatus(token, thisPropsal.RequestID, res.newStatus);
 		}
 		catch(error){
 			console.log(error);
@@ -192,114 +225,111 @@ const SingleMoveRequest = ({ route, navigation}) => {
 			</DataTable>
 		);
 	}
-
 	return (
-		<Surface style={{ flex: 1 }}>
-			<Text variant="bodyMedium" style={styles.text}>{`From: ${moveRequest.fromAddress}`}</Text>
-			<Text variant="bodyMedium" style={styles.text}>{`To: ${moveRequest.toAddress}`}</Text>
-			<View style={{ flex: 1 }}>
-				<CustomMapView region={{
-					latitude: moveRequest.moveFromCoor.coordinates[1],
-					longitude: moveRequest.moveFromCoor.coordinates[0],
-					latitudeDelta: 0.0922,
-					longitudeDelta: 0.0421
-				}}>
-					<Marker coordinate={{ latitude: moveRequest.moveFromCoor.coordinates[1], longitude: moveRequest.moveFromCoor.coordinates[0] }} title="From" />
-					<Marker coordinate={{ latitude: moveRequest.moveToCoor.coordinates[1], longitude: moveRequest.moveToCoor.coordinates[0] }} title="To" />
-					<MapViewDirections
-						origin={{ latitude: moveRequest.moveFromCoor.coordinates[1], longitude: moveRequest.moveFromCoor.coordinates[0] }}
-						destination={{ latitude: moveRequest.moveToCoor.coordinates[1], longitude: moveRequest.moveToCoor.coordinates[0] }}
-						apikey={google_maps_api_key}
-						strokeWidth={3}
-						strokeColor='red'
-					/>
-				</CustomMapView>
-			</View>
-			<BottomSheet ref={sheetRef} index={1} snapPoints={snapPoints}>
-				<BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
-					{isItMine ? (
-						<>
-							<ItemsTable/>
-							<ScrollView>
-							{proposals.map((proposal, index) => (
-								<Card style={{ backgroundColor: proposal.PriceStatus === "Accepted" || proposal.PriceStatus ==="AcceptedByClient" ? "green" : "none"}} key={index}>
-									<Card.Title
-									title={
-										<TouchableOpacity onPress={() => navigation.navigate('My Reviews', { providerId: proposal.MoverID })}>
-										<Text style={styles.providerName}>{proposal.provider.username}</Text>
-										</TouchableOpacity>
-									}
-									/>								
-									<Card.Content>
-										<Text>Current price offer: {proposal.PriceOffer}₪</Text>
-										<Text>Status: {priceStatusNames(proposal.PriceStatus)}</Text>
-									</Card.Content>
-									<Card.Actions>
-										{(proposal.PriceStatus  !== "Accepted" &&  proposal.PriceStatus !== "AcceptedByClient")  && 
-										<Button  onPress={() => handleClientAgree(proposal.uuid)} >Accept</Button>
-								}
-										<Button onPress={()=>removePropsal(proposal.uuid)}>Remove</Button>
-									</Card.Actions>
-								</Card>
-								
-							))}
-							</ScrollView>
-						</>
-					) : (
-						<>
-							{!myProposal ? (
-								<>
-										<ItemsTable/>
-									<Text style={{padding: 5}}>Offer a price?</Text>
-									<TextInput
-										keyboardType="numeric"
-										label="Price"
-										value={price}
-										onChangeText={text => setPrice(text)}
-									/>
-									<Button mode="contained" onPress={handleOfferPrice}>Offer</Button>
-								</>
-							) : (
-								<>
-											<ItemsTable/>
-									<Text>Your proposal</Text>
-									<Card>
-										<Card.Actions>
-													{
-														myProposal.PriceStatus === "AcceptedByClient" ? (
-															<Button onPress={() => handleMoverFinalAceept(myProposal.uuid)}>Agree</Button>
-
-														) : null
-													}
-													<Button onPress={() => removePropsal(myProposal.uuid)} >remove</Button>
-										</Card.Actions>
+        <Surface style={{ flex: 1 }}>
+            <Text variant="bodyMedium" style={styles.text}>{`From: ${moveRequest.fromAddress}`}</Text>
+            <Text variant="bodyMedium" style={styles.text}>{`To: ${moveRequest.toAddress}`}</Text>
+            <View style={{ flex: 1 }}>
+                <CustomMapView region={{
+                    latitude: moveRequest.moveFromCoor.coordinates[1],
+                    longitude: moveRequest.moveFromCoor.coordinates[0],
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421
+                }}>
+                    <Marker coordinate={{ latitude: moveRequest.moveFromCoor.coordinates[1], longitude: moveRequest.moveFromCoor.coordinates[0] }} title="From" />
+                    <Marker coordinate={{ latitude: moveRequest.moveToCoor.coordinates[1], longitude: moveRequest.moveToCoor.coordinates[0] }} title="To" />
+                    <MapViewDirections
+                        origin={{ latitude: moveRequest.moveFromCoor.coordinates[1], longitude: moveRequest.moveFromCoor.coordinates[0] }}
+                        destination={{ latitude: moveRequest.moveToCoor.coordinates[1], longitude: moveRequest.moveToCoor.coordinates[0] }}
+                        apikey={google_maps_api_key}
+                        strokeWidth={3}
+                        strokeColor='red'
+                    />
+                </CustomMapView>
+            </View>
+            <BottomSheet ref={sheetRef} index={1} snapPoints={snapPoints}>
+                <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
+                    {isItMine ? (
+                        <>
+                            <ItemsTable />
+                            <ScrollView>
+								{proposals.map((proposal, index) => (
+									<Card 
+										key={index} 
+										style={{
+											backgroundColor: 
+												proposal.PriceStatus === "Accepted" || proposal.PriceStatus === "AcceptedByClient" 
+												? acceptedProposalUuid === proposal.uuid ? "#00FF00" : "white"
+												: "white"
+										}}
+									>
+										<Card.Title
+											title={
+												<TouchableOpacity onPress={() => navigation.navigate('My Reviews', { providerId: proposal.MoverID })}>
+													<Text style={styles.providerName}>{proposal.provider.username}</Text>
+												</TouchableOpacity>
+											}
+										/>
 										<Card.Content>
-											<Text>Price: {myProposal.PriceOffer}₪</Text>
-											<Text>Status: {priceStatusNames(myProposal.PriceStatus)}</Text>
+											<Text>Current price offer: {proposal.PriceOffer}₪</Text>
+											<Text>Status: {priceStatusNames(proposal.PriceStatus)}</Text>
 										</Card.Content>
+										<Card.Actions>
+											{proposal.PriceStatus === "Pending" && !acceptedProposalUuid && (
+												<Button onPress={() => handleClientAgree(proposal.uuid)}>Accept</Button>
+											)}
+											{proposal.PriceStatus === "AcceptedByClient" && acceptedProposalUuid === proposal.uuid && (
+												<Button onPress={handleClientCancel}>Cancel</Button>
+											)}
+											{proposal.PriceStatus === "Pending" && (
+												<Button onPress={() => removePropsal(proposal.uuid)}>Remove</Button>
+											)}
+										</Card.Actions>
 									</Card>
-								</>
-							)}
-						</>
-					)}
-				</BottomSheetScrollView>
-			</BottomSheet>
-			<Portal>
-                <RNModal visible={!!fullScreenImage} onRequestClose={handleFullScreenImageClose} transparent={true}>
-                    <>
-                        <IconButton
-                            icon="close"
-                            size={30}
-                            color="white"
-                            onPress={handleFullScreenImageClose}
-                            style={styles.closeButton}
-                        />
-                        <ImageViewer imageUrls={fullScreenImage} />
+								))}
+							</ScrollView>
+
                         </>
-                </RNModal>
-            </Portal>
-		</Surface>
-	);
+                    ) : (
+                        <>
+                            {!myProposal ? (
+                                <>
+                                    <ItemsTable />
+                                    <Text style={{ padding: 5 }}>Offer a price?</Text>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        label="Price"
+                                        value={price}
+                                        onChangeText={text => setPrice(text)}
+                                    />
+                                    <Button mode="contained" onPress={handleOfferPrice}>Offer</Button>
+                                </>
+                            ) : (
+                                <>
+                                    <ItemsTable />
+                                    <Text>Your proposal</Text>
+                                    <Card>
+										<Card.Actions>
+											{myProposal.PriceStatus === "AcceptedByClient" ? (
+												<Button onPress={() => handleMoverFinalAceept(myProposal.uuid)}>Agree</Button>
+											) : null}
+											{myProposal.PriceStatus !== "Accepted" && (
+												<Button onPress={() => removePropsal(myProposal.uuid)}>Remove</Button>
+											)}
+										</Card.Actions>
+                                        <Card.Content>
+                                            <Text>Price: {myProposal.PriceOffer}₪</Text>
+                                            <Text>Status: {priceStatusNames(myProposal.PriceStatus)}</Text>
+                                        </Card.Content>
+                                    </Card>
+                                </>
+                            )}
+                        </>
+                    )}
+                </BottomSheetScrollView>
+            </BottomSheet>
+        </Surface>
+    );
 };
 
 const styles = StyleSheet.create({
