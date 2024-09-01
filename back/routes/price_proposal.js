@@ -11,6 +11,7 @@ const {getPriceProposal,
 	findProposalByMoverAndRequest,
 	getProviderPricePropasal,
 	clientAgreePriceProposal,
+	clientCancelPriceProposal,
 	moverAgreePriceProposal
 } = require("../controller/pricepropsal")
 
@@ -24,6 +25,7 @@ delete(uuIDValidation, deletePriceProposal)
 
 router.get('/moveragree/:uuid', moverAgreePriceProposal)
 router.get('/clientagree/:uuid', clientAgreePriceProposal)
+router.get('/clientCancel/:uuid', clientCancelPriceProposal)
 
 
 module.exports = router;

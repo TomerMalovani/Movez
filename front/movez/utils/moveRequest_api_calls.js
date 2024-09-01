@@ -1,4 +1,4 @@
-import { postRequest, getRequest, deleteRequest,postPhotoRequest } from './api_calls'
+import { postRequest, getRequest, deleteRequest, putRequest, postPhotoRequest } from './api_calls'
 import { URL } from './consts'
 
 // UserID, moveStatus, moveDate, moveTime, moveFrom, moveTo,items
@@ -37,6 +37,22 @@ export const deleteMoveRequest = async (token, uuid) => {
 	}
 };
 
+export const updateRequestStatus = async (token, requestUuid, newStatus) => {
+	try {
+		const base_url = `${URL}/moverequests`
+        const url = `${base_url}/${requestUuid}`;
+		const body = { moveStatus: newStatus };
+		console.log("url and new status: ", url, newStatus);
+		const response = await putRequest(url, body, token);
+		console.log(`Move request with UUID ${requestUuid} updated successfully to status ${newStatus}.`);
+		return response;
+	} catch (error) {
+		console.error(`Error updating move request with UUID ${requestUuid}:`, error);
+		throw error;
+	}
+};
+
+
 export const searchMoveRequest = async (token, lat, lng, radius, vehicleUUID, isUsingAlgorithm) => {
 	try {
 		const url = `${URL}/moverequests/search`
@@ -62,7 +78,7 @@ export const showRequestedMoves = async (token) => {
 		const url = `${URL}/moverequests/user`
 		const response = await getRequest(url, token)
 		console.log("API Response:", response); // Log API response for debugging
-		return response;
+		return response.data;
 	} catch (error) {
 		console.error('Error fetching move requests via user:', error);
 		throw error;
@@ -73,11 +89,11 @@ export const showSingleMoveRequestItems = async (token, moveRequestId) => {
 	try {
 		const url = `${URL}/moverequestitems/request?uuid=${moveRequestId}`
 		const response = await getRequest(url, token)
-		console.log("response", response)
-		if (response.message !== "success") {
-			throw new Error(response.message)
+		console.log("response in showSingleMoveRequestItems: ", response)
+		if (response.data.message !== "success") {
+			throw new Error(response.data.message)
 		}
-		return response.moveRequestItems;
+		return response.data.moveRequestItems;
 	} catch (error) {
 		console.error('Error fetching move request items:', error);
 		throw error;

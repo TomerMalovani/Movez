@@ -35,8 +35,8 @@ export const getPriceProposalsByRequest = async (token, requestID) => {
 		const url = `${base_url}/request/${requestID}`
 		const response = await getRequest(url, token)
 		console.log("response priceProp", response)
-		if (response.message !== "success") throw new Error(response.message)
-		return response.proposals
+		if (response.data.message !== "success") throw new Error(response.data.message)
+		return response.data.proposals
 	} catch (error) {
 		throw error
 	}
@@ -49,8 +49,8 @@ export const getPriceProposalsByRequestAndMover = async (token, requestID, mover
 		const response = await getRequest(url, token)
 		console.log("response price", response)
 
-		if (response.message !== "success") throw new Error(response.message)
-		return response.proposals[0]
+		if (response.data.message !== "success") throw new Error(response.data.message)
+		return response.data.proposals[0]
 	} catch (error) {
 		throw error
 	}
@@ -62,8 +62,8 @@ export const getPriceProposalForProvider = async (token, moverID) => {
 		const url = `${base_url}/provider/${moverID}`
 		const response = await getRequest(url, token)
 		console.log("response price", response)
-		if (response.message !== "success") throw new Error(response.message)
-		return response.proposals
+		if (response.data.message !== "success") throw new Error(response.data.message)
+		return response.data.proposals
 	} catch (error) {
 		console.log(error)
 		throw error
@@ -88,8 +88,21 @@ export const moverAgreePriceProposal = async (token, uuid) => {
 export const clientAgreePriceProposal = async (token, uuid) => {
 	try {
 		const url = `${base_url}/clientagree/${uuid}`
-		const response = await getRequest(url, token)
-		if (response.status !== 200) throw new Error(response.message)
+		const response = await getRequest(url, token);
+		console.log("in api_price_prop. response: ", response, response.status);
+		if (response.status !== 200) throw new Error(response.data.message)
+		return response.data
+	} catch (error) {
+		throw error
+	}
+}
+
+export const clientCancelPriceProposal = async (token, uuid) => {
+	try {
+		const url = `${base_url}/clientCancel/${uuid}`
+		const response = await getRequest(url, token);
+		console.log("in api_price_prop. response: ", response, response.status);
+		if (response.status !== 200) throw new Error(response.data.message)
 		return response.data
 	} catch (error) {
 		throw error

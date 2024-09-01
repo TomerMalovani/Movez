@@ -16,9 +16,9 @@ const {
 
 router.route('/').post(upload.array('photos'), moveRequestPostValidation, createMoveRequest)
 .get(uuIDValidation, getMoveRequest)
-.patch(uuIDValidation , validateUpdateMoveRequest, updateMoveRequest).
-delete(uuIDValidation ,deleteMoveRequest)
+.patch(uuIDValidation , validateUpdateMoveRequest, updateMoveRequest)
+.delete(uuIDValidation ,deleteMoveRequest)
 router.post('/search',searchRequest)
 router.get('/user',getMoveRequestsViaUser)
-
+router.patch('/:requestUuid', updateMoveRequest);
 module.exports = router;
