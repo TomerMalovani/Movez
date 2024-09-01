@@ -15,6 +15,7 @@ let priceProposalRouter = require('./routes/price_proposal');
 let reviewRouter = require('./routes/review');
 let app = express();
 
+
 app.use(bodyParser.json());
 app.use(logger('dev'));
 app.use(express.json());
@@ -24,9 +25,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 
+
+
+
 // middleware that skip only login and register
 app.use(function(req, res, next) {
-  if (req.url === '/users/login' || req.url === '/users/register') {
+  if (req.url === '/users/login' || req.url === '/users/register' || req.url.startsWith('/socket.io/')) {
+    console.log("*******");
     next();
   } else {
     const token = req.headers['authorization'];
@@ -49,7 +54,9 @@ app.use(function(req, res, next) {
       res.status(401).json({ message: 'Unauthorized' });
     }
   }
+   
 });
+
 
 
 

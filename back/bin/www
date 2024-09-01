@@ -7,6 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('back:server');
 var http = require('http');
+const socketIo = require('socket.io');
+const Message = require('../models/index').Messages;
+const requestUsers = {};
 
 /**
  * Get port from environment and store in Express.
@@ -20,7 +23,53 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: '*'
+  }
+});
 
+io.on('connection', async (socket) => {
+  // Storing the socket
+
+  console.log("socket connected");
+  requestUsers[socket.handshake.query.moveRequest] = [...(requestUsers[socket.handshake.query.moveRequest] || []), socket.id];
+  try {
+    const results = await Message.findAll({
+      attributes: ['FromName', 'Content'],
+      where: {
+        RequestID: socket.handshake.query.moveRequest
+      }
+    });
+    io.to(socket.id).emit('connection', results.map(msg => {
+      return {
+        from: msg['dataValues']['FromName'],
+        content: msg['dataValues']['Content']
+      }
+    }));
+  }
+  catch (exception) {
+    console.error(exception);
+  }
+  socket.on('private message', async ({ content }) => {
+    console.log("content", content);
+    const newMessage = await Message.create({
+      RequestID: socket.handshake.query.moveRequest,
+      FromName: socket.handshake.query.name,
+      Content: content
+    });
+    if (socket.handshake.query.moveRequest in requestUsers) {
+      const targetSocketIds = requestUsers[socket.handshake.query.moveRequest];
+      console.log('real time massage to');
+      targetSocketIds.forEach(targetSocketId => {
+        io.to(targetSocketId).emit('private message', {
+          content,
+          from: socket.handshake.query.name,
+        });
+      });
+    }
+  });
+});
 /**
  * Listen on provided port, on all network interfaces.
  */

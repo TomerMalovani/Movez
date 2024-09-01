@@ -41,14 +41,16 @@ const searchRequest = async (req,res) => {
     `, {
 			replacements: { userUUid, lat, lng, radius }
 		});
-		console.log(results)
+        console.log("?????");
+		console.log(results);
 		if (results){
             console.log("isUsingAlgorithm", isUsingAlgorithm);
             if(isUsingAlgorithm !== true){
 			    res.status(200).json(results)
             }
             else{
-                console.log("Why AM I HERE?")
+                console.log("Why AM I HERE?");
+
                 adjustedmoveRequests = getAdjustedMoveRequests(results, vehicleUUID);
                 if(adjustedmoveRequests){
                     res.status(200).json({message: 'matching move requests were found', adjustedmoveRequests});    

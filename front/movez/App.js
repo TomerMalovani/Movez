@@ -24,6 +24,7 @@ import { TabProvider, useTab } from './TabContext';
 import { ToastProvider } from './toastContext';
 import MovesSearchScreen from './screens/MovesSearchScreen';
 import ProviderReviewsScreen from './screens/ProviderReviewsScreen';
+import Chat from './screens/Chat';
 
 
 const Drawer = createDrawerNavigator();
@@ -67,9 +68,13 @@ const DrawerComponent = (props) => {
 							await removeToken();
 						}}
 					/>
+					
+
+					
 				</>
 			) : (
 				<>
+			
 					<DrawerItem label="Login" onPress={() => props.navigation.navigate('Login')} />
 					<DrawerItem label="Register" onPress={() => props.navigation.navigate('Register')} />
 				</>
@@ -97,7 +102,7 @@ const LoggedInRoutes = () => (
 		<Drawer.Screen options={{ unmountOnBlur: true , title:"Search"}}  name="SearchMoves" component={MovesSearchScreen} />
 		<Drawer.Screen options={{ unmountOnBlur: true , title:"Reviews"}} name="My Reviews" component={ProviderReviewsScreen} />
 		<Drawer.Screen options={{ unmountOnBlur: true , title:"ReviewScreen"}}name="ReviewScreen" component={ReviewScreen} />
-
+		<Drawer.Screen options={{ unmountOnBlur: true , title:"Chat"}}name="Chat" component={Chat} />
 
 	</Drawer.Navigator>
 );
