@@ -202,7 +202,7 @@ const MovesSearchScreen = ({ navigation }) => {
 						<Card.Content>
 							<Card.Actions>
 								<Button onPress={() => navigation.navigate('SingleMoveRequest', { moveRequest: moveRequest, vehicle: selectedVehicle})}>View</Button>
-								<Button onPress={() => navigation.navigate('Chat', {  to:moveRequest.UserID})}>Chat</Button>
+								<Button onPress={() => navigation.navigate('Chat', {  moveRequest:moveRequest.uuid})}>Chat</Button>
 							</Card.Actions>
 							<Paragraph>{`Distance: ${moveRequest.distance}`}</Paragraph>
 							<Paragraph>{`From: ${moveRequest.fromAddress}`}</Paragraph>

@@ -84,6 +84,7 @@ const MoveRequestsList = ({ navigation, filterStatus }) => {
                         <Paragraph>{`From: ${item.fromAddress}`}</Paragraph>
                         <Paragraph>{`To: ${item.toAddress}`}</Paragraph>
                     </View>
+                    <Button onPress={() => navigation.navigate('Chat', {moveRequest:item.uuid})}>Chat</Button>
                     {item.moveStatus === 'Pending' && (
                         <IconButton
                             icon="delete"

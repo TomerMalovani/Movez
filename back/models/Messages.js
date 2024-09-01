@@ -11,40 +11,37 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.Users,{foreignKey:'FromID'} );
-      this.belongsTo(models.Users, { foreignKey: 'ToID' });
+      this.belongsTo(models.MoveRequest, { foreignKey: 'RequestID' });
     }
   }
   Messages.init({
     uuid: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true
-  },
-  FromID: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+    },
+    RequestID: {
       type: DataTypes.UUID,
       allowNull: false,
       validate: {
           isUUID: 4,
           notEmpty: true
       }
-  },
-  ToID: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    validate: {
-        isUUID: 4,
-        notEmpty: true
-    }
-},
-  Content: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
+    },
+    FromName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
           notEmpty: true
       }
-  },
- 
+    },
+    Content: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
   }, {
     sequelize,
     modelName: 'Messages',

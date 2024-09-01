@@ -3,17 +3,17 @@ import { TokenContext } from '../tokenContext';
 import { View, StyleSheet } from 'react-native';
 import { Button, TextInput, Text } from 'react-native-paper';
 import { getProfile } from '../utils/user_api_calls';
-import {URL} from '../utils/consts';
+import { URL } from '../utils/consts';
 import io from 'socket.io-client';
 
 const Chat = (props) => {
-    const {to } = props.route.params;
+    const { moveRequest } = props.route.params;
     const { user, token } = useContext(TokenContext);
     const [profile, setProfile] = useState();
     const [loading, setLoading] = useState(false);
 
     const [socket, setSocket] = useState(null);
-    
+
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
@@ -39,14 +39,22 @@ const Chat = (props) => {
 
 
 
-        return () => newSocket.close();
-
+        return () => socket?.close();
+        
     }, []);
     useEffect(() => {
         if (profile) {
             console.log("profile:", profile);
-            const newSocket = io(URL, {transports: ['websocket'], query: { username: profile.uuid } });
+            const newSocket = io(URL, {
+                transports: ['websocket'], query: {
+                    name: profile.firstName + " " + profile.lastName,
+                    moveRequest
+                }
+            });
             setSocket(newSocket);
+            newSocket.on('connection', (message) => {
+                setMessages((prevMessages) => [...prevMessages, ...message]);
+            });
             newSocket.on('private message', (message) => {
                 setMessages((prevMessages) => [...prevMessages, message]);
             });
@@ -54,11 +62,10 @@ const Chat = (props) => {
     }, [profile]);
     const sendMessage = () => {
         console.log(message);
-        console.log("to:", to);
         if (socket && message) {
-            socket.emit('private message', { content: message, to });
+            socket.emit('private message', { content: message });
             setMessage('');
-            setMessages([...messages, { from: profile.username, content: message }]);
+            // setMessages([...messages, { from: profile.username, content: message }]);
         }
     }
 
@@ -69,7 +76,7 @@ const Chat = (props) => {
             <View>
                 {messages.map((msg, index) => (
                     <View key={index}>
-                       <Text> {msg.from}:  {msg.content}</Text>
+                        <Text> {msg.from}:  {msg.content}</Text>
                     </View>
                 ))}
             </View>
