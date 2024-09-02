@@ -3,9 +3,11 @@ import { TokenContext } from '../tokenContext';
 import { View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import { Button, TextInput, Text, Avatar } from 'react-native-paper';
 import { getProfile } from '../utils/user_api_calls';
+import { getUsersMessage } from '../utils/messages_api_calls';
 import { URL } from '../utils/consts';
 
 import io from 'socket.io-client';
+
 
 const Chat = (props) => {
     const { moveRequest } = props.route.params;
@@ -17,7 +19,7 @@ const Chat = (props) => {
     const [messages, setMessages] = useState([]);
     const [initialMessagesLoaded, setInitialMessagesLoaded] = useState(false);
     const [userColors, setUserColors] = useState({});
-
+    const [usersChat, setUsersChat] = useState([]);
 
     const getUser = async () => {
         try {
@@ -33,6 +35,33 @@ const Chat = (props) => {
             console.log(error);
         }
     }
+
+    const getUsersToChat = async () => {
+        try {
+            setLoading(true);
+            const usersIDs = await getUsersMessage(token, moveRequest);
+            const users = await Promise.all(usersIDs.map(async (userID) => {
+                return await getProfile(token, userID);
+            }));
+            console.log("users", users);
+            setUsersChat(users);
+            setLoading(false);
+            return users;  // Return users for further use
+        } catch (error) {
+            setLoading(false);
+            console.log(error);
+            return [];
+        }
+    }
+    const mergeMessagesWithUsers = (messages, users) => {
+        return messages.map((message) => {
+            const user = users.find((u) => u.userId === message.from);
+            return {
+                ...message,
+                ...user,  // Merge user details into message object
+            };
+        });
+    };
 
     useEffect(() => {
         getUser();
@@ -50,23 +79,27 @@ const Chat = (props) => {
                 }
             });
             setSocket(newSocket);
-    
+
             // Load old messages once on connection
-            newSocket.on('connection', (messages) => {
-                if (!initialMessagesLoaded) {  // Check if initial messages are already loaded
-                    setMessages(messages);
-                    setInitialMessagesLoaded(true); // Mark initial messages as loaded
-                }
-            });
+            getUsersToChat().then(users => {
+                // Load old messages once on connection
+                newSocket.on('connection', (messages) => {
+                    if (!initialMessagesLoaded) {
+                        console.log("messages", messages);
+                        const mergedMessages = mergeMessagesWithUsers(messages, users);
+                        setMessages(mergedMessages);
+                        setInitialMessagesLoaded(true);
+                    }
+                });
 
-            // Listen for new messages
-            newSocket.on('private message', (message) => {
-                setMessages((prevMessages) => [...prevMessages, message]);
-                //TODO: add a new search for users ID, do that by getting priceProposals from RequestID
-                // and then search for any user with the requestid uuid and return the users UUID
-                //the whole search would be in the backend in new controller called MessageController, dont forget to create a route for it
+                // Listen for new messages
+                newSocket.on('private message', (message) => {
+                    getUsersToChat().then(updatedUsers => {
+                        const mergedMessage = mergeMessagesWithUsers([message], updatedUsers);
+                        setMessages((prevMessages) => [...prevMessages, ...mergedMessage]);
+                    });
+                });
             });
-
             return () => {
                 newSocket.disconnect();
             };
