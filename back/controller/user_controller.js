@@ -23,6 +23,27 @@ const getUser = async (req, res) => {
 	}
 }
 
+const getUserById = async (req, res) => {
+    const uuid = req.params.uuid; // Extract uuid from route parameters
+    try {
+        const user = await User.findOne({
+            where: { uuid },
+            attributes: { exclude: ['password', 'salt', 'token', 'token_exp'] }
+        });
+
+        if (user) {
+            res.status(200).json({ message: "User found", user });
+            console.log(user);
+        } else {
+            res.status(404).json({ message: "User not found" });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+}
+
+
 const register = async (req, res) => {
     const { username, email, password, firstName, lastName, phoneNumber } = req.body;
     let PhotoUrl = null;
@@ -189,6 +210,7 @@ module.exports = {
     register,
     login,
 	getUser,
+    getUserById,
     uploadProfilePhoto,
     deleteProfilePhoto,
     editProfile

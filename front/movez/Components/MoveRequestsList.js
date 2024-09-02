@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { Text, Card, Title, Paragraph, TouchableRipple, IconButton, Button, Portal, Dialog } from 'react-native-paper';
+import { Text, Card, Title, Paragraph, TouchableRipple, IconButton, Button, Portal, Dialog, Avatar, MD3Colors } from 'react-native-paper';
 import { showRequestedMoves, deleteMoveRequest } from '../utils/moveRequest_api_calls';
 import { getReviewByRequest } from '../utils/review_api_calls';
 import { TokenContext } from '../tokenContext';
@@ -84,34 +84,45 @@ const MoveRequestsList = ({ navigation, filterStatus }) => {
                         <Paragraph>{`From: ${item.fromAddress}`}</Paragraph>
                         <Paragraph>{`To: ${item.toAddress}`}</Paragraph>
                     </View>
-                    <Button onPress={() => navigation.navigate('Chat', {moveRequest:item.uuid})}>Chat</Button>
-                    {item.moveStatus === 'Pending' && (
-                        <IconButton
-                            icon="delete"
-                            color="red"
-                            size={20}
-                            onPress={() => handleDeleteRequest(item.uuid)}
-                            style={styles.iconButton}
-                        />
-                    )}
-                    {item.moveStatus === 'Done' && (
-                        <Button
-                            mode="contained"
-                            onPress={() => navigation.navigate('ReviewScreen', { 
-                                moveRequest: item, 
-                                reviewExists: !!reviewStatus[item.uuid], 
-                                reviewData: reviewStatus[item.uuid],
-                                reviewUuid: reviewStatus[item.uuid]?.uuid
-                            })}
-                            style={styles.reviewButton}
-                        >
-                            {reviewStatus[item.uuid] ? 'Edit Review' : 'Submit Review'}
-                        </Button>
-                    )}
+                    <View style={styles.iconContainer}>
+                        {item.moveStatus === 'Pending' && (
+                            <IconButton
+                                icon="trash-can"
+                                iconColor={MD3Colors.error50}
+                                mode='contained'
+                                size={20}
+                                onPress={() => handleDeleteRequest(item.uuid)}
+                            />
+                        )}
+                        {item.moveStatus === 'Pending' || item.moveStatus === 'Done' ? (
+                            <IconButton
+                                icon="chat"
+                                mode='contained'
+                                size={20}
+                                onPress={() => navigation.navigate('Chat', { moveRequest: item.uuid })}
+                                style={styles.chatIcon}
+                            />
+                        ) : null}
+                        {item.moveStatus === 'Done' && (
+                            <Button
+                                mode="contained"
+                                onPress={() => navigation.navigate('ReviewScreen', { 
+                                    moveRequest: item, 
+                                    reviewExists: !!reviewStatus[item.uuid], 
+                                    reviewData: reviewStatus[item.uuid],
+                                    reviewUuid: reviewStatus[item.uuid]?.uuid
+                                })}
+                                style={styles.reviewButton}
+                            >
+                                {reviewStatus[item.uuid] ? 'Edit Review' : 'Submit Review'}
+                            </Button>
+                        )}
+                    </View>
                 </Card.Content>
             </Card>
         </TouchableRipple>
     );
+    
     
     
     useEffect(() => {
@@ -164,16 +175,22 @@ const styles = StyleSheet.create({
     },
     card: {
         marginBottom: 16,
+        position: 'relative',
     },
     cardContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        position: 'relative',
     },
     cardText: {
         flex: 1,
     },
-    iconButton: {
+    iconContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    chatIcon: {
         marginLeft: 10,
     },
     reviewButton: {
@@ -190,5 +207,7 @@ const styles = StyleSheet.create({
         color: '#888',
     },
 });
+
+
 
 export default MoveRequestsList;

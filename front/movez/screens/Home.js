@@ -24,9 +24,8 @@ function HomePage({ navigation }) {
 	const ProviderRoute = ({ navigation }) => (
 		<View style={styles.container}>
 			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('SearchMoves')}>Search Moves Around You</Button>
-			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('Moves Provided')}>My Providing</Button>
+			<Button style={styles.button} mode='outlined' onPress={() => navigation.navigate('Moves Provided')}>My Providings</Button>
 			<Button style={styles.button } mode='outlined' onPress={() => navigation.navigate('Providings History')}>History</Button>
-			<Button style={styles.button } mode='outlined' onPress={() => navigation.navigate('My Reviews', { providerId: myUuid })}>Feedback</Button>
 		</View>
 	);
 
