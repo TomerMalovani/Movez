@@ -53,12 +53,31 @@ const MovesSearchScreen = ({ navigation }) => {
 	const handleVehicleChoose = async () => {
 		const userVehicles = await getAllVehicles(token);
 		setUserVehicles(userVehicles);
+		
 		if (userVehicles.length === 0) {
-			Alert.alert("You don't have any vehicles, please add one to continue");
+		  Alert.alert(
+			"No Vehicles Found",
+			"You don't have any vehicles, would you like to create one?",
+			[
+			  {
+				text: "No",
+				onPress: () => console.log("Stay on the same page"),
+				style: "cancel",
+			  },
+			  {
+				text: "Yes",
+				onPress: () => {
+				  // Replace 'UserVehicles' with your navigation route or logic to go to the create vehicle page
+				  navigation.navigate('UserVehicles'); 
+				},
+			  },
+			],
+			{ cancelable: false }
+		  );
 		} else {
-			setIsModalVisible(true);
+		  setIsModalVisible(true);
 		}
-	};
+	  };
 
 	const handleVehicleSelected = (vehicle) => {
 		setSelectedVehicle(vehicle);

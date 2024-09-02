@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { Text, Card, Title, Paragraph, TouchableRipple } from 'react-native-paper';
+import { Text, Card, Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
 import { getPriceProposalForProvider } from '../utils/api_price_proposals';
 import { getVehicleByVehicleUUID } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
@@ -20,6 +20,7 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
             console.log("MoveProvidingList- Provided moves data:", data); // Log API response for debugging
             if (data && Array.isArray(data)) {
                 const filteredData = data.filter(proposal => proposal.request && filterStatus.includes(proposal.request.moveStatus));
+                console.log("MoveProvidingList- Filtered provided moves data:", filteredData);
                 setProposals(filteredData);
             } else {
                 console.log("No proposals found");
@@ -36,10 +37,9 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
         try {
             console.log("Proposal clicked:", item); 
             const selectedVehicleUUID = item.VehicleUUID;
-    
+            
             const vehicleInfo = await getVehicleByVehicleUUID(token, selectedVehicleUUID);
             console.log("Fetched vehicle info:", vehicleInfo);
-    
             navigation.navigate('SingleMoveRequest', { 
                 moveRequest: item.request, 
                 selectedVehicle: vehicleInfo // Pass the full vehicle info
@@ -67,6 +67,7 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
                         <Paragraph>{`From: ${item.request.fromAddress}`}</Paragraph>
                         <Paragraph>{`To: ${item.request.toAddress}`}</Paragraph>
                     </View>
+                    <Button onPress={() =>navigation.navigate('Chat', {moveRequest:item.request.uuid})}>Chat</Button>
                 </Card.Content>
             </Card>
         </TouchableRipple>
