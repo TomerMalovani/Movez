@@ -24,8 +24,8 @@ const getUser = async (req, res) => {
 	}
 }
 
-const getUserByUUID = async (req, res) => {
-	const uuid = req.params.userId;
+const getUserByID = async (req, res) => {
+	const uuid = req.params.uuid;
     console.log("uuid: ", uuid);
 	try {
 		const user = await User.findOne({ where: { uuid }, attributes: { exclude: ['password', 'salt', 'token', 'token_exp'] }});
@@ -209,7 +209,7 @@ module.exports = {
     register,
     login,
 	getUser,
-    getUserByUUID,
+    getUserByID,
     uploadProfilePhoto,
     deleteProfilePhoto,
     editProfile

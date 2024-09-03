@@ -58,7 +58,7 @@ export const getProfile = async (token) => {
     }
 }
 
-export const getProfileByUUID = async (token, uuid) => {
+export const getProfileByID = async (token, uuid) => {
     try {
         // console.log("token",token)
         const res = await getRequest(`${URL}/users/profileById/${uuid}`, token)
