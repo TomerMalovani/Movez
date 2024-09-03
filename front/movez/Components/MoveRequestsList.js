@@ -84,7 +84,13 @@ const MoveRequestsList = ({ navigation, filterStatus }) => {
                         <Paragraph>{`From: ${item.fromAddress}`}</Paragraph>
                         <Paragraph>{`To: ${item.toAddress}`}</Paragraph>
                     </View>
-                    <Button onPress={() => navigation.navigate('Chat', {moveRequest:item.uuid})}>Chat</Button>
+                    <IconButton
+                        icon="chat"
+                        mode='contained'
+                        size={20}
+                        onPress={() => navigation.navigate('Chat', { moveRequest: item.uuid })}
+                        style={styles.chatIcon}
+                    />
                     {item.moveStatus === 'Pending' && (
                         <IconButton
                             icon="delete"
@@ -172,6 +178,11 @@ const styles = StyleSheet.create({
     },
     cardText: {
         flex: 1,
+    },
+    chatIcon: {
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
     },
     iconButton: {
         marginLeft: 10,

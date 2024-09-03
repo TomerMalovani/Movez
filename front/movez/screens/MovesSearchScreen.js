@@ -221,7 +221,13 @@ const MovesSearchScreen = ({ navigation }) => {
 						<Card.Content>
 							<Card.Actions>
 								<Button onPress={() => navigation.navigate('SingleMoveRequest', { moveRequest: moveRequest, vehicle: selectedVehicle})}>View</Button>
-								<Button onPress={() => navigation.navigate('Chat', {  moveRequest:moveRequest.uuid})}>Chat</Button>
+								<IconButton
+                                icon="chat"
+                                mode='contained'
+                                size={20}
+                                onPress={() => navigation.navigate('Chat', { moveRequest: item.uuid })}
+                                style={styles.chatIcon}
+                            />
 							</Card.Actions>
 							<Paragraph>{`Distance: ${moveRequest.distance}`}</Paragraph>
 							<Paragraph>{`From: ${moveRequest.fromAddress}`}</Paragraph>
@@ -239,6 +245,14 @@ const MovesSearchScreen = ({ navigation }) => {
 			/>
 		</Surface>
 	);
+};
+
+const styles = {
+	chatIcon: {
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
+    },
 };
 
 export default MovesSearchScreen;

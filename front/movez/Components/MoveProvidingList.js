@@ -67,7 +67,13 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
                         <Paragraph>{`From: ${item.request.fromAddress}`}</Paragraph>
                         <Paragraph>{`To: ${item.request.toAddress}`}</Paragraph>
                     </View>
-                    <Button onPress={() =>navigation.navigate('Chat', {moveRequest:item.request.uuid})}>Chat</Button>
+                    <IconButton
+                                icon="chat"
+                                mode='contained'
+                                size={20}
+                                onPress={() => navigation.navigate('Chat', { moveRequest: item.uuid })}
+                                style={styles.chatIcon}
+                    />
                 </Card.Content>
             </Card>
         </TouchableRipple>
@@ -102,6 +108,11 @@ const styles = StyleSheet.create({
     },
     card: {
         marginBottom: 16,
+    },
+    chatIcon: {
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
     },
     cardContent: {
         flexDirection: 'row',
