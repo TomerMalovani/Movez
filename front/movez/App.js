@@ -40,7 +40,7 @@ const theme = {
 };
 
 const DrawerComponent = (props) => {
-	const { user, removeToken } = useContext(TokenContext);
+	const { user, removeToken, myUuid} = useContext(TokenContext);
 
 	return (
 		<DrawerContentScrollView>
@@ -54,7 +54,7 @@ const DrawerComponent = (props) => {
 					<DrawerItem
 						label="Profile"
 						icon={() => <Icon source="account" size={24} />}
-						onPress={() => props.navigation.navigate('Profile')}
+						onPress={() => props.navigation.navigate('Profile', { userId: myUuid })}
 					/>
 					<DrawerItem
 						label="My Vehicles"

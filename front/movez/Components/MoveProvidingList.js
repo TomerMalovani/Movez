@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { Text, Card, Title, Paragraph, TouchableRipple, Button, IconButton } from 'react-native-paper';
+import { View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Text, Card, Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { getPriceProposalForProvider } from '../utils/api_price_proposals';
 import { getVehicleByVehicleUUID } from '../utils/vehicle_api_calls';
+import { getProfileById } from '../utils/user_api_calls';
 import { TokenContext } from '../tokenContext';
 import { ToastContext } from '../toastContext';
 
@@ -12,26 +13,56 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
     const [loading, setLoading] = useState(true);
 	const {showError, showSuccess} = useContext(ToastContext);
     const { token, myUuid } = useContext(TokenContext);
+    const [requesterName, setRequesterName] = useState('');
+
 
     const fetchProposals = async () => {
         try {
-            console.log("MOve Providing List- try fetching price proposals for provider");
-            const data = await getPriceProposalForProvider(token, myUuid);//requests that the current provider gave offer on
-            console.log("MoveProvidingList- Provided moves data:", data); // Log API response for debugging
+            console.log("Move Providing List - try fetching price proposals for provider");
+            const data = await getPriceProposalForProvider(token, myUuid);
+            console.log("MoveProvidingList - Provided moves data:", data); // Log API response for debugging
+    
             if (data && Array.isArray(data)) {
                 const filteredData = data.filter(proposal => proposal.request && filterStatus.includes(proposal.request.moveStatus));
-                console.log("MoveProvidingList- Filtered provided moves data:", filteredData);
-                setProposals(filteredData);
+
+                const requesterIds = filteredData.map(proposal => proposal.MovingID);
+    
+                console.log("Requester IDs to fetch:", requesterIds);
+
+                // Fetch requester names in bulk
+                const requesterData = await Promise.all(
+                    requesterIds.map(id => getProfileById(id, token))
+                );
+    
+                console.log("Requester data fetched:", requesterData);
+
+                const requesterMap = requesterData.reduce((map, user) => {
+                    map[user.uuid] = user.username;
+                    return map;
+                }, {});
+    
+                console.log("Requester map:", requesterMap);
+
+                // Add requester names to proposals
+                const proposalsWithNames = filteredData.map(proposal => ({
+                    ...proposal,
+                    requesterName: requesterMap[proposal.MovingID] || 'Unknown',
+                }));
+    
+                console.log("Proposals with names:", proposalsWithNames);
+
+                setProposals(proposalsWithNames);
             } else {
                 console.log("No proposals found");
             }
         } catch (error) {
-			showError(error.message); // Show error message to user
-             // Log error for debugging
+            showError(error.message); // Show error message to user
+            console.error("Error fetching proposals:", error);
         } finally {
             setLoading(false); // Ensure loading is set to false after request completes
         }
     };
+    
 
     const handleProposalClick = async (item) => {
         try {
@@ -61,6 +92,9 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
                 <Card.Content style={styles.cardContent}>
                     <View style={styles.cardText}>
                         <Title>{item.request.moveStatus}</Title>
+                        <TouchableOpacity onPress={() => navigation.navigate('Profile', { userId: item.MovingID })}>
+                            <Text style={styles.name}>{item.requesterName}</Text>
+                        </TouchableOpacity>
                         <Paragraph>{`Price: ${item.PriceOffer}`}</Paragraph>
                         <Paragraph>{`Distance: ${item.request.distance}`}</Paragraph>
                         <Paragraph>{`Move Date: ${item.request.moveDate}`}</Paragraph>
@@ -78,6 +112,7 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
             </Card>
         </TouchableRipple>
     );
+    
 
     return (
         <View style={styles.container}>
@@ -86,12 +121,15 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
             ) : proposals.length === 0 ? (
                 <Text style={styles.emptyMessage}>No provided moves found.</Text>
             ) : (
+                <>
+                {console.log("All proposals to be rendered:", JSON.stringify(proposals, null, 2))}
                 <FlatList
                     data={proposals}
                     renderItem={renderItem}
                     keyExtractor={item => item.uuid}
                     contentContainerStyle={styles.list}
                 />
+            </>
             )}
         </View>
     );
@@ -117,6 +155,10 @@ const styles = StyleSheet.create({
     cardText: {
         flex: 1,
     },
+    name: {
+		color: 'blue',
+		textDecorationLine: 'underline',
+	},
     loadingIndicator: {
         flex: 1,
     },

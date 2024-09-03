@@ -5,13 +5,15 @@ import { ToastContext } from '../toastContext';
 import { getAllVehicles } from '../utils/vehicle_api_calls';
 import ProfileVehicleCard from '../components/profileVehicleCard';
 import { Avatar, MD2Colors, Surface, Text,Button, ActivityIndicator, Provider, Portal, Modal } from 'react-native-paper';
-import { getProfile, uploadPhoto, deleteProfilePhoto, updateProfile} from '../utils/user_api_calls';
+import { getProfile, uploadPhoto, deleteProfilePhoto, updateProfile, getProfileById} from '../utils/user_api_calls';
 import * as ImagePicker from 'expo-image-picker';
 import MyModal from '../components/UploadPictureModal';
 
 const ProfilePage = (props) => {
-	const { navigation } = props;
-	const { user, token } = useContext(TokenContext);
+    const { navigation, route } = props;
+	const { userId } = route.params;
+	const { user, token, myUuid } = useContext(TokenContext);
+	const [isItMine, setIsItMine] = useState(myUuid === userId);
 	const [profile, setProfile] = useState();
 	const [loading, setLoading] = useState(false);
 	const [image, setImage] = useState(null);
@@ -27,7 +29,7 @@ const ProfilePage = (props) => {
 	const getUser = async () => {
 		try {
 			setLoading(true);
-			const profile = await getProfile(token);
+			const profile = await getProfileById(userId, token);
 			console.log("profile api", profile.email)
 			console.log(profile);
 			setProfile(profile);
@@ -43,8 +45,9 @@ const ProfilePage = (props) => {
 	}
 
 	useEffect(() => {
-		getUser()
-	}, []);
+		getUser();
+		setIsItMine(myUuid === userId);
+	}, [userId]);
 	
 	const handleUploadPhoto = async () => {
 		setModalVisible(true);
@@ -56,9 +59,9 @@ const ProfilePage = (props) => {
 
 	const handleEditProfile = () => {
 		setEditModalVisible(true);
-	  };
+	};
 	
-	  const handleSaveProfile = async () => {
+	const handleSaveProfile = async () => {
 		try {
 		  const updatedProfile = {
 			firstName: firstNameRef.current || profile.firstName,
@@ -87,11 +90,11 @@ const ProfilePage = (props) => {
 		  console.error('Error updating profile: ', error);
 		  showError('Error updating profile');
 		}
-	  };
+	};
 	
-	  const hideEditModal = () => {
+	const hideEditModal = () => {
 		setEditModalVisible(false);
-	  };
+	};
 
 	const pickImageFromGallery = async () => {
 		// Ask for permission to access media library 
@@ -114,9 +117,9 @@ const ProfilePage = (props) => {
 			uploadSuccess ? await setImage(result.assets[0].uri) : setImage(null);
 		}
 		setModalVisible(false);
-	  };
+	};
 
-	  const pickImageFromCamera = async () => {
+	const pickImageFromCamera = async () => {
 		const { status } = await ImagePicker.requestCameraPermissionsAsync();
 		if (status !== 'granted') {
 		  Alert.alert('Permission Denied', 'Permission to access camera is required.');
@@ -135,7 +138,7 @@ const ProfilePage = (props) => {
 		 uploadSuccess ? await setImage(result.assets[0].uri) : setImage(null);
 		}
 		setModalVisible(false);
-	  };
+	};
 
 	  const uploadImage = async (uri) => {
 		let uploadSuccess = false;
@@ -163,9 +166,9 @@ const ProfilePage = (props) => {
 			finally {
 				return uploadSuccess;
 			}
-		};
+	};
 
-		const removeImage = async () => {
+	const removeImage = async () => {
 			setModalVisible(false);
 			setImage(null);
 			console.log('Removing image:', profile.PhotoUrl);
@@ -182,15 +185,15 @@ const ProfilePage = (props) => {
 			  console.error('Error removing photo:', error);
 			  showError('Error removing photo from the server');
 			}
-		  };
+	};
 	
-		  const formatKey = (key) => {
+	const formatKey = (key) => {
 			return key.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
-		};
+	};
 
 	if (loading) {
 		return <ActivityIndicator animating={true} color={MD2Colors.error50} size={50} style={{ marginTop: 50 }} />;
-		}
+	}
 		
 	else if (profile) {
 		let buttonPictureLabel;
@@ -204,86 +207,55 @@ const ProfilePage = (props) => {
 		}
 		console.log(`PhotoUrl: ${profile.PhotoUrl}`);
 		return (
-		<Provider>
-			<Surface elevation={0} style={styles.container}>
-				{profile.PhotoUrl || image ? (
-					<Avatar.Image size={100} source={{ uri: profile.PhotoUrl || image }} />
-					) : (
-					<Avatar.Icon size={100} icon="account" />
-				)}
-				<Button style={styles.editBtn} mode='contained' onPress={handleUploadPhoto}>
-				{buttonPictureLabel}
-				</Button>
-				<Text variant="headlineSmall">{user}</Text>
-				<Text variant="titleMedium">{profile.email}</Text>
-				{Object.keys(profile).map((key) => (
-					key != 'PhotoUrl' && key != 'createdAt' && key != 'updatedAt' && key != 'uuid' &&
-				 	key != 'email' && key != 'username' && profile[key] != null && (
-				<Text key={key} variant="bodyMedium">{`${formatKey(key)}: ${profile[key]}`}</Text>)
-				))}
-				<Button style={styles.editBtn} mode="contained" onPress={handleEditProfile}>
-					Edit User Information
-				</Button>
-				<Surface style={styles.butttonsCon}>
-					<Button onPress={() => navigation.navigate('My Vehicles')} icon="car" mode='text'>
-						My Vehicles
-					</Button>
-				</Surface>
-			</Surface>
-			<MyModal
-				visible={modalVisible}
-				hideModal={hideModal}
-				pickImageFromCamera={pickImageFromCamera}
-				pickImageFromGallery={pickImageFromGallery}
-				removeImage={removeImage}
-			  />
-			<Portal>
-				<Modal visible={editModalVisible} onDismiss={hideEditModal} contentContainerStyle={styles.modalContent}>
-					<Text variant="headlineSmall">Edit Profile Information</Text>
-					<View style={styles.inputGroup}>
-					<Text variant="bodyMedium">First Name:</Text>
-					<TextInput
-						style={styles.input}
-						defaultValue={profile.firstName}
-						onChangeText={(value) => (firstNameRef.current = value)}
-					/>
-					</View>
-					<View style={styles.inputGroup}>
-					<Text variant="bodyMedium">Last Name:</Text>
-					<TextInput
-						style={styles.input}
-						defaultValue={profile.lastName}
-						onChangeText={(value) => (lastNameRef.current = value)}
-					/>
-					</View>
-					<View style={styles.inputGroup}>
-					<Text variant="bodyMedium">Phone Number:</Text>
-					<TextInput
-						style={styles.input}
-						defaultValue={profile.phoneNumber}
-						onChangeText={(value) => (phoneNumberRef.current = value)}
-					/>
-					<Text variant="bodyMedium">Email:</Text>
-					<TextInput
-						style={styles.input}
-						defaultValue={profile.email}
-						onChangeText={(value) => (emailRef.current = value)}
-					/>
-					</View>
-					{/* Add more fields here */}
-					<View style={styles.buttonGroup}>
-						<Button mode="contained" onPress={handleSaveProfile} style={styles.saveButton}>
-							Save Changes
-						</Button>
-						<Button mode="contained" onPress={hideEditModal} style={styles.cancelButton}>
-							Cancel
-						</Button>
-					</View>
-				</Modal>
-			</Portal>
-		</Provider>
+			<Provider>
+            <Surface elevation={0} style={styles.container}>
+                <Avatar.Image size={100} source={{ uri: profile.PhotoUrl || image }} />
+                <Text variant="headlineSmall">{profile.username}</Text>
+                <Text variant="titleMedium">{profile.email}</Text>
+                <Text variant="bodyMedium">{`First Name: ${profile.firstName}`}</Text>
+                <Text variant="bodyMedium">{`Last Name: ${profile.lastName}`}</Text>
+                <Text variant="bodyMedium">{`Phone Number: ${profile.phoneNumber}`}</Text>
+				<Button
+					style={[styles.feedbackBtn, { marginTop: 10 }]} 
+					contentStyle={{ height: 40 }} // Increase button height
+					labelStyle={{ fontSize: 16 }}  // Increase text size
+					mode='text'  
+					onPress={() => navigation.navigate('My Reviews', { providerId: myUuid })} icon="star"
+					>
+                    My Reviews
+                </Button>
+
+                {isItMine && (
+                    <>
+                        <Button style={styles.editBtn} mode='contained' onPress={handleUploadPhoto}>
+                            {buttonPictureLabel}
+                        </Button>
+                        <Button style={styles.editBtn} mode="contained" onPress={handleEditProfile}>
+                            Edit User Information
+                        </Button>
+                        <Surface style={styles.butttonsCon}>
+                            <Button onPress={() => navigation.navigate('My Vehicles')} icon="car" mode='text'>
+                                My Vehicles
+                            </Button>
+                        </Surface>
+                        <MyModal
+                            visible={modalVisible}
+                            hideModal={hideModal}
+                            pickImageFromCamera={pickImageFromCamera}
+                            pickImageFromGallery={pickImageFromGallery}
+                            removeImage={removeImage}
+                        />
+                        <Portal>
+                            <Modal visible={editModalVisible} onDismiss={hideEditModal} contentContainerStyle={styles.modalContent}>
+                                {/* Your edit modal content here */}
+                            </Modal>
+                        </Portal>
+                    </>
+                )}
+            </Surface>
+        </Provider>
 	);
-}
+	}
 }
 
 const styles = StyleSheet.create({

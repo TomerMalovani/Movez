@@ -2,7 +2,7 @@ const moveRequest = require("../models/index").MoveRequest
 const moveRequestItem = require("../models/index").MoveRequestItems
 const  {calculateVolume, allPermutationsOfItem} = require('../controller/move_requestItem');
 const {createMoveRequestItem, deleteMoveRequestItem} = require('../controller/move_requestItem');
-const isThereMatchBetweenMoveRequestToVehicle = require('../utils/findmatchingvehiclealgo');
+const {isThereMatchBetweenMoveRequestToVehicle} = require('../utils/findmatchingvehiclealgo');
 const VehicleInfo = require('../models/index').VehicleInfo;
 const { uploadPhoto, deletePhoto } = require("./photo_controller");
 
@@ -45,18 +45,18 @@ const searchRequest = async (req,res) => {
 		console.log(results);
 		if (results){
             console.log("isUsingAlgorithm", isUsingAlgorithm);
-            if(isUsingAlgorithm !== true){
+            if(isUsingAlgorithm !== "true"){
 			    res.status(200).json(results)
             }
             else{
                 console.log("Why AM I HERE?");
 
-                adjustedmoveRequests = getAdjustedMoveRequests(results, vehicleUUID);
+                const adjustedmoveRequests = await getAdjustedMoveRequests(results, vehicleUUID);
                 if(adjustedmoveRequests){
-                    res.status(200).json({message: 'matching move requests were found', adjustedmoveRequests});    
+                    res.status(200).json(adjustedmoveRequests);    
                 }
                 else{
-                    res.status(200).json({message: 'there are no matching move requests right now'});
+                    res.status(404).json({message: 'there are no matching move requests right now'});
                 }
             }
 		}else{
@@ -220,21 +220,29 @@ const getAdjustedMoveRequests = async (initialSearch, vehicleUUID) =>{
         //const moveRequests = await moveRequest.findAll({where: {moveStatus: "pending"}});
 
         if(!moverVehicle)
-            return res.status(404).json({message: 'the vehicle does not exists'});
+            throw 'the vehicle does not exists';
         const adjustedmoveRequests = [];
         let moveRequest;
-        for(moveRequest in initialSearch){
-            const requestItems = await moveRequestItem.findAll({ where: { MoveRequestID: moveRequest.uuid } });
-            if(requestItems){
-               return res.status(404).json({ message: 'MoveRequestItems not found' });
-            }
-            if(isThereMatchBetweenMoveRequestToVehicle(requestItems, moverVehicle.Height, moverVehicle.Width, moverVehicle.Depth))
-                {
-                    adjustedmoveRequests.push(moveRequest);
+        for(let i =0; i< initialSearch.length ;i++){
+            moveRequest = initialSearch[i];
+            let requestItems = await moveRequestItem.findAll({ where: { MoveRequestID: moveRequest.uuid } });
+            requestItems = requestItems.map(item => {
+                return {
+                    height: item.dataValues.Height,
+                    width: item.dataValues.Width,
+                    depth: item.dataValues.Depth
                 }
+            });
+            if(!requestItems || requestItems.length == 0){
+               throw 'MoveRequestItems not found';
+            }
+            if(isThereMatchBetweenMoveRequestToVehicle(requestItems, parseFloat(moverVehicle.Height), parseFloat(moverVehicle.Width), parseFloat(moverVehicle.Depth)))
+            {
+                adjustedmoveRequests.push(moveRequest);
+            }
+        }
+        return adjustedmoveRequests;
     }
-    return adjustedmoveRequests;
-}
     catch(error)
     {
        throw error;

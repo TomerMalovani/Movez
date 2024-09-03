@@ -74,6 +74,7 @@ export const getProfileByID = async (token, uuid) => {
     }
 }
 
+
 export const uploadPhoto = async (token, photo) => {
     try{
         const res = await postPhotoRequest(`${URL}/users/photo`, photo, token);

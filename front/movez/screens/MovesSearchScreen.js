@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, FlatList, Alert, ScrollView } from 'react-native';
-import { TextInput, Button, Card, Paragraph, Portal, Modal, TouchableRipple, Avatar, RadioButton, Surface, Text } from 'react-native-paper';
+import { TextInput, Button, Card, Paragraph, Portal, Modal, TouchableRipple, IconButton, Avatar, RadioButton, Surface, Text } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
 import { getAllVehicles } from '../utils/vehicle_api_calls';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -233,10 +233,24 @@ const MovesSearchScreen = ({ navigation }) => {
 							<Paragraph>{`From: ${moveRequest.fromAddress}`}</Paragraph>
 							<Paragraph>{`To: ${moveRequest.toAddress}`}</Paragraph>
 							<Paragraph>{`Date: ${moveRequest.moveDate}`}</Paragraph>
+							
+							{/* Positioning the chat icon at the bottom right corner */}
+							<IconButton
+								icon="chat"
+								mode="contained"
+								size={20}
+								onPress={() => navigation.navigate('Chat', { moveRequest: moveRequest.uuid })}
+								style={{
+									position: 'absolute',
+									right: 10,
+									bottom: 10
+								}}
+							/>
 						</Card.Content>
 					</Card>
 				)}
 			/>
+
 
 			<FullScreenImageModal
 				visible={!!fullScreenImage}
