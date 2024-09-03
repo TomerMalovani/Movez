@@ -58,6 +58,22 @@ export const getProfile = async (token) => {
     }
 }
 
+export const getProfileByUUID = async (token, uuid) => {
+    try {
+        // console.log("token",token)
+        const res = await getRequest(`${URL}/users/profileById/${uuid}`, token)
+        if (res.data.user){
+            console.log("res", res)
+            console.log("res.user", res.data.user)
+            return res.data.user
+        }else throw new Error(res.data.message)
+      
+    } catch (error) {
+        console.log(error)
+        throw new Error(error)
+    }
+}
+
 export const uploadPhoto = async (token, photo) => {
     try{
         const res = await postPhotoRequest(`${URL}/users/photo`, photo, token);
