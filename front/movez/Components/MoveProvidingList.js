@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { Text, Card, Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
+import { Text, Card, Title, Paragraph, TouchableRipple, Button, IconButton } from 'react-native-paper';
 import { getPriceProposalForProvider } from '../utils/api_price_proposals';
 import { getVehicleByVehicleUUID } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
@@ -68,11 +68,11 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
                         <Paragraph>{`To: ${item.request.toAddress}`}</Paragraph>
                     </View>
                     <IconButton
-                                icon="chat"
-                                mode='contained'
-                                size={20}
-                                onPress={() => navigation.navigate('Chat', { moveRequest: item.uuid })}
-                                style={styles.chatIcon}
+                        icon="chat"
+                        mode='contained'
+                        size={20}
+                        onPress={() => navigation.navigate('Chat', { moveRequest: item.request.uuid })}
+                        style={styles.chatIcon}
                     />
                 </Card.Content>
             </Card>
@@ -108,11 +108,6 @@ const styles = StyleSheet.create({
     },
     card: {
         marginBottom: 16,
-    },
-    chatIcon: {
-        position: 'absolute',
-        right: 10,
-        bottom: 10,
     },
     cardContent: {
         flexDirection: 'row',
