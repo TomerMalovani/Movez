@@ -5,8 +5,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 const {usersRegisterValidation, usersLoginValidation, usersEditProfileValidation} = require('../validation/users_validation');
 const {photoValidation} = require('../validation/photo_validation');
 const {uuIDValidation} = require('../validation/uuidValidation');
-const { register, login, getUser, getUserByUUID, uploadProfilePhoto, deleteProfilePhoto, editProfile} = require('../controller/user_controller');
+const { register, login, getUser, getUserByID, uploadProfilePhoto, deleteProfilePhoto, editProfile} = require('../controller/user_controller');
 const e = require('express');
+
 /* GET users listing. */
 router.post('/register', upload.single('photo'), usersRegisterValidation, register);
 
