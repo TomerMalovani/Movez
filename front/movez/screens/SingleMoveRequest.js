@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View, Image, Modal as RNModal, TouchableOpacity
 import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndicator, Portal, IconButton } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
 import { showSingleMoveRequestItems, updateRequestStatus } from '../utils/moveRequest_api_calls';
+import { getProfileById } from '../utils/user_api_calls';
 import { Marker } from 'react-native-maps';
 import CustomMapView from '../components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
@@ -19,6 +20,7 @@ const SingleMoveRequest = ({ route, navigation}) => {
 	const sheetRef = useRef(null);
 	const [items, setItems] = useState([]);
 	const [moveRequestInfo, setMoveRequestInfo] = useState([]);
+	const [requesterName, setRequesterName] = useState('');
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [price, setPrice] = useState('');
 	const [isItMine, setIsItMine] = useState(myUuid === moveRequest.UserID);
@@ -44,6 +46,7 @@ const SingleMoveRequest = ({ route, navigation}) => {
 			{ icon: 'map-marker-distance', title: 'Distance', info: `${parseFloat(moveRequest.distance).toFixed(2)} KM` }
 		];
 		setMoveRequestInfo(moveRequestInfoObj);
+		fetchRequesterName();
 	}, []);
 
 
@@ -62,6 +65,17 @@ const SingleMoveRequest = ({ route, navigation}) => {
         } catch (error) {
             console.log(error);
             showError("Error accepting price");
+        }
+    };
+
+	const fetchRequesterName = async () => {
+        try {
+            const userData = await getProfileById(moveRequest.UserID, token);
+			console.log("profile of requester: ", userData);
+            setRequesterName(userData.username);
+        } catch (error) {
+            console.log(error);
+            showError("Error fetching requester name");
         }
     };
 
@@ -265,8 +279,8 @@ const SingleMoveRequest = ({ route, navigation}) => {
 									>
 										<Card.Title
 											title={
-												<TouchableOpacity onPress={() => navigation.navigate('My Reviews', { providerId: proposal.MoverID })}>
-													<Text style={styles.providerName}>{proposal.provider.username}</Text>
+												<TouchableOpacity onPress={() => navigation.navigate('Profile', { userId: proposal.MoverID })}>
+													<Text style={styles.name}>{proposal.provider.username}</Text>
 												</TouchableOpacity>
 											}
 										/>
@@ -293,21 +307,26 @@ const SingleMoveRequest = ({ route, navigation}) => {
                     ) : (
                         <>
                             {!myProposal ? (
+								<>
+									<ItemsTable />
+									<View style={styles.offerPriceContainer}>
+										<Text style={styles.offerPriceText}>Offer a price to</Text>
+										<TouchableOpacity onPress={() => navigation.navigate('Profile', { userId: moveRequest.UserID })}>
+											<Text style={styles.name}>{requesterName}</Text>
+										</TouchableOpacity>
+									</View>
+									<TextInput
+										keyboardType="numeric"
+										label="Price"
+										value={price}
+										onChangeText={text => setPrice(text)}
+									/>
+									<Button mode="contained" onPress={handleOfferPrice}>Offer</Button>
+								</>
+							) : (
                                 <>
                                     <ItemsTable />
-                                    <Text style={{ padding: 5 }}>Offer a price?</Text>
-                                    <TextInput
-                                        keyboardType="numeric"
-                                        label="Price"
-                                        value={price}
-                                        onChangeText={text => setPrice(text)}
-                                    />
-                                    <Button mode="contained" onPress={handleOfferPrice}>Offer</Button>
-                                </>
-                            ) : (
-                                <>
-                                    <ItemsTable />
-                                    <Text>Your proposal</Text>
+                                    <Text>My Proposal</Text>
                                     <Card>
 										<Card.Actions>
 											{myProposal.PriceStatus === "AcceptedByClient" ? (
@@ -333,7 +352,35 @@ const SingleMoveRequest = ({ route, navigation}) => {
 };
 
 const styles = StyleSheet.create({
-	providerName: {
+	container: {
+        padding: 16,
+        // Adjust container styles if necessary
+    },
+    requesterName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10, // Ensure there's space below the requesterName
+    },
+    offerButton: {
+        backgroundColor: '#007BFF', // Example color for the button
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+	offerPriceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 10, // Adjust the vertical margin as needed
+    },
+    offerPriceText: {
+        marginRight: 5, // Adjust the spacing between the text and the user name
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+    },
+	name: {
 		color: 'blue',
 		textDecorationLine: 'underline',
 	},
