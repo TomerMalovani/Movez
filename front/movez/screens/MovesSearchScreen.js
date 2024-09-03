@@ -53,12 +53,31 @@ const MovesSearchScreen = ({ navigation }) => {
 	const handleVehicleChoose = async () => {
 		const userVehicles = await getAllVehicles(token);
 		setUserVehicles(userVehicles);
+		
 		if (userVehicles.length === 0) {
-			Alert.alert("You don't have any vehicles, please add one to continue");
+		  Alert.alert(
+			"No Vehicles Found",
+			"You don't have any vehicles, would you like to create one?",
+			[
+			  {
+				text: "No",
+				onPress: () => console.log("Stay on the same page"),
+				style: "cancel",
+			  },
+			  {
+				text: "Yes",
+				onPress: () => {
+				  // Replace 'UserVehicles' with your navigation route or logic to go to the create vehicle page
+				  navigation.navigate('UserVehicles'); 
+				},
+			  },
+			],
+			{ cancelable: false }
+		  );
 		} else {
-			setIsModalVisible(true);
+		  setIsModalVisible(true);
 		}
-	};
+	  };
 
 	const handleVehicleSelected = (vehicle) => {
 		setSelectedVehicle(vehicle);
@@ -201,12 +220,14 @@ const MovesSearchScreen = ({ navigation }) => {
 					<Card style={{ marginBottom: 16 }}>
 						<Card.Content>
 							<Card.Actions>
-								<Button
-									mode="contained"
-									onPress={() => navigation.navigate('SingleMoveRequest', { moveRequest: moveRequest, vehicle: selectedVehicle })}
-								>
-									View
-								</Button>
+								<Button onPress={() => navigation.navigate('SingleMoveRequest', { moveRequest: moveRequest, vehicle: selectedVehicle})}>View</Button>
+								<IconButton
+                                icon="chat"
+                                mode='contained'
+                                size={20}
+                                onPress={() => navigation.navigate('Chat', { moveRequest: item.uuid })}
+                                style={styles.chatIcon}
+                            />
 							</Card.Actions>
 							<Paragraph>{`Distance: ${moveRequest.distance}`}</Paragraph>
 							<Paragraph>{`From: ${moveRequest.fromAddress}`}</Paragraph>
@@ -238,6 +259,14 @@ const MovesSearchScreen = ({ navigation }) => {
 			/>
 		</Surface>
 	);
+};
+
+const styles = {
+	chatIcon: {
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
+    },
 };
 
 export default MovesSearchScreen;

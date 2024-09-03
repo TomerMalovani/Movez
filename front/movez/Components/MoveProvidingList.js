@@ -24,6 +24,7 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
     
             if (data && Array.isArray(data)) {
                 const filteredData = data.filter(proposal => proposal.request && filterStatus.includes(proposal.request.moveStatus));
+
                 const requesterIds = filteredData.map(proposal => proposal.MovingID);
     
                 console.log("Requester IDs to fetch:", requesterIds);
@@ -67,10 +68,9 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
         try {
             console.log("Proposal clicked:", item); 
             const selectedVehicleUUID = item.VehicleUUID;
-    
+            
             const vehicleInfo = await getVehicleByVehicleUUID(token, selectedVehicleUUID);
             console.log("Fetched vehicle info:", vehicleInfo);
-    
             navigation.navigate('SingleMoveRequest', { 
                 moveRequest: item.request, 
                 selectedVehicle: vehicleInfo // Pass the full vehicle info
@@ -101,6 +101,13 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
                         <Paragraph>{`From: ${item.request.fromAddress}`}</Paragraph>
                         <Paragraph>{`To: ${item.request.toAddress}`}</Paragraph>
                     </View>
+                    <IconButton
+                        icon="chat"
+                        mode='contained'
+                        size={20}
+                        onPress={() => navigation.navigate('Chat', { moveRequest: item.request.uuid })}
+                        style={styles.chatIcon}
+                    />
                 </Card.Content>
             </Card>
         </TouchableRipple>

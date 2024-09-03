@@ -7,6 +7,26 @@ dotenv.config()
 
 const getUser = async (req, res) => {
 	const uuid = req.userId;
+    console.log("uuid: ", uuid);
+	try {
+		const user = await User.findOne({ where: { uuid }, attributes: { exclude: ['password', 'salt', 'token', 'token_exp'] }});
+		if (user) {
+			res.status(200).json({ message: "User found", user: user });
+            console.log(user);
+        }
+		else {
+			res.status(404).json({ message: "User not found" });
+		}
+	}
+	catch (error) {
+		console.log(error);
+		res.status(500).json({ message: "Internal Server Error", error: error.message });
+	}
+}
+
+const getUserByID = async (req, res) => {
+	const uuid = req.params.uuid;
+    console.log("uuid: ", uuid);
 	try {
 		const user = await User.findOne({ where: { uuid }, attributes: { exclude: ['password', 'salt', 'token', 'token_exp'] }});
 		if (user) {
@@ -209,8 +229,8 @@ const editProfile = async (req, res) => {
 module.exports = {
     register,
     login,
-	getUser,
-    getUserById,
+	  getUser,
+    getUserByID,
     uploadProfilePhoto,
     deleteProfilePhoto,
     editProfile

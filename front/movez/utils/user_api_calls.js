@@ -58,22 +58,21 @@ export const getProfile = async (token) => {
     }
 }
 
-export const getProfileById = async (uuid, token) => {
+export const getProfileByID = async (token, uuid) => {
     try {
-        const url = `${URL}/users/${uuid}`;
-        const res = await getRequest(url, token);
-        if (res.data.user) {
-            console.log("res", res);
-            console.log("res.user", res.data.user);
-            return res.data.user;
-        } else {
-            throw new Error(res.data.message);
-        }
+        // console.log("token",token)
+        const res = await getRequest(`${URL}/users/profileById/${uuid}`, token)
+        if (res.data.user){
+            console.log("res", res)
+            console.log("res.user", res.data.user)
+            return res.data.user
+        }else throw new Error(res.data.message)
+      
     } catch (error) {
-        console.log(error);
-        throw new Error(error);
+        console.log(error)
+        throw new Error(error)
     }
-};
+}
 
 
 export const uploadPhoto = async (token, photo) => {
