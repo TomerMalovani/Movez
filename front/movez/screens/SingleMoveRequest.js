@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Image, Modal as RNModal, TouchableOpacity
 import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndicator, Portal, IconButton } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
 import { showSingleMoveRequestItems, updateRequestStatus } from '../utils/moveRequest_api_calls';
-import { getProfileById } from '../utils/user_api_calls';
+import { getProfileByID } from '../utils/user_api_calls';
 import { Marker } from 'react-native-maps';
 import CustomMapView from '../components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
@@ -70,7 +70,7 @@ const SingleMoveRequest = ({ route, navigation}) => {
 
 	const fetchRequesterName = async () => {
         try {
-            const userData = await getProfileById(moveRequest.UserID, token);
+            const userData = await getProfileByID(token, moveRequest.UserID);
 			console.log("profile of requester: ", userData);
             setRequesterName(userData.username);
         } catch (error) {

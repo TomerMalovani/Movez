@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useMemo, useRef, useCallback } 
 import { TokenContext } from '../tokenContext';
 import { View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
 import { Button, TextInput, Text, Avatar } from 'react-native-paper';
-import { getProfile, getProfileByUUID } from '../utils/user_api_calls';
+import { getProfile, getProfileByID } from '../utils/user_api_calls';
 import { getUsersMessage } from '../utils/messages_api_calls';
 import { URL } from '../utils/consts';
 
@@ -47,7 +47,7 @@ const Chat = (props) => {
             if (usersIDs && Array.isArray(usersIDs.usersUUID)) {
                 const users = await Promise.all(usersIDs.usersUUID.map(async (userID) => {
                     try {
-                        const userProfile = await getProfileByUUID(token, userID);
+                        const userProfile = await getProfileByID(token, userID);
                         console.log("Fetched user profile:", userProfile);
                         return userProfile;
                     } catch (error) {

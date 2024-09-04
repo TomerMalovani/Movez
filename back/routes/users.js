@@ -7,14 +7,13 @@ const {photoValidation} = require('../validation/photo_validation');
 const {uuIDValidation} = require('../validation/uuidValidation');
 const { register, login, getUser, getUserByID, uploadProfilePhoto, deleteProfilePhoto, editProfile} = require('../controller/user_controller');
 const e = require('express');
-
 /* GET users listing. */
 router.post('/register', upload.single('photo'), usersRegisterValidation, register);
 
 router.post('/login',usersLoginValidation, login);
 
 router.get('/',uuIDValidation ,getUser)
-router.get('/profileById/:userId', uuIDValidation, getUserByUUID)
+router.get('/profileById/:uuid', uuIDValidation, getUserByID)
 router.patch('/', uuIDValidation, usersEditProfileValidation, editProfile)
 router.route('/photo').post(upload.single('photo'), uuIDValidation ,uploadProfilePhoto)
 .put(photoValidation ,upload.single('photo'), uploadProfilePhoto)

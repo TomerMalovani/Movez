@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 
 import { Text, Card, Title, Paragraph, TouchableRipple } from 'react-native-paper';
 import { getPriceProposalForProvider } from '../utils/api_price_proposals';
 import { getVehicleByVehicleUUID } from '../utils/vehicle_api_calls';
-import { getProfileById } from '../utils/user_api_calls';
+import { getProfileByID } from '../utils/user_api_calls';
 import { TokenContext } from '../tokenContext';
 import { ToastContext } from '../toastContext';
 
@@ -31,7 +31,7 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
 
                 // Fetch requester names in bulk
                 const requesterData = await Promise.all(
-                    requesterIds.map(id => getProfileById(id, token))
+                    requesterIds.map(id => getProfileByID(token, id))
                 );
     
                 console.log("Requester data fetched:", requesterData);

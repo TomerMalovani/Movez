@@ -5,7 +5,7 @@ import { ToastContext } from '../toastContext';
 import { getAllVehicles } from '../utils/vehicle_api_calls';
 import ProfileVehicleCard from '../components/profileVehicleCard';
 import { Avatar, MD2Colors, Surface, Text,Button, ActivityIndicator, Provider, Portal, Modal } from 'react-native-paper';
-import { getProfile, uploadPhoto, deleteProfilePhoto, updateProfile, getProfileById} from '../utils/user_api_calls';
+import { getProfile, uploadPhoto, deleteProfilePhoto, updateProfile, getProfileByID} from '../utils/user_api_calls';
 import * as ImagePicker from 'expo-image-picker';
 import MyModal from '../components/UploadPictureModal';
 
@@ -29,7 +29,7 @@ const ProfilePage = (props) => {
 	const getUser = async () => {
 		try {
 			setLoading(true);
-			const profile = await getProfileById(userId, token);
+			const profile = await getProfileByID(token, userId);
 			console.log("profile api", profile.email)
 			console.log(profile);
 			setProfile(profile);
