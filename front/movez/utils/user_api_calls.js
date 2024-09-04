@@ -19,10 +19,11 @@ export const register = async (username, email, password, firstName, lastName, p
     try {
 		const response = await postRequest(`${URL}/users/register`, body, null, image)
         console.log("response", response);
-		if (response.status !== 201) throw new Error (response.data.message)
+		if (response.status !== 201) throw new Error ({message: response.data.message, error: response.data.error})
 			return response.data
     } catch (error) {
-        console.log("error", error);
+        console.log("error", error.message);
+        console.log("error is: ", error.error);
 		throw error
     }
 }

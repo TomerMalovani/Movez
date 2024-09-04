@@ -3,21 +3,21 @@
     "username": "movezdb",
     "password": "strongpassword",
     "database": "movez",
-    "host": "127.0.0.1",
+    "host": "51.4.0.115",
     "dialect": "postgres"
   },
   "test": {
-    "username": "postgres",
-    "password": "password",
+    "username": "movezdb",
+    "password": "strongpassword",
     "database": "movez",
-    "host": "127.0.0.1",
+    "host": "51.4.0.115",
     "dialect": "postgres"
   },
   "production": {
-    "username": "postgres",
-    "password": "password",
+    "username": "movezdb",
+    "password": "strongpassword",
     "database": "movez",
-    "host": "127.0.0.1",
+    "host": "51.4.0.115",
     "dialect": "postgres"
   }
 }
