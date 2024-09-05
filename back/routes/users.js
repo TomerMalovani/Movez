@@ -14,7 +14,7 @@ router.post('/register', upload.single('photo'), usersRegisterValidation, regist
 router.post('/login',usersLoginValidation, login);
 
 router.get('/',uuIDValidation ,getUser)
-router.get('/profileById/:userId', uuIDValidation, getUserByUUID)
+router.get('/profileById/:userId', uuIDValidation, getUserByID)
 router.patch('/', uuIDValidation, usersEditProfileValidation, editProfile)
 router.route('/photo').post(upload.single('photo'), uuIDValidation ,uploadProfilePhoto)
 .put(photoValidation ,upload.single('photo'), uploadProfilePhoto)
