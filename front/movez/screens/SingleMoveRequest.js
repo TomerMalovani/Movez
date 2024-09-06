@@ -3,12 +3,12 @@ import { ScrollView, StyleSheet, View, Image, Modal as RNModal, TouchableOpacity
 import { Button, Card, Chip, DataTable, Surface, Text, TextInput, ActivityIndicator, Portal, IconButton } from 'react-native-paper';
 import { TokenContext } from '../tokenContext';
 import { showSingleMoveRequestItems, updateRequestStatus } from '../utils/moveRequest_api_calls';
-import { getProfileById } from '../utils/user_api_calls';
+import { getProfileByID } from '../utils/user_api_calls';
 import { Marker } from 'react-native-maps';
 import CustomMapView from '../components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
-import ImageViewer from 'react-native-image-zoom-viewer';
+import FullScreenImageModal from '../components/FullScreenImageModal';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { clientAgreePriceProposal, clientCancelPriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal, removePriceProposal } from '../utils/api_price_proposals';
 import { ToastContext } from '../toastContext';
@@ -70,7 +70,7 @@ const SingleMoveRequest = ({ route, navigation}) => {
 
 	const fetchRequesterName = async () => {
         try {
-            const userData = await getProfileById(moveRequest.UserID, token);
+            const userData = await getProfileByID(token, moveRequest.UserID);
 			console.log("profile of requester: ", userData);
             setRequesterName(userData.username);
         } catch (error) {
@@ -347,6 +347,11 @@ const SingleMoveRequest = ({ route, navigation}) => {
                     )}
                 </BottomSheetScrollView>
             </BottomSheet>
+			<FullScreenImageModal
+				visible={!!fullScreenImage}
+				imageUrls={fullScreenImage}
+				onClose={handleFullScreenImageClose}
+			/>
         </Surface>
     );
 };

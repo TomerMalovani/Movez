@@ -6,7 +6,9 @@ import { getAllVehicles } from '../utils/vehicle_api_calls';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { google_maps_api_key } from '../config/config';
 import { searchMoveRequest } from '../utils/moveRequest_api_calls';
+import { getProfileByID } from '../utils/user_api_calls';
 import FullScreenImageModal from '../components/FullScreenImageModal';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const MovesSearchScreen = ({ navigation }) => {
 	const [location, setLocation] = useState();
@@ -43,7 +45,7 @@ const MovesSearchScreen = ({ navigation }) => {
 	];
 
 	const handlePhotoClick = (url) => {
-		setFullScreenImage(url);
+		setFullScreenImage([{url: url}]);
 	};
 
 	const handleFullScreenImageClose = () => {
@@ -83,10 +85,20 @@ const MovesSearchScreen = ({ navigation }) => {
 		setSelectedVehicle(vehicle);
 		setIsModalVisible(false);
 	};
+
 	const handleSearch = async () => {
 		console.log("vehicleUUID: ", selectedVehicle.uuid, " isUsingAlgorithm: ", isUsingAlgorithm);
 		const res = await searchMoveRequest(token, location.latitude, location.longitude, radius, selectedVehicle.uuid, isUsingAlgorithm);
 		console.log("res", res);
+		for (const element of res) {
+			try {
+			  const profile = await getProfileByID(token, element.UserID);
+			  element.username = profile.username;
+			} catch (error) {
+			  console.log("error", error);
+			}
+			// Do something with the profile
+		  }
 		setResults(res);
 	};
 
@@ -125,24 +137,25 @@ const MovesSearchScreen = ({ navigation }) => {
 				<Surface style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, padding: 8 }}>
 					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 						{selectedVehicle.PhotoUrl ? (
-							<Avatar.Image
-								size={50}
-								source={{ uri: selectedVehicle.PhotoUrl }}
-								onPress={() => handlePhotoClick(selectedVehicle.PhotoUrl)}
-							/>
+							<TouchableOpacity onPress={() => handlePhotoClick(selectedVehicle.PhotoUrl)}>
+								<Avatar.Image
+									size={40}
+									source={{ uri: selectedVehicle.PhotoUrl }}
+								/>
+							</TouchableOpacity>
 						) : (
 							<Avatar.Icon
-								size={50}
+								size={40}
 								icon="car"
 								onPress={() => setIsModalVisible(true)}
 							/>
 						)}
-						<View style={{ marginLeft: 8 }}>
+						<View style={{ marginLeft: 5 }}>
 							<Text variant="bodyLarge">{`Vehicle Type: ${selectedVehicle.VehicleType}`}</Text>
 							<Text variant="bodyLarge" style={{ marginTop: 4 }}>{`Vehicle Model: ${selectedVehicle.VehicleModel}`}</Text>
 						</View>
 					</View>
-					<Button mode="contained" onPress={() => setIsModalVisible(true)} style={{ marginLeft: 30 }}>
+					<Button mode="contained" onPress={() => setIsModalVisible(true)} style={{ marginLeft: 10 }}>
 						Change Vehicle
 					</Button>
 				</Surface>
@@ -221,14 +234,8 @@ const MovesSearchScreen = ({ navigation }) => {
 						<Card.Content>
 							<Card.Actions>
 								<Button onPress={() => navigation.navigate('SingleMoveRequest', { moveRequest: moveRequest, vehicle: selectedVehicle})}>View</Button>
-								<IconButton
-                                icon="chat"
-                                mode='contained'
-                                size={20}
-                                onPress={() => navigation.navigate('Chat', { moveRequest: item.uuid })}
-                                style={styles.chatIcon}
-                            />
 							</Card.Actions>
+							<Paragraph>{`By: ${moveRequest.username}`}</Paragraph>
 							<Paragraph>{`Distance: ${moveRequest.distance}`}</Paragraph>
 							<Paragraph>{`From: ${moveRequest.fromAddress}`}</Paragraph>
 							<Paragraph>{`To: ${moveRequest.toAddress}`}</Paragraph>
@@ -242,8 +249,8 @@ const MovesSearchScreen = ({ navigation }) => {
 								onPress={() => navigation.navigate('Chat', { moveRequest: moveRequest.uuid })}
 								style={{
 									position: 'absolute',
-									right: 10,
-									bottom: 10
+									right: 30,
+									bottom: 30
 								}}
 							/>
 						</Card.Content>

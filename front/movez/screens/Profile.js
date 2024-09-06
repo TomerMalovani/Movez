@@ -1,11 +1,12 @@
 import React,{useState,useEffect,useContext, useRef} from 'react';
-import { View, StyleSheet, TextInput, Alert} from 'react-native';
+import { View, StyleSheet, TextInput, Alert, TouchableOpacity} from 'react-native';
 import { TokenContext } from '../tokenContext';
 import { ToastContext } from '../toastContext';
 import { getAllVehicles } from '../utils/vehicle_api_calls';
 import ProfileVehicleCard from '../components/profileVehicleCard';
-import { Avatar, MD2Colors, Surface, Text,Button, ActivityIndicator, Provider, Portal, Modal } from 'react-native-paper';
+import { Avatar, MD2Colors, Surface, Text,Button, ActivityIndicator, Provider, Portal, Modal} from 'react-native-paper';
 import { getProfile, uploadPhoto, deleteProfilePhoto, updateProfile, getProfileByID} from '../utils/user_api_calls';
+import FullScreenImageModal from '../components/FullScreenImageModal';
 import * as ImagePicker from 'expo-image-picker';
 import MyModal from '../components/UploadPictureModal';
 
@@ -20,6 +21,7 @@ const ProfilePage = (props) => {
 	const [modalVisible, setModalVisible] = useState(false);
 	const { showError, showSuccess } = useContext(ToastContext)
 	const [editModalVisible, setEditModalVisible] = useState(false);
+	const [fullScreenImage, setFullScreenImage] = useState(null);
 
 	const firstNameRef = useRef('');
 	const lastNameRef = useRef('');
@@ -191,6 +193,14 @@ const ProfilePage = (props) => {
 			return key.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
 		};
 
+		const handlePhotoClick = (url) => {
+			setFullScreenImage([{url: url}]);
+		};
+
+		const handleFullScreenImageClose = () => {
+			setFullScreenImage(null);
+		};
+
 	if (loading) {
 		return <ActivityIndicator animating={true} color={MD2Colors.error50} size={50} style={{ marginTop: 50 }} />;
 		}
@@ -210,7 +220,9 @@ const ProfilePage = (props) => {
 		<Provider>
 			<Surface elevation={0} style={styles.container}>
 				{profile.PhotoUrl || image ? (
-					<Avatar.Image size={100} source={{ uri: profile.PhotoUrl || image }} />
+					<TouchableOpacity onPress={() => {handlePhotoClick(profile.PhotoUrl || image)}}>
+						<Avatar.Image size={100} source={{ uri: profile.PhotoUrl || image }}/>
+					</TouchableOpacity>
 					) : (
 					<Avatar.Icon size={100} icon="account" />
 				)}
@@ -248,6 +260,11 @@ const ProfilePage = (props) => {
 				pickImageFromGallery={pickImageFromGallery}
 				removeImage={removeImage}
 			  />
+			  <FullScreenImageModal
+				visible={!!fullScreenImage}
+				imageUrls={fullScreenImage}
+				onClose={handleFullScreenImageClose}
+			/>
 			<Portal>
 				<Modal visible={editModalVisible} onDismiss={hideEditModal} contentContainerStyle={styles.modalContent}>
 					<Text variant="headlineSmall">Edit Profile Information</Text>
