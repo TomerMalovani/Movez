@@ -25,7 +25,7 @@ const getUser = async (req, res) => {
 }
 
 const getUserByID = async (req, res) => {
-	const uuid = req.params.uuid;
+	const uuid = req.params.userId;
     console.log("uuid: ", uuid);
 	try {
 		const user = await User.findOne({ where: { uuid }, attributes: { exclude: ['password', 'salt', 'token', 'token_exp'] }});

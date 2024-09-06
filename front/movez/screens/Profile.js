@@ -219,7 +219,7 @@ const ProfilePage = (props) => {
 					{buttonPictureLabel}
 					</Button>
 				)}
-				<Text variant="headlineSmall">{user}</Text>
+				<Text variant="headlineSmall">{profile.username}</Text>
 				<Text variant="titleMedium">{profile.email}</Text>
 				{Object.keys(profile).map((key) => (
 					key != 'PhotoUrl' && key != 'createdAt' && key != 'updatedAt' && key != 'uuid' &&
@@ -231,13 +231,15 @@ const ProfilePage = (props) => {
 				</Button>)}
 
 				<Surface style={styles.butttonsCon}>
-					<Button onPress={() => navigation.navigate('My Reviews', { providerId: myUuid })} icon="star">
-						My Reviews
+					<Button onPress={() => navigation.navigate('My Reviews', { providerId: myUuid })} icon="star"  mode= 'text'>
+						Reviews
 					</Button>
+				</Surface>
+				{isItMine && (<Surface style={styles.butttonsCon}>
 					<Button onPress={() => navigation.navigate('My Vehicles')} icon="car" mode='text'>
 						My Vehicles
 					</Button>
-				</Surface>
+				</Surface>)}
 			</Surface>
 			<MyModal
 				visible={modalVisible}
@@ -302,7 +304,8 @@ const styles = StyleSheet.create({
 	  alignItems: 'center',
 	},
 	butttonsCon: {
-	  marginTop: 50,
+	  marginTop: 20,
+	  padding: 5,
 	  width: "80%",
 	},
 	editBtn: {
