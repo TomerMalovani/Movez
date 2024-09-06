@@ -62,6 +62,7 @@ export const getProfile = async (token) => {
 export const getProfileByID = async (token, uuid) => {
     try {
         // console.log("token",token)
+        console.log("uuid: ",uuid)
         const res = await getRequest(`${URL}/users/profileById/${uuid}`, token)
         if (res.data.user){
             console.log("res", res)

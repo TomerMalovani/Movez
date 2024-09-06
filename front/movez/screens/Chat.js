@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useMemo, useRef, useCallback } from 'react';
 import { TokenContext } from '../tokenContext';
-import { View, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Alert} from 'react-native';
 import { Button, TextInput, Text, Avatar } from 'react-native-paper';
 import { getProfile, getProfileByID } from '../utils/user_api_calls';
 import { getUsersMessage } from '../utils/messages_api_calls';
@@ -87,6 +87,7 @@ const Chat = (props) => {
                 ...message,
                 userName: user ? `${user.firstName} ${user.lastName}` : message.from,  // Default to message 'from' if no user found
                 userPhoto: user ? user.PhotoUrl : null, // Include user's photo URL if available
+                userId: user ? user.uuid : null, // Include user's UUID if available
             };
         });
     };
@@ -212,7 +213,7 @@ const Chat = (props) => {
             ) : (
                 <Avatar.Icon size={40} icon="account" style={styles.defaultProfileIcon} />
             )}
-            <TouchableOpacity onPress={() => navigation.navigate('Profile', { userId: item.userId })}>
+            <TouchableOpacity onPress={() => {console.log("item: ", item); item.userId ? navigation.navigate('Profile', { userId: item.userId }) : Alert.alert("Cant access user's profile")}}>
                 <Text style={[styles.username, { color: getUserColorMemoized(item.from) }]}>{item.from}</Text>
             </TouchableOpacity>
             <Text style={styles.messageContent}>{item.content}</Text>

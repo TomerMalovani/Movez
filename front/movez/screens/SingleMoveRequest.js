@@ -8,7 +8,7 @@ import { Marker } from 'react-native-maps';
 import CustomMapView from '../components/CustomMapView';
 import { google_maps_api_key } from '../config/config';
 import MapViewDirections from 'react-native-maps-directions';
-import ImageViewer from 'react-native-image-zoom-viewer';
+import FullScreenImageModal from '../components/FullScreenImageModal';
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { clientAgreePriceProposal, clientCancelPriceProposal, createPriceProposal, getPriceProposalsByRequest, getPriceProposalsByRequestAndMover, moverAgreePriceProposal, removePriceProposal } from '../utils/api_price_proposals';
 import { ToastContext } from '../toastContext';
@@ -347,6 +347,11 @@ const SingleMoveRequest = ({ route, navigation}) => {
                     )}
                 </BottomSheetScrollView>
             </BottomSheet>
+			<FullScreenImageModal
+				visible={!!fullScreenImage}
+				imageUrls={fullScreenImage}
+				onClose={handleFullScreenImageClose}
+			/>
         </Surface>
     );
 };

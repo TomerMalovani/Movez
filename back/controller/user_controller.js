@@ -24,8 +24,6 @@ const getUser = async (req, res) => {
 	}
 }
 
-
-
 const getUserByID = async (req, res) => {
     const uuid = req.params.uuid; // Extract uuid from route parameters
     try {

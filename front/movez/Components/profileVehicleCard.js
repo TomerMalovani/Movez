@@ -1,11 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Card, DataTable, IconButton, Paragraph, TouchableRipple, Avatar, Button } from 'react-native-paper';
 import { deateVehicle } from '../utils/vehicle_api_calls';
 import { TokenContext } from '../tokenContext';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import FullScreenImageModal from './FullScreenImageModal';
 
 const ProfileVehicleCard = ({ handleDelete, handleEditModalOpen,vehicles, handleModalOpen, setVehicle}) => {
-	
+	const [fullScreenImage, setFullScreenImage] = useState(null);
 	const columns = [
 		{
 			// "Depth": "10.00", "Height": "15.00", "MoverID": "736bad7e-05c6-4a09-8a56-06e847ea6255", "VehicleType": "cool", "Width": "10.00"}
@@ -36,6 +38,14 @@ const ProfileVehicleCard = ({ handleDelete, handleEditModalOpen,vehicles, handle
         handleEditModalOpen();
     };
 
+	const handlePhotoClick = (url) => {
+		setFullScreenImage([{url: url}]);
+	}
+
+	const handleFullScreenImageClose = () => {
+		setFullScreenImage(null);
+	};
+
 	if (vehicles.length > 0) {
 		console.log(vehicles);
 		return (
@@ -65,7 +75,9 @@ const ProfileVehicleCard = ({ handleDelete, handleEditModalOpen,vehicles, handle
 						<Card.Title title="Vehicle Information" />
 						{vehicle.PhotoUrl ? (
                				<View style={{paddingLeft: 16}}>
-								<Image source={{ uri: vehicle.PhotoUrl }} style={{ width: 100, height: 100 }} />
+								<TouchableOpacity onPress={() => handlePhotoClick(vehicle.PhotoUrl)}>
+									<Image source={{ uri: vehicle.PhotoUrl }} style={{ width: 100, height: 100 }} />
+								</TouchableOpacity>
 							</View>
 						) : (
 							<View style={{  paddingLeft: 16}}>
@@ -81,6 +93,11 @@ const ProfileVehicleCard = ({ handleDelete, handleEditModalOpen,vehicles, handle
 						</Card.Content>
 					</Card>
 				))}
+				<FullScreenImageModal
+				visible={!!fullScreenImage}
+				imageUrls={fullScreenImage}
+				onClose={handleFullScreenImageClose}
+			/>
 			</>
 		);
 	} else {
