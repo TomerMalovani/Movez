@@ -19,12 +19,5 @@ RUN npm rebuild bcrypt --build-from-source
 # Expose the port on which the app will run
 EXPOSE 3000
 
-# Define environment variables
-ENV POSTGRES_PASSWORD=movez \
-	POSTGRES_USER=movez \
-	POSTGRES_HOST=4.156.32.216 \
-	POSTGRES_DB=balance \
-	JWT_SECRET=secret
-
 # Start the application
 CMD ["npm", "start"]

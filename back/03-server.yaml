@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+data:
+  JWT_SECRET: c2VjcmV0          # 'secret' encoded in base64
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-app
+  labels:
+    app: movez
+    deployment: express-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: movez
+      deployment: express-app
+  template:
+    metadata:
+      labels:
+        app: movez
+        deployment: express-app
+    spec:
+      containers:
+      - name: express-app
+        image: your-dockerhub-username/your-image-name:latest  # Replace with your actual image name
+        ports:
+        - containerPort: 3000
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: "db-credentials"
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "db-credentials"
+              key: password
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: "db-credentials"
+              key: database
+        - name: POSTGRES_HOST
+          value: "db"  # This references the name of the database service
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: JWT_SECRET
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: express-service
+  labels:
+    app: movez
+    deployment: express-app
+spec:
+  selector:
+    app: movez
+    deployment: express-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer

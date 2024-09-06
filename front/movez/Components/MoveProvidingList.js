@@ -31,7 +31,7 @@ const MoveProvidingList = ({ navigation, filterStatus, selectedVehicle }) => {
 
                 // Fetch requester names in bulk
                 const requesterData = await Promise.all(
-                    requesterIds.map(id => getProfileByID (token, id))
+                     requesterIds.map(id => getProfileByID(token, id))
                 );
     
                 console.log("Requester data fetched:", requesterData);
