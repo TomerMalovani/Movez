@@ -66,7 +66,6 @@ export const getPriceProposalForProvider = async (token, moverID) => {
 		return response.data.proposals
 	} catch (error) {
 		console.log(error)
-		throw error
 	}
 }
 
