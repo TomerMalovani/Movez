@@ -139,10 +139,13 @@ const uploadProfilePhoto = async (req, res) => {
         }
         else{
             res.status(500).json({message: 'Failed to upload Profile Photo'});
+            console.log("error: here", error.message);
         }
     }
     catch(error){
         res.status(500).json({message: "Internal Server Error", error: error.message})
+        console.log("error: ", error.message);
+        console.error(error.message);
     }
 }
 

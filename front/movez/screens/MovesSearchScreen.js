@@ -18,7 +18,7 @@ const MovesSearchScreen = ({ navigation }) => {
 	const [results, setResults] = useState([]);
 	const { token } = useContext(TokenContext);
 	const [isModalVisible, setIsModalVisible] = useState(false);
-	const [isUsingAlgorithm, setIsUsingAlgorithm] = useState(true);
+	const [isUsingAlgorithm, setIsUsingAlgorithm] = useState(false);
 	const [fullScreenImage, setFullScreenImage] = useState(null);
 
 	const columns = [
@@ -156,7 +156,7 @@ const MovesSearchScreen = ({ navigation }) => {
 						</View>
 					</View>
 					<Button mode="contained" onPress={() => setIsModalVisible(true)} style={{ marginLeft: 10 }}>
-						Change Vehicle
+						Change
 					</Button>
 				</Surface>
 			) : (

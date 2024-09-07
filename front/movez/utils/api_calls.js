@@ -134,6 +134,7 @@ export const postPhotoRequest = async (url, data, token) => {
     }
     catch(error){
         console.log("error in uploading photo: ",error);
+        console.log("error.response: ",error.response);
         throw error;
     }
 }

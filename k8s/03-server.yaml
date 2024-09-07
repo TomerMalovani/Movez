@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: express-app
-        image: itamarpo/movezback:latest  # Replace with your actual image name
+        image: itamarpo/movezserver:latest  # Replace with your actual image name
         ports:
         - containerPort: 3000
         env:

@@ -84,6 +84,7 @@ export const uploadPhoto = async (token, photo) => {
         return res.data
     }
     catch(error){
+        console.log("error: ", error)
         throw error
     }
 }

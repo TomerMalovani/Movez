@@ -24,7 +24,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+function fibonacci(num) {
+  if (num <= 1) return 1;
+  return fibonacci(num - 1) + fibonacci(num - 2);
+}
 
+app.get('/stress', (req, res) => {
+  //bad fibonacci algorithm:
+  fibonacci(30);
+  res.send('Stress test completed');
+})
 
 
 
