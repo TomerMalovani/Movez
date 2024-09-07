@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { ActivityIndicator, Button, MD2Colors, Modal, Portal } from 'react-native-paper';
 import ProfileVehicleCard from '../components/profileVehicleCard';
 import { deleteVehicle, getAllVehicles } from '../utils/vehicle_api_calls';
@@ -66,7 +66,7 @@ const UserVehicles = (props) => {
         return <ActivityIndicator animating={true} color={MD2Colors.error50} size={50} style={{ marginTop: 50 }} />;
 
     return (
-        <View>
+        <ScrollView>
             <Portal>
                 <Modal
                     visible={isOpen}
@@ -93,7 +93,7 @@ const UserVehicles = (props) => {
                 setVehicle={handleSelectedVehicle}
                 {...props}
             />
-        </View>
+        </ScrollView>
     );
 };
 
